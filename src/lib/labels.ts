@@ -1,0 +1,131 @@
+import { fromZonedTime, formatInTimeZone } from 'date-fns-tz'
+
+export const CAIRO = 'Africa/Cairo'
+
+/** `<input type="datetime-local">` gives "2026-10-07T20:00" with no zone.
+ *  Interpret it as Cairo wall-clock time and return a UTC ISO string. */
+export function cairoInputToUtcIso(value: string): string {
+  return fromZonedTime(value, CAIRO).toISOString()
+}
+
+export function formatCairo(iso: string | null | undefined): string {
+  if (!iso) return '—'
+  return formatInTimeZone(new Date(iso), CAIRO, 'yyyy-MM-dd hh:mm a')
+}
+
+export const TASK_STATUS: Record<string, string> = {
+  todo: 'To Do',
+  in_progress: 'In Progress',
+  completed: 'Completed',
+  blocked: 'Blocked',
+  canceled: 'Canceled',
+}
+
+export const DELIVERABLE_STATUS: Record<string, string> = {
+  draft: 'Draft',
+  internal_review: 'Under Internal Review',
+  internal_changes_requested: 'Internal Changes Requested',
+  approved_internally: 'Approved Internally',
+  shared_with_client: 'Awaiting Client Decision',
+  client_changes_requested: 'Client Requested Changes',
+  client_approved: 'Client Approved',
+}
+
+/** Client-facing wording (the client never sees internal states). */
+export const CLIENT_STATUS: Record<string, string> = {
+  shared_with_client: 'Awaiting Your Decision',
+  client_changes_requested: 'Changes Requested',
+  client_approved: 'Approved by You',
+}
+
+export const ROLE: Record<string, string> = {
+  admin: 'System Admin',
+  manager: 'Team Lead',
+  member: 'Team Member',
+  client: 'Client',
+}
+
+export const HANDOVER_REASONS: { value: string; label: string }[] = [
+  { value: 'not_enough_time', label: 'Insufficient Time' },
+  { value: 'schedule_conflict', label: 'Schedule Conflict' },
+  { value: 'task_complexity', label: 'Higher Task Complexity' },
+  { value: 'higher_priority', label: 'Higher Priority Assignment' },
+  { value: 'need_assistance', label: 'Assistance Needed' },
+  { value: 'other', label: 'Other Reason' },
+]
+export const HANDOVER_REASON_LABEL: Record<string, string> = Object.fromEntries(
+  HANDOVER_REASONS.map(r => [r.value, r.label])
+)
+
+/** Status tone → only approved palette (see Design System §6 Badges). */
+export function statusTone(status: string): 'neutral' | 'done' | 'waiting' | 'attention' {
+  if (['completed', 'approved_internally', 'client_approved'].includes(status)) return 'done'
+  if (['internal_review', 'shared_with_client'].includes(status)) return 'waiting'
+  if (['blocked', 'internal_changes_requested', 'client_changes_requested', 'overdue'].includes(status)) return 'attention'
+  return 'neutral'
+}
+
+/** Short, professional English messages for codes raised by the DB / actions. */
+export const MESSAGES: Record<string, string> = {
+  // generic
+  NOT_ALLOWED: 'You do not have permission to perform this action.',
+  UNKNOWN: 'An unexpected issue occurred. Please try again.',
+  MISSING_FIELDS: 'Please fill in all required fields.',
+  MISSING_SERVICE_ROLE_KEY: 'Server configuration incomplete (SUPABASE_SERVICE_ROLE_KEY). Check .env.local.',
+  // tasks
+  TASK_NOT_FOUND: 'Task not found or not in your workspace scope.',
+  TASK_TEAM_REQUIRED: 'Please select a team for this task.',
+  TASK_OWNER_INVALID: 'Selected owner is not available.',
+  INVALID_STATUS_TRANSITION: 'Task cannot transition to this status directly.',
+  TASK_CREATED: 'Task created and owner notified.',
+  // handover
+  NOT_TASK_OWNER: 'Handover requests can only be initiated by the current task owner.',
+  TASK_CLOSED: 'Task is closed; handover cannot be requested.',
+  INVALID_REASON: 'Please select a handover reason from the list.',
+  HANDOVER_ALREADY_PENDING: 'A handover request is already pending for this task.',
+  NO_DECIDER_AVAILABLE: 'No manager available to review request. Contact administration.',
+  HANDOVER_REQUESTED: 'Handover request submitted to manager. Ownership remains unchanged until decided.',
+  HANDOVER_NOT_FOUND: 'Handover request not found.',
+  HANDOVER_ALREADY_DECIDED: 'A decision has already been recorded for this request.',
+  NEW_OWNER_REQUIRED: 'Please select the team member to assign the task to.',
+  NEW_OWNER_INVALID: 'Selected team member is not available.',
+  NEW_OWNER_SAME_AS_CURRENT: 'Please choose someone other than the current owner.',
+  NEW_OWNER_OUTSIDE_TEAM: 'Please select a member from the same team.',
+  HANDOVER_DONE: 'Decision recorded successfully.',
+  // deliverables
+  DELIVERABLE_NOT_FOUND: 'Deliverable not found.',
+  REVIEWER_INVALID: 'Selected reviewer is not available.',
+  CURRENT_VERSION_STILL_OPEN: 'Current version is still under review; a new version cannot be created yet.',
+  VERSION_NOT_FOUND: 'Version not found.',
+  VERSION_NOT_DRAFT: 'Only draft versions can be submitted for review.',
+  VERSION_HAS_NO_FILES: 'Please upload at least one file before submitting for review.',
+  VERSION_NOT_CURRENT: 'This is not the latest version.',
+  COMMENT_REQUIRED: 'Please provide notes detailing the requested revisions.',
+  NOT_REVIEWER: 'Internal review is restricted to the assigned reviewer.',
+  CANNOT_REVIEW_OWN_VERSION: 'You cannot approve a version you created yourself.',
+  VERSION_NOT_IN_INTERNAL_REVIEW: 'This version is not awaiting internal review.',
+  NOT_CLIENT_MEMBER: 'This deliverable is not in your organization.',
+  VERSION_NOT_SHARED: 'This version is not awaiting client decision.',
+  VERSION_NOT_APPROVED_INTERNALLY: 'Deliverable must be approved internally before sharing with client.',
+  PROJECT_HAS_NO_CLIENT: 'Project is not linked to an external client.',
+  FILE_UPLOAD_FAILED: 'File upload failed. Please try again.',
+  SAVED: 'Saved successfully.',
+  // admin
+  INVITE_FAILED: 'Could not send invitation. Verify the email address and ensure it is not already registered.',
+  INVITE_SENT: 'Invitation sent successfully.',
+  CLIENT_REQUIRED: 'Select the client organization associated with this client account.',
+}
+
+/** Pull a known code out of a Supabase / thrown error message. */
+export function toCode(err: unknown): string {
+  const msg = typeof err === 'string' ? err : (err as { message?: string })?.message || ''
+  const hit = Object.keys(MESSAGES).find(code => msg.includes(code))
+  if (hit) return hit
+  if (msg.includes('row-level security')) return 'NOT_ALLOWED'
+  return 'UNKNOWN'
+}
+
+/** Current time for server-rendered deadline buckets (kept out of render for react-hooks/purity). */
+export function nowMs(): number {
+  return Date.now()
+}

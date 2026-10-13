@@ -1,49 +1,1217 @@
+/*
+ * Massar Work OS — Design Tokens v1
+ * Derived from Massar Brand Guidelines 2026.
+ * Do not add unapproved brand colors or font families.
+ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Approved brand palette */
+  --massar-green: #0D3B34;
+  --bone: #F1ECE2;
+  --ink: #101815;
+  --clay: #B85333;
+  --stone: #9A9791;
+  --white: #FFFFFF;
+
+  /* Semantic roles; semantic colors resolve only to approved palette values */
+  --color-page: var(--bone);
+  --color-surface: var(--bone);
+  --color-surface-subtle: var(--bone);
+  --color-text: var(--ink);
+  --color-text-strong: var(--massar-green);
+  --color-text-on-dark: var(--white);
+  --color-navigation: var(--massar-green);
+  --color-action-primary: var(--massar-green);
+  --color-action-primary-text: var(--white);
+  --color-attention: var(--clay);
+  --color-attention-text: var(--white);
+  --color-border-strong: var(--ink);
+  --color-border-focus: var(--massar-green);
+  --color-divider: var(--stone);
+
+  /* Fonts: Switzer Swiss Neo-Grotesque paired with Editorial Serif */
+  --font-serif: Georgia, "Cormorant Garamond", "Times New Roman", serif;
+  --font-sans: var(--font-switzer), "Switzer", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-latin: var(--font-sans);
+  --font-arabic: var(--font-ibm-plex), sans-serif;
+  --font-display-restricted: var(--font-serif);
+  --font-ui: var(--font-sans);
+
+  /* 8px-based spacing system (4px only for fine adjustments) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 40px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Type scale for product UI (screen adaptation of the editorial hierarchy) */
+  --text-micro: 12px;
+  --text-label: 14px;
+  --text-body: 16px;
+  --text-subhead: 20px;
+  --text-section: 24px;
+  --text-page: 32px;
+
+  /* Layout */
+  --sidebar-width: 256px;
+  --content-max-width: 1440px;
+  --grid-columns-desktop: 12;
+  --grid-gap: 24px;
+  --control-height: 48px;
+  --row-height: 56px;
+
+  /* Restrained geometry */
+  --radius-small: 2px;
+  --radius-control: 4px;
+  --radius-surface: 8px;
+  --border-width: 1px;
+  --focus-width: 2px;
+
+  /* Restrained motion */
+  --motion-fast: 120ms;
+  --motion-standard: 180ms;
+  --motion-ease: cubic-bezier(0.2, 0, 0, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:lang(ar) {
+  --font-ui: var(--font-arabic);
+}
+
+:lang(en) {
+  --font-ui: var(--font-latin);
 }
 
 html {
-  height: 100%;
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  background: var(--color-page);
+  text-rendering: optimizeLegibility;
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+:focus-visible {
+  outline: var(--focus-width) solid var(--color-border-focus);
+  outline-offset: 2px;
 }
 
+@media (max-width: 767px) {
+  :root {
+    --sidebar-width: 0px;
+    --grid-gap: 16px;
+    --control-height: 48px;
+    --text-page: 24px;
+  }
+}
+
+/* ── App shell ──────────────────────────────────────────────────────────
+   row-reverse inside dir="rtl" keeps the fixed navigation on the LEFT
+   (brand guideline) while the content itself stays RTL. */
 body {
-  min-height: 100%;
+  margin: 0;
+  background: var(--color-page);
+}
+
+.massar-shell {
+  display: flex;
+  min-height: 100vh;
+}
+html[dir="ltr"] .massar-shell {
+  flex-direction: row;
+}
+html[dir="rtl"] .massar-shell {
+  flex-direction: row-reverse;
+}
+
+.massar-sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background-color: var(--massar-green);
+  border-right: 1px solid rgba(241, 236, 226, 0.12);
+  padding: var(--space-5) var(--space-3);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.massar-sidebar a {
+  color: rgba(241, 236, 226, 0.85);
+  text-decoration: none;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-control);
+  font-size: var(--text-body);
+  font-weight: 500;
+  font-family: var(--font-sans);
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  transition: all var(--motion-fast) var(--motion-ease);
+}
+
+.massar-sidebar a:hover,
+.massar-sidebar a:focus-visible {
+  background-color: rgba(241, 236, 226, 0.12);
+  color: var(--white);
+  outline: none;
+}
+
+.massar-sidebar-brand {
+  margin-bottom: var(--space-6);
+  padding: 0 var(--space-3);
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.massar-sidebar-logo {
+  width: 135px;
+  height: auto;
+  max-width: 100%;
+  display: block;
+}
+
+.massar-main {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-5);
+  max-width: var(--content-max-width);
+  box-sizing: border-box;
+}
+
+@media (max-width: 767px) {
+  .massar-shell {
+    flex-direction: column;
+  }
+  .massar-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    padding: var(--space-3);
+  }
+  .massar-sidebar nav {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+  }
+  .massar-main {
+    padding: var(--space-3);
+  }
+  /* Tables become scrollable rather than squeezed */
+  .massar-table-wrap {
+    overflow-x: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Massar Cinematic Splash Screen & Grand Logo Experience ──────────── */
+.massar-splash-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 99999;
   display: flex;
   flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 50%, #15554b 0%, #0D3B34 45%, #051614 100%);
+  overflow: hidden;
+  user-select: none;
+  cursor: pointer;
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-* {
+/* Dedicated out-of-focus camera defocus on the logo */
+.massar-splash-container.massar-splash-defocus .massar-splash-logo-wrap,
+.massar-splash-container.massar-splash-defocus .massar-splash-logo {
+  filter: blur(26px) brightness(1.22) drop-shadow(0 0 45px rgba(241, 236, 226, 0.55));
+  transform: scale(1.14);
+  opacity: 0.92;
+  transition: filter 1s cubic-bezier(0.25, 1, 0.3, 1), transform 1s cubic-bezier(0.25, 1, 0.3, 1), opacity 1s cubic-bezier(0.25, 1, 0.3, 1);
+}
+
+.massar-splash-container.massar-splash-defocus .massar-cinematic-caption {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.massar-splash-container.massar-splash-exit {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.massar-splash-container.massar-splash-exit .massar-splash-logo-wrap,
+.massar-splash-container.massar-splash-exit .massar-splash-logo {
+  filter: blur(34px) brightness(1.28) drop-shadow(0 0 50px rgba(241, 236, 226, 0.6));
+  transform: scale(1.18);
+  opacity: 0;
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Atmospheric vignette overlay */
+.massar-splash-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(4, 18, 16, 0.75) 100%);
+  pointer-events: none;
+}
+
+/* Ambient pulsing aura behind the massive emblem */
+.massar-splash-ambient {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 650px;
+  height: 650px;
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(241, 236, 226, 0.16) 0%, rgba(19, 78, 69, 0.08) 45%, transparent 70%);
+  pointer-events: none;
+  animation: massarCinematicAura 5s ease-in-out infinite;
+}
+
+@keyframes massarCinematicAura {
+  0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.2; }
+  50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.65; }
+  100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.25; }
+}
+
+/* Hero Grand Logo Wrapper — takes up substantial screen space */
+.massar-splash-logo-wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: massarCinematicHero 5s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+}
+
+.massar-splash-logo {
+  height: min(58vh, 520px);
+  width: auto;
+  max-width: min(85vw, 560px);
+  object-fit: contain;
+  filter: drop-shadow(0 16px 36px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 28px rgba(241, 236, 226, 0.2));
+  display: block;
+}
+
+@media (max-width: 767px) {
+  .massar-splash-logo {
+    height: min(48vh, 360px);
+    max-width: 85vw;
+  }
+}
+
+/* Full cinematic arc: dramatic reveal -> slow drift -> grand out-of-focus camera defocus */
+@keyframes massarCinematicHero {
+  0% {
+    opacity: 0;
+    transform: scale(0.84);
+    filter: blur(14px) brightness(0.65);
+  }
+  24% {
+    opacity: 1;
+    transform: scale(1.0);
+    filter: blur(0px) brightness(1.05);
+  }
+  64% {
+    opacity: 1;
+    transform: scale(1.02);
+    filter: blur(0px) brightness(1);
+  }
+  84% {
+    opacity: 0.92;
+    transform: scale(1.14);
+    filter: blur(26px) brightness(1.22);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.18);
+    filter: blur(34px) brightness(1.3);
+  }
+}
+
+/* The emblem displays clean and unoccluded */
+
+/* Small, subtle, editorial caption text */
+.massar-cinematic-caption {
+  margin-top: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  animation: massarCaptionFade 5s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+}
+
+@keyframes massarCaptionFade {
+  0%, 15% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  35% {
+    opacity: 0.85;
+    transform: translateY(0);
+  }
+  75% {
+    opacity: 0.85;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.massar-caption-small-en {
+  font-family: var(--font-latin);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: rgba(241, 236, 226, 0.7);
+}
+
+.massar-caption-subtitle {
+  font-family: var(--font-latin);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(241, 236, 226, 0.55);
+}
+
+/* Discreet cinematic hairline progress bar at the very bottom */
+.massar-cinematic-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(241, 236, 226, 0.12);
+}
+
+.massar-cinematic-progress-fill {
+  height: 100%;
+  background: var(--bone);
+  box-shadow: 0 0 8px rgba(241, 236, 226, 0.7);
+  transition: width 0.05s linear;
+}
+
+/* Subtle corner skip hint */
+.massar-cinematic-skip {
+  position: absolute;
+  bottom: 24px;
+  right: 32px;
+  color: rgba(241, 236, 226, 0.45);
+  font-family: var(--font-arabic);
+  font-size: 12px;
+  letter-spacing: 1px;
+  background: transparent;
+  border: 1px solid rgba(241, 236, 226, 0.18);
+  padding: 4px 12px;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  animation: massarCaptionFade 5s cubic-bezier(0.2, 0, 0.2, 1) forwards;
+}
+
+.massar-cinematic-skip:hover {
+  color: var(--bone);
+  border-color: rgba(241, 236, 226, 0.4);
+  background: rgba(241, 236, 226, 0.08);
+}
+
+/* ── Seamless Cinematic to Light Login Transition ─────────────────────── */
+.massar-auth-page {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
   box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+  padding: var(--space-3);
+  transition: background 0.75s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-a {
-  color: inherit;
+.massar-auth-page.massar-theme-dark {
+  background: radial-gradient(circle at 50% 50%, #15554b 0%, #0D3B34 45%, #051614 100%);
+}
+
+.massar-auth-page.massar-theme-light {
+  background: var(--color-page); /* #F1ECE2 Bone */
+}
+
+.massar-splash-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 50%, #15554b 0%, #0D3B34 45%, #051614 100%);
+  overflow: hidden;
+  user-select: none;
+  cursor: pointer;
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Dedicated out-of-focus camera defocus on the logo while still on dark green */
+.massar-splash-overlay.massar-splash-defocus .massar-splash-logo-wrap,
+.massar-splash-overlay.massar-splash-defocus .massar-splash-logo {
+  filter: blur(26px) brightness(1.22) drop-shadow(0 0 45px rgba(241, 236, 226, 0.55));
+  transform: scale(1.14);
+  opacity: 0.92;
+  transition: filter 1s cubic-bezier(0.25, 1, 0.3, 1), transform 1s cubic-bezier(0.25, 1, 0.3, 1), opacity 1s cubic-bezier(0.25, 1, 0.3, 1);
+}
+
+.massar-splash-overlay.massar-splash-defocus .massar-cinematic-caption {
+  opacity: 0;
+  transform: translateY(-8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+/* Smooth dissolve to the white page ("وبعدين نروح للصفحه البيضا") */
+.massar-splash-overlay.massar-splash-fading {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.massar-splash-overlay.massar-splash-fading .massar-splash-logo-wrap,
+.massar-splash-overlay.massar-splash-fading .massar-splash-logo {
+  filter: blur(34px) brightness(1.28) drop-shadow(0 0 50px rgba(241, 236, 226, 0.6)) !important;
+  transform: scale(1.18) !important;
+  opacity: 0 !important;
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* ── Light Login Card (Pure Massar Editorial Light Theme) ─────────────── */
+.massar-login-card-light {
+  background: var(--color-surface); /* #FFFFFF */
+  padding: var(--space-5);
+  border-radius: var(--radius-surface);
+  width: 100%;
+  max-width: 420px;
+  border: var(--border-width) solid var(--color-divider);
+  box-shadow: 0 16px 40px rgba(16, 24, 21, 0.07);
+  box-sizing: border-box;
+  position: relative;
+  z-index: 10;
+  animation: massarCardReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: filter 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes massarCardReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Login submission defocus transition (Camera Lens Rack Defocus bloom) */
+.massar-auth-page.massar-logging-in {
+  pointer-events: none;
+}
+
+.massar-auth-page.massar-logging-in .massar-login-card-light {
+  filter: blur(28px) brightness(1.2) drop-shadow(0 0 60px rgba(13, 59, 52, 0.2));
+  transform: scale(1.08);
+  opacity: 0.12;
+}
+
+.massar-auth-page.massar-logging-in::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(13, 59, 52, 0.15) 0%, rgba(241, 236, 226, 0.92) 80%);
+  backdrop-filter: blur(20px);
+  z-index: 9999;
+  animation: massarBloomIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes massarBloomIn {
+  0% {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    backdrop-filter: blur(20px);
+  }
+}
+
+.massar-logo-green-mask {
+  width: 76px;
+  height: 86px;
+  margin: 0 auto var(--space-3);
+  background-color: var(--massar-green);
+  -webkit-mask: url(/image/massar_logo.svg) no-repeat center / contain;
+  mask: url(/image/massar_logo.svg) no-repeat center / contain;
+  display: block;
+}
+
+.massar-input-light {
+  height: var(--control-height);
+  padding: 0 var(--space-3);
+  border-radius: var(--radius-control);
+  border: var(--border-width) solid var(--color-border-strong);
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  font-size: var(--text-body);
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-ui);
+  outline: none;
+  transition: border-color var(--motion-fast) var(--motion-ease);
+}
+
+.massar-input-light:focus {
+  border-color: var(--color-border-focus);
+  outline: var(--focus-width) solid var(--color-border-focus);
+  outline-offset: 1px;
+}
+
+.massar-btn-primary-light {
+  margin-top: var(--space-2);
+  background-color: var(--color-action-primary);
+  color: var(--color-action-primary-text);
+  border: none;
+  height: var(--control-height);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  font-size: var(--text-body);
+  font-weight: 600;
+  width: 100%;
+  font-family: var(--font-ui);
+  transition: background-color var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+}
+
+.massar-btn-primary-light:hover {
+  background-color: var(--ink);
+}
+
+/* ── Welcome / Splash Screen — Split Layout, Left-Aligned on 12-Col Grid ── */
+
+.massar-welcome-viewport {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 99999;
+  background-color: var(--bone, #F1ECE2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+  animation: massarSplitLensEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.massar-welcome-viewport.massar-welcome-dissolving {
+  opacity: 0;
+  filter: blur(16px) brightness(1.05);
+  transform: scale(1.025);
+  pointer-events: none;
+}
+
+/* Optical rack focus entrance */
+@keyframes massarSplitLensEntrance {
+  0% {
+    opacity: 0.2;
+    filter: blur(20px) brightness(1.15);
+    transform: scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px) brightness(1);
+    transform: scale(1);
+  }
+}
+
+/* Grid Frame: max-width 1440px, outer margins 64px desktop / 24px tablet / 16px mobile */
+.massar-grid-frame {
+  max-width: 1440px;
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 64px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1023px) {
+  .massar-grid-frame {
+    padding-inline: 24px;
+  }
+}
+
+@media (max-width: 767px) {
+  .massar-grid-frame {
+    padding-inline: 16px;
+  }
+}
+
+/* 12-column grid container with 24px column gap */
+.massar-12-col-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 24px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* ── 1. Top Bar (72px) ── */
+.massar-split-topbar {
+  height: 72px;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid rgba(13, 59, 52, 0.06);
+}
+
+.massar-welcome-brand {
+  grid-column: 1 / 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+.massar-welcome-brand-mark {
+  width: 26px;
+  height: 29px;
+  display: block;
+  object-fit: contain;
+}
+
+.massar-welcome-brand-text {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--massar-green, #0D3B34);
+}
+
+.massar-split-topbar-action {
+  grid-column: 10 / 13;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* "Enter Workspace →" button (Right edge aligns exactly with col 12) */
+.massar-enter-workspace-btn {
+  background: transparent;
+  color: var(--massar-green, #0D3B34);
+  border: 1px solid rgba(13, 59, 52, 0.22);
+  border-radius: var(--radius-control, 4px);
+  padding: 9px 20px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.massar-enter-workspace-btn:hover {
+  background: rgba(13, 59, 52, 0.08);
+  border-color: var(--massar-green, #0D3B34);
+  transform: translateX(2px);
+}
+
+/* When loading completes, button becomes primary filled green */
+.massar-enter-workspace-btn.massar-enter-active {
+  background-color: var(--massar-green, #0D3B34);
+  color: var(--bone, #F1ECE2);
+  border-color: var(--massar-green, #0D3B34);
+  box-shadow: 0 4px 14px rgba(13, 59, 52, 0.25);
+}
+
+.massar-enter-workspace-btn.massar-enter-active:hover {
+  background-color: var(--ink, #101815);
+  border-color: var(--ink, #101815);
+}
+
+/* ── 2. Middle Split Area ── */
+.massar-split-middle {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-height: 0;
+  padding: 32px 0;
+  box-sizing: border-box;
+}
+
+/* Middle grid alignment: height 100% */
+.massar-split-middle-grid {
+  align-items: center;
+  height: 100%;
+}
+
+/* Left Content: cols 1–6 */
+.massar-split-content {
+  grid-column: 1 / 7;
+  text-align: start;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Eyebrow: 12px, uppercase, letter-spacing 0.08em, medium, muted green, small dot */
+.massar-split-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #2D5A4C;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: massarSplitFadeUp 250ms cubic-bezier(0.16, 1, 0.3, 1) 0ms forwards;
+}
+
+.massar-split-eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #2D5A4C;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+/* Headline: serif display, clamp(48px, 6vw, 88px), line-height 1.05, letter-spacing -0.02em, 2 lines */
+.massar-split-headline {
+  margin: 0 0 24px 0;
+  font-family: var(--font-serif);
+  font-size: clamp(48px, 6vw, 88px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--ink, #101815);
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  opacity: 0;
+  animation: massarSplitFadeUp 250ms cubic-bezier(0.16, 1, 0.3, 1) 60ms forwards;
+}
+
+.massar-split-headline span {
+  display: block;
+}
+
+/* Supporting text: 16–18px sans, line-height 1.6, muted, max-width 45ch */
+.massar-split-support-text {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: clamp(16px, 1.2vw, 18px);
+  line-height: 1.6;
+  color: #5A655F;
+  max-width: 45ch;
+  opacity: 0;
+  animation: massarSplitFadeUp 250ms cubic-bezier(0.16, 1, 0.3, 1) 120ms forwards;
+}
+
+@keyframes massarSplitFadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
+
+/* Col 7 stays empty: grid-column: 7 / 8 is unoccupied */
+
+/* Right Visual Panel: cols 8–12 */
+.massar-split-panel {
+  grid-column: 8 / 13;
+  height: 100%;
+  min-height: 380px;
+  max-height: 480px;
+  background-color: var(--massar-green, #0D3B34);
+  background-image: radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.06) 0%, transparent 60%);
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 16px 48px -12px rgba(13, 59, 52, 0.28);
+  opacity: 0;
+  animation: massarSplitPanelFade 350ms cubic-bezier(0.16, 1, 0.3, 1) 180ms forwards;
+}
+
+@keyframes massarSplitPanelFade {
+  0% {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Oversized watermark emblem cropped off edge at 8% opacity */
+.massar-split-panel-watermark {
+  position: absolute;
+  inset-inline-end: -40px;
+  bottom: -40px;
+  width: 300px;
+  height: 330px;
+  opacity: 0.08;
+  pointer-events: none;
+  background-color: #F1ECE2;
+  -webkit-mask: url(/image/massar_logo.svg) no-repeat center / contain;
+  mask: url(/image/massar_logo.svg) no-repeat center / contain;
+}
+
+/* Visual Panel Content: Calm "Today" Preview */
+.massar-panel-header {
+  position: relative;
+  z-index: 2;
+}
+
+.massar-panel-tag {
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(241, 236, 226, 0.6);
+  margin-bottom: 6px;
+}
+
+.massar-panel-date {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--bone, #F1ECE2);
+  letter-spacing: -0.01em;
+}
+
+.massar-panel-stats {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.massar-panel-stat-card {
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(241, 236, 226, 0.1);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.massar-panel-stat-num {
+  font-family: var(--font-sans);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--bone, #F1ECE2);
+  line-height: 1;
+}
+
+.massar-panel-stat-meta {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  color: rgba(241, 236, 226, 0.72);
+  margin-top: 2px;
+}
+
+.massar-panel-status {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: rgba(241, 236, 226, 0.75);
+}
+
+.massar-status-dot-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #34D399;
+  box-shadow: 0 0 8px #34D399;
+}
+
+/* ── 3. Bottom Bar (72px) ── */
+.massar-split-bottombar {
+  height: 72px;
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid rgba(13, 59, 52, 0.06);
+}
+
+/* Progress: cols 1–4 */
+.massar-split-progress-wrap {
+  grid-column: 1 / 5;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: opacity 0.4s ease;
+}
+
+.massar-split-progress-wrap.massar-progress-done {
+  opacity: 0;
+}
+
+.massar-split-progress-label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: #5A655F;
+}
+
+.massar-split-progress-track {
+  height: 2px;
+  width: 100%;
+  background-color: rgba(13, 59, 52, 0.12);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.massar-split-progress-fill {
+  height: 100%;
+  background-color: var(--massar-green, #0D3B34);
+  border-radius: 999px;
+  transition: width 35ms linear;
+}
+
+/* Right side of bottom bar: ending on col 12 */
+.massar-split-bottom-meta {
+  grid-column: 8 / 13;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--stone, #9A9791);
+}
+
+/* ── 4. Dev-Only Grid Overlay (Toggle with key "G") ── */
+.massar-dev-grid-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100000;
+}
+
+.massar-overlay-frame {
+  height: 100%;
+}
+
+.massar-overlay-grid {
+  height: 100%;
+}
+
+.massar-overlay-col {
+  height: 100%;
+  background-color: rgba(220, 38, 38, 0.05);
+  border-inline: 1px dashed rgba(220, 38, 38, 0.35);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8px 4px;
+  box-sizing: border-box;
+}
+
+.massar-overlay-col-num {
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(220, 38, 38, 0.75);
+  background: rgba(255, 255, 255, 0.85);
+  padding: 1px 4px;
+  border-radius: 2px;
+  align-self: flex-start;
+}
+
+.massar-overlay-pill {
+  position: fixed;
+  bottom: 24px;
+  inset-inline-end: 24px;
+  background: rgba(16, 24, 21, 0.92);
+  color: #FFFFFF;
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  pointer-events: auto;
+  user-select: none;
+}
+
+.massar-overlay-pill kbd {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: monospace;
+  font-size: 11px;
+}
+
+/* ── 5. Responsive Breakpoints ── */
+
+/* Tablet (768px – 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .massar-split-content {
+    grid-column: 1 / 8;
+  }
+  .massar-split-panel {
+    grid-column: 9 / 13;
+    padding: 24px 20px;
+  }
+  .massar-split-progress-wrap {
+    grid-column: 1 / 6;
+  }
+  .massar-split-bottom-meta {
+    grid-column: 7 / 13;
+  }
+}
+
+/* Mobile (< 768px) */
+@media (max-width: 767px) {
+  .massar-welcome-viewport {
+    overflow-y: auto;
+  }
+  .massar-split-topbar {
+    height: 60px;
+    min-height: 60px;
+  }
+  .massar-welcome-brand {
+    grid-column: 1 / 9;
+  }
+  .massar-split-topbar-action {
+    display: none;
+  }
+  .massar-split-middle {
+    padding: 24px 0;
+    align-items: flex-start;
+  }
+  .massar-split-middle-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    height: auto;
+  }
+  .massar-split-content {
+    width: 100%;
+  }
+  .massar-split-headline {
+    font-size: clamp(38px, 10vw, 54px);
+    margin-bottom: 16px;
+  }
+  .massar-split-panel {
+    width: 100%;
+    min-height: 200px;
+    max-height: none;
+    padding: 20px;
+  }
+  .massar-split-panel-watermark {
+    width: 180px;
+    height: 200px;
+  }
+  .massar-split-bottombar {
+    height: auto;
+    min-height: 64px;
+    padding: 16px 0;
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  .massar-split-progress-wrap {
+    width: 100%;
+  }
+  .massar-split-bottom-meta {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .massar-mobile-enter-btn {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    margin-top: 12px;
+  }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .massar-welcome-viewport,
+  .massar-split-eyebrow,
+  .massar-split-headline,
+  .massar-split-support-text,
+  .massar-split-panel {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  .massar-split-progress-fill {
+    transition: none !important;
+  }
+}
+
+/* Cascading Dashboard Entrance Reveal ("وبعدين يبدا يظهر الشغل بتاعه") */
+@keyframes massarDashboardCascade {
+  0% {
+    opacity: 0.65;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.massar-main {
+  animation: massarDashboardCascade 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+
+

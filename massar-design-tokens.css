@@ -1,0 +1,113 @@
+/*
+ * Massar Work OS — Design Tokens v1
+ * Derived from Massar Brand Guidelines 2026.
+ * Do not add unapproved brand colors or font families.
+ */
+
+:root {
+  /* Approved brand palette */
+  --massar-green: #0D3B34;
+  --bone: #F1ECE2;
+  --ink: #101815;
+  --clay: #B85333;
+  --stone: #9A9791;
+  --white: #FFFFFF;
+
+  /* Semantic roles; semantic colors resolve only to approved palette values */
+  --color-page: var(--bone);
+  --color-surface: var(--bone);
+  --color-surface-subtle: var(--bone);
+  --color-text: var(--ink);
+  --color-text-strong: var(--massar-green);
+  --color-text-on-dark: var(--white);
+  --color-navigation: var(--massar-green);
+  --color-action-primary: var(--massar-green);
+  --color-action-primary-text: var(--white);
+  --color-attention: var(--clay);
+  --color-attention-text: var(--white);
+  --color-border-strong: var(--ink);
+  --color-border-focus: var(--massar-green);
+  --color-divider: var(--stone);
+
+  /* Fonts: install licensed Switzer files and IBM Plex Sans Arabic locally. */
+  --font-latin: "Switzer", "Arial", sans-serif;
+  --font-arabic: "IBM Plex Sans Arabic", sans-serif;
+  --font-display-restricted: "Cormorant Garamond", Georgia, serif;
+  --font-ui: var(--font-arabic);
+
+  /* 8px-based spacing system (4px only for fine adjustments) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 40px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Type scale for product UI (screen adaptation of the editorial hierarchy) */
+  --text-micro: 12px;
+  --text-label: 14px;
+  --text-body: 16px;
+  --text-subhead: 20px;
+  --text-section: 24px;
+  --text-page: 32px;
+
+  /* Layout */
+  --sidebar-width: 256px;
+  --content-max-width: 1440px;
+  --grid-columns-desktop: 12;
+  --grid-gap: 24px;
+  --control-height: 48px;
+  --row-height: 56px;
+
+  /* Restrained geometry */
+  --radius-small: 2px;
+  --radius-control: 4px;
+  --radius-surface: 8px;
+  --border-width: 1px;
+  --focus-width: 2px;
+
+  /* Restrained motion */
+  --motion-fast: 120ms;
+  --motion-standard: 180ms;
+  --motion-ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+:lang(ar) {
+  --font-ui: var(--font-arabic);
+}
+
+:lang(en) {
+  --font-ui: var(--font-latin);
+}
+
+html {
+  font-family: var(--font-ui);
+  color: var(--color-text);
+  background: var(--color-page);
+  text-rendering: optimizeLegibility;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --sidebar-width: 0px;
+    --grid-gap: 16px;
+    --control-height: 48px;
+    --text-page: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

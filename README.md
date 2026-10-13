@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Massar Work OS — V1
 
-## Getting Started
+نظام تشغيل داخلي لمسار + بوابة عملاء. Next.js 16 (App Router) + Supabase (Postgres + Auth + Storage).
 
-First, run the development server:
+## التشغيل
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### 1. متغيرات البيئة — `.env.local`
+```
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
+```
+`SUPABASE_SERVICE_ROLE_KEY` **إجباري**: من غيره دعوة المستخدمين وتحميل الملفات لا يعملان.
+تجده في Supabase → Project Settings → API Keys → *secret* / *service_role*.
+لا تضع قبله `NEXT_PUBLIC_` أبدًا، ولا ترفعه على Git.
+
+### 2. قاعدة البيانات
+- **قاعدة بيانات شغّلت عليها 001–006 قبل كده** → شغّل في SQL Editor ملف واحد بس:
+  `supabase/migrations/20261007000007_security_hardening.sql`
+- **قاعدة بيانات جديدة فاضية** → شغّل `init.sql` (فيه 001→007 بالترتيب) أو `supabase db push`.
+- لا تشغّل `init.sql` على قاعدة فيها الجداول بالفعل؛ هيطلع `already exists`.
+
+### 3. بيانات تجريبية (اختياري — محلي/Staging فقط)
+أنشئ 4 مستخدمين من Authentication → Users:
+`admin@massar.test`, `manager@massar.test`, `member@massar.test`, `client@massar.test`
+ثم شغّل `supabase/seed.sql`. الملف يوزّع الأدوار حسب البريد وآمن لإعادة التشغيل.
+
+**أول Admin في مشروع حقيقي:** سجّل المستخدم من Authentication ثم شغّل في SQL Editor:
+```sql
+update public.profiles set role = 'admin' where id = (select id from auth.users where email = 'you@company.com');
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 4. التشغيل
+```bash
+npm install
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## قواعد الأمان (مطبّقة داخل قاعدة البيانات، مش في الواجهة بس)
+| القاعدة (من ملحق القرارات) | أين تُطبّق |
+|---|---|
+| المستخدم لا يغيّر دوره بنفسه؛ الدور من `app_metadata` فقط | RLS على `profiles` + `handle_new_user` |
+| الموظف لا يغيّر المسؤول؛ يطلب نقل والمدير يقرر | `request_handover` / `process_handover_decision` |
+| طلب نقل واحد مفتوح لكل مهمة | Unique index + قفل الصف |
+| حالة المهمة تتغيّر بقواعد ثابتة | `update_task_status` |
+| لا مشاركة مع العميل قبل الاعتماد الداخلي | `share_version_with_client` |
+| المراجع المعيّن فقط يعتمد داخليًا، ولا يعتمد نسخته | `process_review_decision` |
+| نسخة جديدة لا ترث موافقة قديمة؛ النسخة تتجمّد بعد الإرسال | `create_deliverable_version` + RLS على `files` |
+| العميل يرى ما شُورك مع جهته فقط | RLS + `is_client_member` |
+| الموظف يرى مهام فريقه فقط | RLS على `tasks` / `files` / `comments` |
+| التنزيل برابط 60 ثانية بعد فحص الصلاحية كالمستخدم نفسه | `/api/files/download` |
+| كل المواعيد تُدخل وتُعرض بتوقيت `Africa/Cairo` وتُخزن UTC | `src/lib/labels.ts` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+أي تغيير في حالة أو ملكية = دالة في قاعدة البيانات. لا تضيف `update` مباشر على
+`tasks.status` أو `deliverable_versions.status` من الواجهة؛ الـ RLS هيرفضه.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## ناقص في V1 (مقصود)
+- رفع ملفات العمل على المهمة نفسها (الرفع متاح على نسخ التسليم فقط).
+- إشعارات بريد/موبايل — الإشعارات داخل التطبيق فقط.
+- Rate limiting على مستوى التطبيق.
