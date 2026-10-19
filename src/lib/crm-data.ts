@@ -53,17 +53,6 @@ export interface TeamMember {
   statusBadgeColor: string
 }
 
-export interface KnowledgeItem {
-  id: string
-  subject: string
-  category: string
-  status: 'executed' | 'in_progress' | 'scheduled' | 'review'
-  startDate: string
-  endDate: string
-  assignedUser: string
-  assignedRole: string
-}
-
 export interface DailyChecklistItem {
   id: string
   textAr: string
@@ -276,49 +265,6 @@ export const INITIAL_LEADS: Lead[] = [
   },
 ]
 
-export const INITIAL_KNOWLEDGE_ITEMS: KnowledgeItem[] = [
-  {
-    id: 'k-1',
-    subject: 'Client Journey Onboarding Protocol v2',
-    category: 'SOP & Operations',
-    status: 'executed',
-    startDate: '2026-10-01',
-    endDate: '2026-10-15',
-    assignedUser: 'Ali Elsayed',
-    assignedRole: 'Design Director',
-  },
-  {
-    id: 'k-2',
-    subject: 'First Response SLA & Escalation Rules',
-    category: 'Customer Success',
-    status: 'executed',
-    startDate: '2026-10-05',
-    endDate: '2026-10-18',
-    assignedUser: 'Sarah Mansour',
-    assignedRole: 'Client Success',
-  },
-  {
-    id: 'k-3',
-    subject: 'Technical Resolution Matrix for Identity Systems',
-    category: 'Brand Architecture',
-    status: 'in_progress',
-    startDate: '2026-10-12',
-    endDate: '2026-10-22',
-    assignedUser: 'Ahmed Tarek',
-    assignedRole: 'Brand Lead',
-  },
-  {
-    id: 'k-4',
-    subject: 'Client Feedback & Milestone Sign-off Playbook',
-    category: 'Deliverables & Approvals',
-    status: 'scheduled',
-    startDate: '2026-10-20',
-    endDate: '2026-11-01',
-    assignedUser: 'Youssef Karim',
-    assignedRole: 'Project Manager',
-  },
-]
-
 export const INITIAL_DAILY_CHECKLIST: DailyChecklistItem[] = [
   {
     id: 'chk-1',
@@ -356,17 +302,3 @@ export const INITIAL_DAILY_CHECKLIST: DailyChecklistItem[] = [
     roleRequired: 'Team Lead & Analyst',
   },
 ]
-
-export const CRM_METRICS = {
-  firstResponseTimeAvg: '38 mins',
-  firstResponseTarget: '< 60 mins',
-  conversionRate: '68.4%',
-  conversionChange: '+4.2%',
-  overdueTasksRate: '3.8%',
-  overdueStatus: 'Under Control',
-  averageStageAge: '2.4 days',
-  dataCompleteness: '96.2%',
-  activeLeadsCount: 18,
-  unassignedCount: 1,
-  todayInteractionsCount: 14,
-}

@@ -8,7 +8,8 @@ import {
   processReview,
 } from '@/app/actions/deliverables'
 import { DELIVERABLE_STATUS, formatCairo } from '@/lib/labels'
-import { s, StatusBadge, Flash, Empty } from '@/components/ui'
+import { s, StatusBadge, Flash, Empty, PageHeader, Panel, StatStrip, CreatePanel } from '@/components/ui'
+import { Icon } from '@/components/icons'
 import VersionUpload from '@/components/VersionUpload'
 
 type FileRow = { id: string; original_name: string; file_size: number | null }
@@ -37,6 +38,74 @@ type Deliverable = {
 
 // A new version is allowed only after the current one is closed (ملحق 1.5)
 const CAN_START_NEW = ['internal_changes_requested', 'client_changes_requested', 'client_approved']
+const INTERNALLY_APPROVED = ['approved_internally', 'shared_with_client', 'client_changes_requested', 'client_approved']
+
+function FileList({ files }: { files: FileRow[] }) {
+  if (!files?.length) return <p style={{ ...s.muted, margin: 'var(--space-2) 0 0' }}>No files uploaded yet.</p>
+  return (
+    <ul style={{ listStyle: 'none', margin: 'var(--space-2) 0 0', padding: 0, display: 'grid', gap: 6 }}>
+      {files.map(f => (
+        <li key={f.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14 }}>
+          <Icon name="file" style={{ width: 16, height: 16, color: 'var(--color-text-muted)', flexShrink: 0 }} />
+          <a href={`/api/files/download?id=${f.id}`} target="_blank" rel="noopener" style={{ color: 'var(--color-text-strong)', fontWeight: 500 }}>
+            {f.original_name}
+          </a>
+          {f.file_size ? <span style={{ ...s.muted, fontSize: 13 }}>{(f.file_size / 1024 / 1024).toFixed(2)} MB</span> : null}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function DecisionList({ decisions }: { decisions: Decision[] }) {
+  if (!decisions?.length) return null
+  return (
+    <ul style={{ listStyle: 'none', margin: 'var(--space-3) 0 0', padding: 0, display: 'grid', gap: 6, fontSize: 13, color: 'var(--color-text-muted)' }}>
+      {decisions.map(r => (
+        <li key={r.id}>
+          <strong style={{ color: 'var(--color-text)', fontWeight: 600 }}>
+            {r.stage === 'internal' ? 'Internal review' : 'Client'}: {r.decision === 'approved' ? 'approved' : 'changes requested'}
+          </strong>{' '}
+          · {r.actor?.full_name} · <bdi>{formatCairo(r.created_at)}</bdi>
+          {r.comment && <> — &ldquo;{r.comment}&rdquo;</>}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+/** The two approvals are separate decisions; show both, side by side, always. */
+function ApprovalTrack({ status }: { status: string }) {
+  const internalDone = INTERNALLY_APPROVED.includes(status)
+  const internal = internalDone ? 'Approved internally' : status === 'internal_changes_requested' ? 'Changes requested' : status === 'internal_review' ? 'In review' : 'Not submitted'
+  const client = status === 'client_approved' ? 'Approved by client' : status === 'client_changes_requested' ? 'Changes requested' : status === 'shared_with_client' ? 'Awaiting decision' : 'Not shared yet'
+  const step = (n: number, label: string, value: string, done: boolean) => (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: '1 1 200px' }}>
+      <span
+        aria-hidden="true"
+        style={{
+          width: 28, height: 28, borderRadius: '50%', flexShrink: 0, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 13, fontWeight: 600,
+          background: done ? 'var(--color-action-primary)' : 'var(--color-surface-raised)',
+          color: done ? 'var(--color-action-primary-text)' : 'var(--color-text-muted)',
+          border: done ? 'none' : 'var(--border-width) solid var(--color-line-strong)',
+        }}
+      >
+        {done ? '✓' : n}
+      </span>
+      <div>
+        <div style={{ fontSize: 12, color: 'var(--color-text-muted)' }}>{label}</div>
+        <div style={{ fontSize: 14, fontWeight: 600 }}>{value}</div>
+      </div>
+    </div>
+  )
+  return (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', padding: 'var(--space-3)', background: 'var(--color-surface-sunken)', borderRadius: 'var(--radius-control)' }}>
+      {step(1, 'Massar approval', internal, internalDone)}
+      {step(2, 'Client decision', client, status === 'client_approved')}
+    </div>
+  )
+}
 
 export default async function DeliverablesPage({
   searchParams,
@@ -50,7 +119,7 @@ export default async function DeliverablesPage({
 
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
   const role = profile?.role || ''
-  if (!['admin', 'manager', 'member'].includes(role)) return <Empty>This page is restricted to internal team members.</Empty>
+  if (!['admin', 'manager', 'member'].includes(role)) return <Empty>This page is for the Massar team only.</Empty>
   const isAdmin = role === 'admin'
 
   const [{ data: rows }, { data: projects }, { data: staff }, { data: managedTeams }] = await Promise.all([
@@ -74,167 +143,162 @@ export default async function DeliverablesPage({
   const deliverables = (rows || []) as unknown as Deliverable[]
   const myTeams = new Set((managedTeams || []).map(t => t.id))
 
+  const count = (st: string) => deliverables.filter(d => d.summary_status === st).length
+
+  const createForm = (
+    <form action={createDeliverable} style={s.formGrid}>
+      <div>
+        <label htmlFor="d-project" style={s.label}>Project</label>
+        <select id="d-project" name="project_id" required defaultValue="" style={s.field}>
+          <option value="" disabled>Select project</option>
+          {projects?.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="d-title" style={s.label}>Deliverable title</label>
+        <input id="d-title" name="title" required style={s.field} />
+      </div>
+      <div>
+        <label htmlFor="d-reviewer" style={s.label}>Internal reviewer</label>
+        <select id="d-reviewer" name="reviewer_user_id" required defaultValue="" style={s.field}>
+          <option value="" disabled>Select reviewer</option>
+          {staff?.filter(m => m.id !== user.id || isAdmin).map(m => <option key={m.id} value={m.id}>{m.full_name}</option>)}
+        </select>
+      </div>
+      <div>
+        <button type="submit" style={s.primary}>Create deliverable</button>
+      </div>
+    </form>
+  )
+
   return (
     <div>
-      <h1 style={s.pageTitle}>Deliverables</h1>
+      <PageHeader
+        title="Deliverables"
+        description="Every version passes internal review before the client sees it."
+        actions={<CreatePanel label="New deliverable">{createForm}</CreatePanel>}
+      />
       <Flash error={error} ok={ok} />
 
-      <section style={s.section}>
-        <h2 style={s.sectionTitle}>New Deliverable</h2>
-        <form action={createDeliverable} style={s.formGrid}>
-          <div>
-            <label htmlFor="d-project" style={s.label}>Project</label>
-            <select id="d-project" name="project_id" required defaultValue="" style={s.field}>
-              <option value="" disabled>Select project</option>
-              {projects?.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
-          </div>
-          <div>
-            <label htmlFor="d-title" style={s.label}>Deliverable Title</label>
-            <input id="d-title" name="title" required placeholder="e.g. Brand Identity Guidelines PDF" style={s.field} />
-          </div>
-          <div>
-            <label htmlFor="d-reviewer" style={s.label}>Internal Reviewer</label>
-            <select id="d-reviewer" name="reviewer_user_id" required defaultValue="" style={s.field}>
-              <option value="" disabled>Select reviewer</option>
-              {staff?.filter(m => m.id !== user.id || isAdmin).map(m => <option key={m.id} value={m.id}>{m.full_name}</option>)}
-            </select>
-          </div>
-          <div>
-            <button type="submit" style={s.primary}>Create Deliverable</button>
-          </div>
-        </form>
-      </section>
+      <StatStrip
+        items={[
+          { label: 'In internal review', value: count('internal_review') },
+          { label: 'Ready to share', value: count('approved_internally') },
+          { label: 'Awaiting client', value: count('shared_with_client') },
+          { label: 'Changes requested', value: count('internal_changes_requested') + count('client_changes_requested'), attention: count('internal_changes_requested') + count('client_changes_requested') > 0 },
+        ]}
+      />
 
-      {deliverables.length === 0 && <Empty>No deliverables created yet.</Empty>}
+      {deliverables.length === 0 && (
+        <Panel title="Deliverables" count={0}><Empty>No deliverables yet. Create one to start a review cycle.</Empty></Panel>
+      )}
 
       {deliverables.map(d => {
         const versions = [...(d.deliverable_versions || [])].sort((a, b) => b.version_number - a.version_number)
         const current = versions.find(v => v.id === d.current_version_id)
+        const previous = versions.filter(v => v.id !== d.current_version_id)
         const isReviewer = d.reviewer_user_id === user.id
         const canShare = isAdmin || isReviewer || (d.projects?.internal_team_id ? myTeams.has(d.projects.internal_team_id) : false)
+        const isCreator = current?.creator_user_id === user.id
 
         return (
-          <section key={d.id} style={s.section}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: 'var(--space-3)', flexWrap: 'wrap', alignItems: 'start' }}>
-              <div>
-                <h2 style={{ ...s.sectionTitle, marginBottom: 'var(--space-1)' }}>{d.title}</h2>
-                <div style={s.muted}>
-                  {d.projects?.name} · {d.projects?.clients?.company_name} · Reviewer: {d.reviewer?.full_name}
-                </div>
-              </div>
-              <StatusBadge status={d.summary_status} label={DELIVERABLE_STATUS[d.summary_status]} />
-            </div>
+          <Panel
+            key={d.id}
+            title={d.title}
+            subtitle={<>{d.projects?.name} · {d.projects?.clients?.company_name} · Reviewer: {d.reviewer?.full_name}</>}
+            actions={<StatusBadge status={d.summary_status} label={DELIVERABLE_STATUS[d.summary_status]} />}
+          >
+            {current && <ApprovalTrack status={current.status} />}
 
-            {/* Two separate approvals, always visible (Design System — Dual Review Stream) */}
             {current && (
-              <div style={{ display: 'flex', gap: 'var(--space-5)', flexWrap: 'wrap', margin: 'var(--space-3) 0', ...s.muted, fontSize: '13px' }}>
-                <span>Current Version: <strong>V{current.version_number}</strong></span>
-                <span>Internal Approval: <strong>{['approved_internally', 'shared_with_client', 'client_changes_requested', 'client_approved'].includes(current.status) ? 'Approved Internally' : 'Pending Internal Review'}</strong></span>
-                <span>Client Decision: <strong>{current.status === 'client_approved' ? 'Client Approved' : current.status === 'client_changes_requested' ? 'Changes Requested' : current.status === 'shared_with_client' ? 'Awaiting Decision' : 'Not Shared Yet'}</strong></span>
+              <div style={{ marginTop: 'var(--space-4)' }}>
+                <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center', flexWrap: 'wrap' }}>
+                  <strong style={{ fontSize: 16 }}><bdi>V{current.version_number}</bdi></strong>
+                  <span style={s.muted}>· <bdi>{formatCairo(current.created_at)}</bdi></span>
+                </div>
+                {current.note && <p style={{ margin: 'var(--space-2) 0 0' }}>{current.note}</p>}
+                <FileList files={current.files} />
+                <DecisionList decisions={current.review_decisions} />
+
+                {/* One clear action per state */}
+                <div style={{ marginTop: 'var(--space-4)', paddingTop: 'var(--space-4)', borderTop: 'var(--border-width) solid var(--color-line)' }}>
+                  {current.status === 'draft' && (
+                    <div className="massar-btn-row" style={{ alignItems: 'end' }}>
+                      <VersionUpload versionId={current.id} />
+                      <form action={submitForInternalReview}>
+                        <input type="hidden" name="version_id" value={current.id} />
+                        <button type="submit" style={s.primary} disabled={!current.files?.length}>Submit for internal review</button>
+                      </form>
+                    </div>
+                  )}
+
+                  {current.status === 'internal_review' && (isReviewer || isAdmin) && (!isCreator || isAdmin) && (
+                    <form action={processReview} className="massar-btn-row" style={{ alignItems: 'end' }}>
+                      <input type="hidden" name="version_id" value={current.id} />
+                      <input type="hidden" name="stage" value="internal" />
+                      <div style={{ flex: '1 1 280px' }}>
+                        <label htmlFor={`rc-${current.id}`} style={s.label}>Review note (required when requesting changes)</label>
+                        <input id={`rc-${current.id}`} name="comment" style={s.field} />
+                      </div>
+                      <button type="submit" name="decision" value="approved" style={s.primary}>Approve internally</button>
+                      <button type="submit" name="decision" value="changes_requested" style={s.secondary}>Request changes</button>
+                    </form>
+                  )}
+                  {current.status === 'internal_review' && !(isReviewer || isAdmin) && (
+                    <p style={{ ...s.muted, margin: 0 }}>Waiting for {d.reviewer?.full_name} to review.</p>
+                  )}
+                  {current.status === 'internal_review' && isReviewer && isCreator && !isAdmin && (
+                    <p style={{ ...s.muted, margin: 0 }}>You can’t review a version you created. Ask a lead to change the reviewer.</p>
+                  )}
+
+                  {current.status === 'approved_internally' && canShare && (
+                    <form action={shareWithClient}>
+                      <input type="hidden" name="version_id" value={current.id} />
+                      <button type="submit" style={s.primary}>Share with client</button>
+                    </form>
+                  )}
+                  {current.status === 'approved_internally' && !canShare && (
+                    <p style={{ ...s.muted, margin: 0 }}>Approved internally. A lead or the reviewer can share it with the client.</p>
+                  )}
+
+                  {current.status === 'shared_with_client' && <p style={{ ...s.muted, margin: 0 }}>Waiting for the client’s decision.</p>}
+
+                  {CAN_START_NEW.includes(current.status) && (
+                    <form action={createDeliverableVersion} className="massar-btn-row" style={{ alignItems: 'end' }}>
+                      <input type="hidden" name="deliverable_id" value={d.id} />
+                      <div style={{ flex: '1 1 280px' }}>
+                        <label htmlFor={`nv-${d.id}`} style={s.label}>What changes in the next version?</label>
+                        <input id={`nv-${d.id}`} name="note" style={s.field} />
+                      </div>
+                      <button type="submit" style={s.secondary}>
+                        {current.status === 'client_approved' ? 'Start new version' : `Create V${current.version_number + 1}`}
+                      </button>
+                    </form>
+                  )}
+                </div>
               </div>
             )}
 
-            {versions.map(v => {
-              const isCurrent = v.id === d.current_version_id
-              const isCreator = v.creator_user_id === user.id
-              return (
-                <div key={v.id} style={{ borderTop: 'var(--border-width) solid var(--color-divider)', padding: 'var(--space-3) 0', opacity: isCurrent ? 1 : 0.75 }}>
-                  <div style={{ display: 'flex', gap: 'var(--space-3)', alignItems: 'center', flexWrap: 'wrap' }}>
-                    <strong style={{ fontFamily: 'var(--font-serif)', fontSize: '18px' }}><bdi>V{v.version_number}</bdi></strong>
-                    <StatusBadge status={v.status} label={DELIVERABLE_STATUS[v.status]} />
-                    <span style={s.muted}><bdi>{formatCairo(v.created_at)}</bdi></span>
-                    {!isCurrent && <span style={s.muted}>(Previous Version)</span>}
-                  </div>
-                  {v.note && <p style={{ margin: 'var(--space-2) 0 0' }}>{v.note}</p>}
-
-                  {/* Files */}
-                  <ul style={{ margin: 'var(--space-2) 0', paddingInlineStart: 'var(--space-4)' }}>
-                    {v.files?.map(f => (
-                      <li key={f.id}>
-                        <a href={`/api/files/download?id=${f.id}`} target="_blank" rel="noopener" style={{ color: 'var(--color-text-strong)' }}>
-                          {f.original_name}
-                        </a>
-                        {f.file_size ? <span style={s.muted}> · {(f.file_size / 1024 / 1024).toFixed(2)} MB</span> : null}
-                      </li>
-                    ))}
-                    {!v.files?.length && <li style={{ ...s.muted, listStyle: 'none' }}>No files uploaded yet.</li>}
-                  </ul>
-
-                  {/* Decisions history (internal + client) */}
-                  {v.review_decisions?.length > 0 && (
-                    <ul style={{ margin: '0 0 var(--space-2)', paddingInlineStart: 'var(--space-4)', ...s.muted, fontSize: '13px' }}>
-                      {v.review_decisions.map(r => (
-                        <li key={r.id}>
-                          {r.stage === 'internal' ? 'Internal Review' : 'Client Review'} — {r.decision === 'approved' ? 'Approved' : 'Changes Requested'} — {r.actor?.full_name} — <bdi>{formatCairo(r.created_at)}</bdi>
-                          {r.comment && <>: &ldquo;{r.comment}&rdquo;</>}
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-
-                  {/* One clear action per state */}
-                  {isCurrent && (
-                    <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap', alignItems: 'end' }}>
-                      {v.status === 'draft' && (
-                        <>
-                          <VersionUpload versionId={v.id} />
-                          <form action={submitForInternalReview}>
-                            <input type="hidden" name="version_id" value={v.id} />
-                            <button type="submit" style={s.primary} disabled={!v.files?.length}>Submit for Internal Review</button>
-                          </form>
-                        </>
-                      )}
-
-                      {v.status === 'internal_review' && (isReviewer || isAdmin) && (!isCreator || isAdmin) && (
-                        <form action={processReview} style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap', alignItems: 'end' }}>
-                          <input type="hidden" name="version_id" value={v.id} />
-                          <input type="hidden" name="stage" value="internal" />
-                          <div>
-                            <label htmlFor={`rc-${v.id}`} style={s.label}>Internal Notes (Required if requesting revisions)</label>
-                            <input id={`rc-${v.id}`} name="comment" placeholder="Add constructive review notes…" style={s.field} />
-                          </div>
-                          <button type="submit" name="decision" value="approved" style={s.primary}>Approve Internally</button>
-                          <button type="submit" name="decision" value="changes_requested" style={s.secondary}>Request Internal Revisions</button>
-                        </form>
-                      )}
-                      {v.status === 'internal_review' && !(isReviewer || isAdmin) && (
-                        <span style={s.muted}>Awaiting internal review by {d.reviewer?.full_name}.</span>
-                      )}
-                      {v.status === 'internal_review' && isReviewer && isCreator && !isAdmin && (
-                        <span style={s.muted}>You cannot review a version you created. Ask a manager to reassign the reviewer.</span>
-                      )}
-
-                      {v.status === 'approved_internally' && canShare && (
-                        <form action={shareWithClient}>
-                          <input type="hidden" name="version_id" value={v.id} />
-                          <button type="submit" style={s.primary}>Share with Client</button>
-                        </form>
-                      )}
-                      {v.status === 'approved_internally' && !canShare && (
-                        <span style={s.muted}>Approved internally — awaiting lead or reviewer to share with client.</span>
-                      )}
-
-                      {v.status === 'shared_with_client' && <span style={s.muted}>Awaiting client decision.</span>}
-
-                      {CAN_START_NEW.includes(v.status) && (
-                        <form action={createDeliverableVersion} style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'end', flexWrap: 'wrap' }}>
-                          <input type="hidden" name="deliverable_id" value={d.id} />
-                          <div>
-                            <label htmlFor={`nv-${d.id}`} style={s.label}>What changed in this version?</label>
-                            <input id={`nv-${d.id}`} name="note" placeholder="Summary of changes…" style={s.field} />
-                          </div>
-                          <button type="submit" style={s.secondary}>
-                            {v.status === 'client_approved' ? 'Start New Version' : `Create V${v.version_number + 1}`}
-                          </button>
-                        </form>
-                      )}
+            {previous.length > 0 && (
+              <details className="massar-disclosure" style={{ marginTop: 'var(--space-4)' }}>
+                <summary style={{ ...s.textBtn, padding: 0 }}>Previous versions ({previous.length})</summary>
+                <div style={{ marginTop: 'var(--space-2)' }}>
+                  {previous.map(v => (
+                    <div key={v.id} style={{ padding: 'var(--space-3) 0', borderTop: 'var(--border-width) solid var(--color-line)' }}>
+                      <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <strong><bdi>V{v.version_number}</bdi></strong>
+                        <StatusBadge status={v.status} label={DELIVERABLE_STATUS[v.status]} />
+                        <span style={s.muted}><bdi>{formatCairo(v.created_at)}</bdi></span>
+                      </div>
+                      {v.note && <p style={{ margin: 'var(--space-2) 0 0' }}>{v.note}</p>}
+                      <FileList files={v.files} />
+                      <DecisionList decisions={v.review_decisions} />
                     </div>
-                  )}
+                  ))}
                 </div>
-              )
-            })}
-          </section>
+              </details>
+            )}
+          </Panel>
         )
       })}
     </div>

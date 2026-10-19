@@ -1,5 +1,6 @@
 export const instant = false
 import LoginForm from './LoginForm'
+import { DEV_AUTH_ENABLED } from '@/lib/dev-session'
 
 export default async function LoginPage({
   searchParams,
@@ -10,5 +11,5 @@ export default async function LoginPage({
   const hasError = params?.message === 'auth-error'
   const inactive = params?.message === 'inactive'
 
-  return <LoginForm hasError={hasError} inactive={inactive} />
+  return <LoginForm hasError={hasError} inactive={inactive} devAuth={DEV_AUTH_ENABLED} />
 }

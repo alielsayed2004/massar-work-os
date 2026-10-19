@@ -29,6 +29,23 @@
   --color-border-focus: var(--massar-green);
   --color-divider: var(--stone);
 
+  /* Product-surface tints. color-mix() of palette values only — no new hues. */
+  --color-surface-raised: var(--white);
+  --color-surface-sunken: color-mix(in srgb, var(--bone) 55%, var(--white));
+  --color-text-muted: color-mix(in srgb, var(--ink) 68%, var(--bone));
+  --color-line: color-mix(in srgb, var(--ink) 11%, transparent);
+  --color-line-strong: color-mix(in srgb, var(--ink) 22%, transparent);
+  --color-hover: color-mix(in srgb, var(--massar-green) 4%, transparent);
+  --color-hover-strong: color-mix(in srgb, var(--massar-green) 9%, transparent);
+  --color-focus-ring: color-mix(in srgb, var(--massar-green) 18%, transparent);
+  --color-scrim: color-mix(in srgb, var(--ink) 40%, transparent);
+  --shadow-overlay: 0 12px 32px color-mix(in srgb, var(--ink) 12%, transparent);
+  --sidebar-text: color-mix(in srgb, var(--bone) 82%, var(--massar-green));
+  --sidebar-text-muted: color-mix(in srgb, var(--bone) 55%, var(--massar-green));
+  --sidebar-hover: color-mix(in srgb, var(--bone) 8%, transparent);
+  --sidebar-active: color-mix(in srgb, var(--bone) 14%, transparent);
+  --sidebar-line: color-mix(in srgb, var(--bone) 14%, transparent);
+
   /* Fonts: Switzer Swiss Neo-Grotesque paired with Editorial Serif */
   --font-serif: Georgia, "Cormorant Garamond", "Times New Roman", serif;
   --font-sans: var(--font-switzer), "Switzer", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -53,11 +70,11 @@
   --text-body: 16px;
   --text-subhead: 20px;
   --text-section: 24px;
-  --text-page: 32px;
+  --text-page: 28px;
 
   /* Layout */
-  --sidebar-width: 256px;
-  --content-max-width: 1440px;
+  --sidebar-width: 248px;
+  --content-max-width: 1280px;
   --grid-columns-desktop: 12;
   --grid-gap: 24px;
   --control-height: 48px;
@@ -98,7 +115,6 @@ html {
 
 @media (max-width: 767px) {
   :root {
-    --sidebar-width: 0px;
     --grid-gap: 16px;
     --control-height: 48px;
     --text-page: 24px;
@@ -106,101 +122,867 @@ html {
 }
 
 /* ── App shell ──────────────────────────────────────────────────────────
-   row-reverse inside dir="rtl" keeps the fixed navigation on the LEFT
-   (brand guideline) while the content itself stays RTL. */
+   Fixed Green navigation on the left (brand guideline), a quiet top bar,
+   and one content column. Every colour below resolves to the palette;
+   tints are color-mix() of approved values, never new hues. */
 body {
   margin: 0;
   background: var(--color-page);
+  color: var(--color-text);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
 }
 
 .massar-shell {
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   min-height: 100vh;
 }
-html[dir="ltr"] .massar-shell {
-  flex-direction: row;
-}
-html[dir="rtl"] .massar-shell {
-  flex-direction: row-reverse;
-}
 
+/* Sidebar */
 .massar-sidebar {
-  width: var(--sidebar-width);
-  flex-shrink: 0;
-  background-color: var(--massar-green);
-  border-right: 1px solid rgba(241, 236, 226, 0.12);
-  padding: var(--space-5) var(--space-3);
+  background-color: var(--color-navigation);
+  color: var(--bone);
   position: sticky;
   top: 0;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4) var(--space-3) var(--space-3);
   box-sizing: border-box;
   overflow-y: auto;
-}
-
-.massar-sidebar a {
-  color: rgba(241, 236, 226, 0.85);
-  text-decoration: none;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-control);
-  font-size: var(--text-body);
-  font-weight: 500;
-  font-family: var(--font-sans);
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  transition: all var(--motion-fast) var(--motion-ease);
-}
-
-.massar-sidebar a:hover,
-.massar-sidebar a:focus-visible {
-  background-color: rgba(241, 236, 226, 0.12);
-  color: var(--white);
-  outline: none;
+  z-index: 30;
 }
 
 .massar-sidebar-brand {
-  margin-bottom: var(--space-6);
-  padding: 0 var(--space-3);
   display: flex;
-  justify-content: flex-start;
   align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-2);
+  margin-bottom: var(--space-5);
 }
 
 .massar-sidebar-logo {
-  width: 135px;
+  width: 104px;
   height: auto;
-  max-width: 100%;
   display: block;
 }
 
-.massar-main {
+.massar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
   flex: 1;
-  min-width: 0;
-  padding: var(--space-5);
-  max-width: var(--content-max-width);
-  box-sizing: border-box;
 }
 
-@media (max-width: 767px) {
-  .massar-shell {
-    flex-direction: column;
+.massar-nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.massar-nav-heading {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sidebar-text-muted);
+  padding: 0 var(--space-2) var(--space-1);
+  margin: 0;
+}
+
+.massar-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-control);
+  color: var(--sidebar-text);
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  position: relative;
+  transition: background-color var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease);
+}
+
+.massar-nav-link svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.massar-nav-link:hover {
+  background-color: var(--sidebar-hover);
+  color: var(--bone);
+}
+
+.massar-nav-link[aria-current='page'] {
+  background-color: var(--sidebar-active);
+  color: var(--white);
+  font-weight: 600;
+}
+
+.massar-nav-link[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: calc(-1 * var(--space-3));
+  top: 10px;
+  bottom: 10px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--bone);
+}
+
+.massar-nav-link[aria-current='page'] svg {
+  opacity: 1;
+}
+
+.massar-sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: var(--space-3) var(--space-2) 0;
+  margin-top: var(--space-4);
+  border-top: var(--border-width) solid var(--sidebar-line);
+}
+
+.massar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: var(--bone);
+  color: var(--massar-green);
+}
+
+.massar-sidebar-user-meta {
+  min-width: 0;
+  flex: 1;
+  line-height: 1.3;
+}
+
+.massar-sidebar-user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.massar-sidebar-user-role {
+  font-size: 12px;
+  color: var(--sidebar-text-muted);
+}
+
+.massar-icon-btn {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-control);
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background-color var(--motion-fast) var(--motion-ease);
+}
+
+.massar-icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.massar-sidebar .massar-icon-btn {
+  color: var(--sidebar-text);
+}
+
+.massar-sidebar .massar-icon-btn:hover {
+  background: var(--sidebar-hover);
+  color: var(--white);
+}
+
+/* Main column */
+.massar-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.massar-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: 64px;
+  padding: 0 var(--space-5);
+  background: var(--color-page);
+  border-bottom: var(--border-width) solid var(--color-line);
+}
+
+.massar-topbar-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.massar-topbar-spacer {
+  flex: 1;
+}
+
+.massar-topbar .massar-icon-btn {
+  color: var(--color-text-strong);
+}
+
+.massar-topbar .massar-icon-btn:hover {
+  background: var(--color-hover);
+}
+
+.massar-menu-btn {
+  display: none;
+}
+
+.massar-search {
+  position: relative;
+  width: min(360px, 40vw);
+}
+
+.massar-search svg {
+  position: absolute;
+  inset-inline-start: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.massar-search input {
+  width: 100%;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 var(--space-3) 0 36px;
+  border-radius: var(--radius-control);
+  border: var(--border-width) solid var(--color-line-strong);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 14px;
+}
+
+.massar-search input:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.massar-badge-count {
+  position: absolute;
+  top: 4px;
+  inset-inline-end: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  background: var(--color-attention);
+  color: var(--color-attention-text);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+.massar-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-overlay);
+  z-index: 40;
+  overflow: hidden;
+}
+
+.massar-popover-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-line);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+}
+
+.massar-popover-group {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: 10px var(--space-3) 4px;
+}
+
+.massar-popover-item {
+  display: block;
+  padding: 8px var(--space-3);
+  font-size: 14px;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.massar-popover-item:hover {
+  background: var(--color-hover);
+}
+
+.massar-content {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-5) var(--space-8);
+  box-sizing: border-box;
+  animation: massarFadeIn var(--motion-standard) var(--motion-ease);
+}
+
+@keyframes massarFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.massar-scrim {
+  display: none;
+}
+
+/* ── Page building blocks ───────────────────────────────────────────── */
+.massar-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-5);
+}
+
+.massar-page-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0 0 6px;
+}
+
+.massar-page-title {
+  font-size: var(--text-page);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--color-text-strong);
+  margin: 0;
+}
+
+.massar-page-description {
+  font-size: 15px;
+  color: var(--color-text-muted);
+  margin: 8px 0 0;
+  max-width: 64ch;
+  line-height: 1.5;
+}
+
+.massar-page-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Stat strip: one surface split by hairlines, not a grid of cards */
+.massar-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
+  margin: 0 0 var(--space-5);
+  overflow: hidden;
+}
+
+.massar-stat {
+  padding: var(--space-3) var(--space-4);
+  border-inline-start: var(--border-width) solid var(--color-line);
+  margin: 0;
+}
+
+.massar-stat:first-child {
+  border-inline-start: none;
+}
+
+.massar-stat dt {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.massar-stat dd {
+  margin: 6px 0 0;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--color-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.massar-stat[data-tone='attention'] dd {
+  color: var(--color-attention);
+}
+
+.massar-stat-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-attention);
+}
+
+/* Panel: the one surface type for grouped content */
+.massar-panel {
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
+  margin-bottom: var(--space-4);
+}
+
+.massar-panel-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-line);
+}
+
+.massar-panel-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.massar-panel-count {
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  border-radius: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-hover-strong);
+  color: var(--color-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.massar-panel-count[data-tone='attention'] {
+  background: var(--color-attention);
+  color: var(--color-attention-text);
+}
+
+.massar-panel-sub {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 2px 0 0;
+}
+
+.massar-panel-body {
+  padding: var(--space-4);
+}
+
+.massar-panel-body[data-flush] {
+  padding: 0;
+}
+
+.massar-panel > .massar-table-wrap,
+.massar-panel-body[data-flush] > .massar-table-wrap {
+  border-radius: 0 0 var(--radius-surface) var(--radius-surface);
+}
+
+/* Stacked rows inside a flush panel */
+.massar-row {
+  padding: var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-line);
+}
+
+.massar-row:last-child {
+  border-bottom: none;
+}
+
+/* Two-column page layout: main work + supporting rail */
+.massar-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: var(--space-4);
+  align-items: start;
+}
+
+/* Tables. Overflow stays visible on desktop so row menus aren't clipped;
+   narrow screens scroll the table instead of squeezing columns. */
+.massar-table-wrap {
+  overflow: visible;
+}
+
+.massar-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: start;
+  font-size: 14px;
+}
+
+.massar-table th {
+  padding: 10px var(--space-4);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-align: start;
+  background: var(--color-surface-sunken);
+  border-bottom: var(--border-width) solid var(--color-line);
+  white-space: nowrap;
+}
+
+.massar-table td {
+  padding: 12px var(--space-4);
+  height: var(--row-height);
+  box-sizing: border-box;
+  border-bottom: var(--border-width) solid var(--color-line);
+  vertical-align: middle;
+}
+
+.massar-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.massar-table tbody tr:hover td {
+  background: var(--color-hover);
+}
+
+.massar-cell-title {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.massar-cell-sub {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* Disclosure: a summary that looks like a button, revealing an inline form */
+.massar-disclosure > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.massar-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.massar-page-actions {
+  position: relative;
+}
+
+.massar-create > summary {
+  display: inline-flex;
+}
+
+.massar-create-body {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + 8px);
+  width: min(760px, calc(100vw - 48px));
+  box-sizing: border-box;
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-overlay);
+  padding: var(--space-4);
+  z-index: 18;
+}
+
+/* Row actions menu */
+.massar-menu {
+  position: relative;
+}
+
+.massar-menu > summary {
+  display: inline-flex;
+}
+
+.massar-menu-panel {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + 6px);
+  width: 320px;
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-overlay);
+  padding: var(--space-3);
+  z-index: 15;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.massar-menu-section + .massar-menu-section {
+  border-top: var(--border-width) solid var(--color-line);
+  padding-top: var(--space-3);
+}
+
+.massar-menu-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  margin: 0 0 var(--space-2);
+}
+
+/* Tabs (in-page segmented navigation) */
+.massar-tabs {
+  display: flex;
+  gap: var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-line);
+  margin-bottom: var(--space-4);
+  overflow-x: auto;
+}
+
+.massar-tab {
+  appearance: none;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 0 0 12px;
+  min-height: 44px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.massar-tab:hover {
+  color: var(--color-text);
+}
+
+.massar-tab[aria-selected='true'] {
+  color: var(--color-text-strong);
+  font-weight: 600;
+  border-bottom-color: var(--color-action-primary);
+}
+
+/* Key–value metadata row */
+.massar-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.massar-meta dt {
+  font-size: 12px;
+  color: var(--color-text-muted);
+  margin-bottom: 2px;
+}
+
+.massar-meta dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Workload list in the side rail */
+.massar-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.massar-list > li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-line);
+}
+
+.massar-list > li:last-child {
+  border-bottom: none;
+}
+
+.massar-meter {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--color-hover-strong);
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.massar-meter > span {
+  display: block;
+  height: 100%;
+  background: var(--color-action-primary);
+}
+
+.massar-btn-row {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .massar-split {
+    grid-template-columns: minmax(0, 1fr);
   }
-  .massar-sidebar {
-    width: 100%;
-    height: auto;
-    position: static;
-    padding: var(--space-3);
-  }
-  .massar-sidebar nav {
-    flex-direction: row !important;
-    flex-wrap: wrap;
-  }
-  .massar-main {
-    padding: var(--space-3);
-  }
-  /* Tables become scrollable rather than squeezed */
+}
+
+@media (max-width: 900px) {
   .massar-table-wrap {
     overflow-x: auto;
+  }
+  .massar-page-actions {
+    width: 100%;
+  }
+  .massar-create {
+    width: 100%;
+  }
+  .massar-create-body {
+    position: static;
+    width: 100%;
+    margin-top: var(--space-3);
+    box-shadow: none;
+  }
+  .massar-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .massar-sidebar {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform var(--motion-standard) var(--motion-ease);
+    box-shadow: var(--shadow-overlay);
+  }
+  .massar-shell[data-nav-open='true'] .massar-sidebar {
+    transform: none;
+  }
+  .massar-shell[data-nav-open='true'] .massar-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 25;
+    background: var(--color-scrim);
+  }
+  .massar-menu-btn {
+    display: inline-flex;
+  }
+  .massar-topbar {
+    padding: 0 var(--space-3);
+  }
+  .massar-content {
+    padding: var(--space-4) var(--space-3) var(--space-7);
+  }
+}
+
+@media (max-width: 640px) {
+  .massar-search {
+    display: none;
+  }
+  .massar-page-title {
+    font-size: 24px;
+  }
+  .massar-stat {
+    padding: var(--space-3);
+  }
+  .massar-stat dd {
+    font-size: 24px;
+  }
+  .massar-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .massar-stat:nth-child(odd) {
+    border-inline-start: none;
+  }
+  .massar-stat:nth-child(n + 3) {
+    border-top: var(--border-width) solid var(--color-line);
+  }
+  /* Tables become stacked rows instead of shrinking columns (Design System §4) */
+  .massar-table thead {
+    display: none;
+  }
+  .massar-table,
+  .massar-table tbody,
+  .massar-table tr,
+  .massar-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .massar-table tr {
+    padding: 14px var(--space-3);
+    border-bottom: var(--border-width) solid var(--color-line);
+  }
+  .massar-table tbody tr:last-child {
+    border-bottom: none;
+  }
+  .massar-table td {
+    height: auto;
+    padding: 4px 0;
+    border: none;
+    text-align: start !important;
+    max-width: none !important;
+  }
+  .massar-table tbody tr:hover td {
+    background: none;
+  }
+  .massar-table td .massar-btn-row {
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+    margin-top: 8px;
+  }
+  .massar-menu-panel {
+    width: min(320px, calc(100vw - 32px));
   }
 }
 
@@ -613,605 +1395,60 @@ html[dir="rtl"] .massar-shell {
   background-color: var(--ink);
 }
 
-/* ── Welcome / Splash Screen — Split Layout, Left-Aligned on 12-Col Grid ── */
-
-.massar-welcome-viewport {
+/* ── Session greeting ─────────────────────────────────────────────── */
+.massar-welcome {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  z-index: 99999;
-  background-color: var(--bone, #F1ECE2);
+  z-index: 100;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  box-sizing: border-box;
-  animation: massarSplitLensEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.massar-welcome-viewport.massar-welcome-dissolving {
-  opacity: 0;
-  filter: blur(16px) brightness(1.05);
-  transform: scale(1.025);
-  pointer-events: none;
-}
-
-/* Optical rack focus entrance */
-@keyframes massarSplitLensEntrance {
-  0% {
-    opacity: 0.2;
-    filter: blur(20px) brightness(1.15);
-    transform: scale(1.03);
-  }
-  100% {
-    opacity: 1;
-    filter: blur(0px) brightness(1);
-    transform: scale(1);
-  }
-}
-
-/* Grid Frame: max-width 1440px, outer margins 64px desktop / 24px tablet / 16px mobile */
-.massar-grid-frame {
-  max-width: 1440px;
-  width: 100%;
-  margin-inline: auto;
-  padding-inline: 64px;
-  box-sizing: border-box;
-}
-
-@media (max-width: 1023px) {
-  .massar-grid-frame {
-    padding-inline: 24px;
-  }
-}
-
-@media (max-width: 767px) {
-  .massar-grid-frame {
-    padding-inline: 16px;
-  }
-}
-
-/* 12-column grid container with 24px column gap */
-.massar-12-col-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: 24px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* ── 1. Top Bar (72px) ── */
-.massar-split-topbar {
-  height: 72px;
-  min-height: 72px;
-  display: flex;
   align-items: center;
-  border-bottom: 1px solid rgba(13, 59, 52, 0.06);
-}
-
-.massar-welcome-brand {
-  grid-column: 1 / 4;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-}
-
-.massar-welcome-brand-mark {
-  width: 26px;
-  height: 29px;
-  display: block;
-  object-fit: contain;
-}
-
-.massar-welcome-brand-text {
-  font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  color: var(--massar-green, #0D3B34);
-}
-
-.massar-split-topbar-action {
-  grid-column: 10 / 13;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-/* "Enter Workspace →" button (Right edge aligns exactly with col 12) */
-.massar-enter-workspace-btn {
-  background: transparent;
-  color: var(--massar-green, #0D3B34);
-  border: 1px solid rgba(13, 59, 52, 0.22);
-  border-radius: var(--radius-control, 4px);
-  padding: 9px 20px;
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  justify-content: center;
+  gap: var(--space-2);
+  background: var(--massar-green);
+  color: var(--bone);
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: massarFadeIn var(--motion-standard) var(--motion-ease);
+  transition: opacity 400ms var(--motion-ease);
 }
 
-.massar-enter-workspace-btn:hover {
-  background: rgba(13, 59, 52, 0.08);
-  border-color: var(--massar-green, #0D3B34);
-  transform: translateX(2px);
-}
-
-/* When loading completes, button becomes primary filled green */
-.massar-enter-workspace-btn.massar-enter-active {
-  background-color: var(--massar-green, #0D3B34);
-  color: var(--bone, #F1ECE2);
-  border-color: var(--massar-green, #0D3B34);
-  box-shadow: 0 4px 14px rgba(13, 59, 52, 0.25);
-}
-
-.massar-enter-workspace-btn.massar-enter-active:hover {
-  background-color: var(--ink, #101815);
-  border-color: var(--ink, #101815);
-}
-
-/* ── 2. Middle Split Area ── */
-.massar-split-middle {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  min-height: 0;
-  padding: 32px 0;
-  box-sizing: border-box;
-}
-
-/* Middle grid alignment: height 100% */
-.massar-split-middle-grid {
-  align-items: center;
-  height: 100%;
-}
-
-/* Left Content: cols 1–6 */
-.massar-split-content {
-  grid-column: 1 / 7;
-  text-align: start;
-  align-self: center;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Eyebrow: 12px, uppercase, letter-spacing 0.08em, medium, muted green, small dot */
-.massar-split-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #2D5A4C;
-  margin-bottom: 16px;
+.massar-welcome[data-leaving='true'] {
   opacity: 0;
-  animation: massarSplitFadeUp 250ms cubic-bezier(0.16, 1, 0.3, 1) 0ms forwards;
-}
-
-.massar-split-eyebrow-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #2D5A4C;
-  display: inline-block;
-  flex-shrink: 0;
-}
-
-/* Headline: serif display, clamp(48px, 6vw, 88px), line-height 1.05, letter-spacing -0.02em, 2 lines */
-.massar-split-headline {
-  margin: 0 0 24px 0;
-  font-family: var(--font-serif);
-  font-size: clamp(48px, 6vw, 88px);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  color: var(--ink, #101815);
-  font-weight: 500;
-  display: flex;
-  flex-direction: column;
-  opacity: 0;
-  animation: massarSplitFadeUp 250ms cubic-bezier(0.16, 1, 0.3, 1) 60ms forwards;
-}
-
-.massar-split-headline span {
-  display: block;
-}
-
-/* Supporting text: 16–18px sans, line-height 1.6, muted, max-width 45ch */
-.massar-split-support-text {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: clamp(16px, 1.2vw, 18px);
-  line-height: 1.6;
-  color: #5A655F;
-  max-width: 45ch;
-  opacity: 0;
-  animation: massarSplitFadeUp 250ms cubic-bezier(0.16, 1, 0.3, 1) 120ms forwards;
-}
-
-@keyframes massarSplitFadeUp {
-  0% {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Col 7 stays empty: grid-column: 7 / 8 is unoccupied */
-
-/* Right Visual Panel: cols 8–12 */
-.massar-split-panel {
-  grid-column: 8 / 13;
-  height: 100%;
-  min-height: 380px;
-  max-height: 480px;
-  background-color: var(--massar-green, #0D3B34);
-  background-image: radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.06) 0%, transparent 60%);
-  border-radius: 16px;
-  position: relative;
-  overflow: hidden;
-  box-sizing: border-box;
-  padding: 36px 32px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 16px 48px -12px rgba(13, 59, 52, 0.28);
-  opacity: 0;
-  animation: massarSplitPanelFade 350ms cubic-bezier(0.16, 1, 0.3, 1) 180ms forwards;
-}
-
-@keyframes massarSplitPanelFade {
-  0% {
-    opacity: 0;
-    transform: scale(0.985);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Oversized watermark emblem cropped off edge at 8% opacity */
-.massar-split-panel-watermark {
-  position: absolute;
-  inset-inline-end: -40px;
-  bottom: -40px;
-  width: 300px;
-  height: 330px;
-  opacity: 0.08;
   pointer-events: none;
-  background-color: #F1ECE2;
-  -webkit-mask: url(/image/massar_logo.svg) no-repeat center / contain;
-  mask: url(/image/massar_logo.svg) no-repeat center / contain;
 }
 
-/* Visual Panel Content: Calm "Today" Preview */
-.massar-panel-header {
-  position: relative;
-  z-index: 2;
+.massar-welcome-logo {
+  width: 120px;
+  height: auto;
+  margin-bottom: var(--space-4);
 }
 
-.massar-panel-tag {
-  font-family: var(--font-sans);
-  font-size: 11px;
+.massar-welcome-eyebrow {
+  margin: 0;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(241, 236, 226, 0.6);
-  margin-bottom: 6px;
+  color: var(--sidebar-text-muted);
 }
 
-.massar-panel-date {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 500;
-  color: var(--bone, #F1ECE2);
-  letter-spacing: -0.01em;
+.massar-welcome-title {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  text-align: center;
+  padding: 0 var(--space-3);
 }
 
-.massar-panel-stats {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+/* Inline-styled buttons get one shared, quiet hover state. */
+.massar-content button:not(:disabled):hover,
+.massar-content summary:hover {
+  filter: brightness(1.12);
 }
 
-.massar-panel-stat-card {
-  padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(241, 236, 226, 0.1);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.massar-content button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
-
-.massar-panel-stat-num {
-  font-family: var(--font-sans);
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--bone, #F1ECE2);
-  line-height: 1;
-}
-
-.massar-panel-stat-meta {
-  font-family: var(--font-sans);
-  font-size: 12px;
-  color: rgba(241, 236, 226, 0.72);
-  margin-top: 2px;
-}
-
-.massar-panel-status {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: rgba(241, 236, 226, 0.75);
-}
-
-.massar-status-dot-pulse {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background-color: #34D399;
-  box-shadow: 0 0 8px #34D399;
-}
-
-/* ── 3. Bottom Bar (72px) ── */
-.massar-split-bottombar {
-  height: 72px;
-  min-height: 72px;
-  display: flex;
-  align-items: center;
-  border-top: 1px solid rgba(13, 59, 52, 0.06);
-}
-
-/* Progress: cols 1–4 */
-.massar-split-progress-wrap {
-  grid-column: 1 / 5;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: opacity 0.4s ease;
-}
-
-.massar-split-progress-wrap.massar-progress-done {
-  opacity: 0;
-}
-
-.massar-split-progress-label {
-  font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: #5A655F;
-}
-
-.massar-split-progress-track {
-  height: 2px;
-  width: 100%;
-  background-color: rgba(13, 59, 52, 0.12);
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.massar-split-progress-fill {
-  height: 100%;
-  background-color: var(--massar-green, #0D3B34);
-  border-radius: 999px;
-  transition: width 35ms linear;
-}
-
-/* Right side of bottom bar: ending on col 12 */
-.massar-split-bottom-meta {
-  grid-column: 8 / 13;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  font-family: var(--font-sans);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  color: var(--stone, #9A9791);
-}
-
-/* ── 4. Dev-Only Grid Overlay (Toggle with key "G") ── */
-.massar-dev-grid-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 100000;
-}
-
-.massar-overlay-frame {
-  height: 100%;
-}
-
-.massar-overlay-grid {
-  height: 100%;
-}
-
-.massar-overlay-col {
-  height: 100%;
-  background-color: rgba(220, 38, 38, 0.05);
-  border-inline: 1px dashed rgba(220, 38, 38, 0.35);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 8px 4px;
-  box-sizing: border-box;
-}
-
-.massar-overlay-col-num {
-  font-family: monospace;
-  font-size: 11px;
-  font-weight: 700;
-  color: rgba(220, 38, 38, 0.75);
-  background: rgba(255, 255, 255, 0.85);
-  padding: 1px 4px;
-  border-radius: 2px;
-  align-self: flex-start;
-}
-
-.massar-overlay-pill {
-  position: fixed;
-  bottom: 24px;
-  inset-inline-end: 24px;
-  background: rgba(16, 24, 21, 0.92);
-  color: #FFFFFF;
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 500;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  pointer-events: auto;
-  user-select: none;
-}
-
-.massar-overlay-pill kbd {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-family: monospace;
-  font-size: 11px;
-}
-
-/* ── 5. Responsive Breakpoints ── */
-
-/* Tablet (768px – 1023px) */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .massar-split-content {
-    grid-column: 1 / 8;
-  }
-  .massar-split-panel {
-    grid-column: 9 / 13;
-    padding: 24px 20px;
-  }
-  .massar-split-progress-wrap {
-    grid-column: 1 / 6;
-  }
-  .massar-split-bottom-meta {
-    grid-column: 7 / 13;
-  }
-}
-
-/* Mobile (< 768px) */
-@media (max-width: 767px) {
-  .massar-welcome-viewport {
-    overflow-y: auto;
-  }
-  .massar-split-topbar {
-    height: 60px;
-    min-height: 60px;
-  }
-  .massar-welcome-brand {
-    grid-column: 1 / 9;
-  }
-  .massar-split-topbar-action {
-    display: none;
-  }
-  .massar-split-middle {
-    padding: 24px 0;
-    align-items: flex-start;
-  }
-  .massar-split-middle-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-    height: auto;
-  }
-  .massar-split-content {
-    width: 100%;
-  }
-  .massar-split-headline {
-    font-size: clamp(38px, 10vw, 54px);
-    margin-bottom: 16px;
-  }
-  .massar-split-panel {
-    width: 100%;
-    min-height: 200px;
-    max-height: none;
-    padding: 20px;
-  }
-  .massar-split-panel-watermark {
-    width: 180px;
-    height: 200px;
-  }
-  .massar-split-bottombar {
-    height: auto;
-    min-height: 64px;
-    padding: 16px 0;
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-  }
-  .massar-split-progress-wrap {
-    width: 100%;
-  }
-  .massar-split-bottom-meta {
-    width: 100%;
-    justify-content: flex-start;
-  }
-  .massar-mobile-enter-btn {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    margin-top: 12px;
-  }
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  .massar-welcome-viewport,
-  .massar-split-eyebrow,
-  .massar-split-headline,
-  .massar-split-support-text,
-  .massar-split-panel {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-  }
-  .massar-split-progress-fill {
-    transition: none !important;
-  }
-}
-
-/* Cascading Dashboard Entrance Reveal ("وبعدين يبدا يظهر الشغل بتاعه") */
-@keyframes massarDashboardCascade {
-  0% {
-    opacity: 0.65;
-    transform: translateY(16px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.massar-main {
-  animation: massarDashboardCascade 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-
-

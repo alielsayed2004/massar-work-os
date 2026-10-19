@@ -58,7 +58,7 @@ export default function VersionUpload({ versionId }: { versionId: string }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
       <label htmlFor={inputId} style={{ ...s.secondary, display: 'inline-flex', alignItems: 'center', opacity: busy ? 0.6 : 1 }}>
-        {busy ? 'Uploading…' : 'Upload Files'}
+        {busy ? 'Uploading…' : 'Upload files'}
       </label>
       <input
         id={inputId}

@@ -2,42 +2,45 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Icon, type IconName } from '@/components/icons'
 
-interface NavItem {
+export interface NavItem {
   href: string
   label: string
+  icon: IconName
 }
 
-export default function SidebarNav({ items }: { items: NavItem[] }) {
+export interface NavGroup {
+  heading: string
+  items: NavItem[]
+}
+
+export function isActivePath(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
+
+export default function SidebarNav({ groups, onNavigate }: { groups: NavGroup[]; onNavigate?: () => void }) {
   const pathname = usePathname()
 
   return (
-    <nav aria-label="Main Navigation" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-      {items.map((item) => {
-        const isActive = pathname === item.href || (item.href !== '/my-work' && pathname.startsWith(item.href))
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            style={{
-              color: isActive ? 'var(--bone)' : 'rgba(241, 236, 226, 0.82)',
-              backgroundColor: isActive ? 'rgba(241, 236, 226, 0.14)' : 'transparent',
-              textDecoration: 'none',
-              padding: '10px var(--space-3)',
-              borderRadius: 'var(--radius-control)',
-              fontSize: 'var(--text-body)',
-              fontWeight: isActive ? 600 : 500,
-              fontFamily: 'var(--font-sans)',
-              minHeight: '44px',
-              display: 'flex',
-              alignItems: 'center',
-              transition: 'all var(--motion-fast) var(--motion-ease)',
-            }}
-          >
-            {item.label}
-          </Link>
-        )
-      })}
+    <nav aria-label="Main navigation" className="massar-nav">
+      {groups.map(group => (
+        <div key={group.heading} className="massar-nav-group">
+          <p className="massar-nav-heading">{group.heading}</p>
+          {group.items.map(item => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="massar-nav-link"
+              aria-current={isActivePath(pathname, item.href) ? 'page' : undefined}
+              onClick={onNavigate}
+            >
+              <Icon name={item.icon} />
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      ))}
     </nav>
   )
 }

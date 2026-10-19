@@ -123,7 +123,6 @@ export default function NewLeadModal({
                 fontWeight: 600,
                 color: 'var(--massar-green)',
                 margin: 0,
-                fontFamily: 'var(--font-serif)',
               }}
             >
               Register New Lead (SOP §6)

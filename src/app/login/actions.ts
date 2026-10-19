@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { DEV_AUTH_ENABLED, DEV_COOKIE_OPTIONS, DEV_SESSION_COOKIE, homeFor, type DevRole } from '@/lib/dev-session'
 
 export async function login(formData: FormData) {
   const email = ((formData.get('email') as string) || '').trim().toLowerCase()
@@ -11,7 +12,6 @@ export async function login(formData: FormData) {
 
   let targetUrl: string | null = null
 
-  // 1. If Supabase is reachable and password provided, try live Supabase Auth
   if (password) {
     try {
       const supabase = await createClient()
@@ -28,17 +28,17 @@ export async function login(formData: FormData) {
           .eq('id', authData.user.id)
           .single()
 
-        targetUrl = profile?.role === 'client' ? '/client-portal?welcome=1' : '/crm'
+        targetUrl = homeFor(profile?.role || '')
       }
     } catch {
       // Supabase is offline or connection timed out
     }
   }
 
-  // 2. Development / Local offline access (ensures Ali is never blocked)
-  if (!targetUrl) {
-    const cookieStore = await cookies()
-    const role = email.includes('client')
+  // Offline fallback for local development only; production must never
+  // turn a failed sign-in into a session.
+  if (!targetUrl && DEV_AUTH_ENABLED) {
+    const role: DevRole = email.includes('client')
       ? 'client'
       : email.includes('manager')
       ? 'manager'
@@ -46,29 +46,22 @@ export async function login(formData: FormData) {
       ? 'member'
       : 'admin'
 
-    cookieStore.set('massar_dev_session', role, {
-      path: '/',
-      httpOnly: true,
-      maxAge: 60 * 60 * 24 * 7,
-      sameSite: 'lax',
-    })
-
-    targetUrl = role === 'client' ? '/client-portal?welcome=1' : '/crm'
+    const cookieStore = await cookies()
+    cookieStore.set(DEV_SESSION_COOKIE, role, DEV_COOKIE_OPTIONS)
+    targetUrl = homeFor(role)
   }
+
+  if (!targetUrl) redirect('/login?message=auth-error')
 
   revalidatePath('/', 'layout')
   redirect(targetUrl)
 }
 
-export async function loginDirectly(role: 'admin' | 'manager' | 'member' | 'client' = 'admin') {
-  const cookieStore = await cookies()
-  cookieStore.set('massar_dev_session', role, {
-    path: '/',
-    httpOnly: true,
-    maxAge: 60 * 60 * 24 * 7,
-    sameSite: 'lax',
-  })
-  revalidatePath('/', 'layout')
-  redirect(role === 'client' ? '/client-portal?welcome=1' : '/crm')
-}
+export async function loginDirectly(role: DevRole = 'admin') {
+  if (!DEV_AUTH_ENABLED) redirect('/login?message=auth-error')
 
+  const cookieStore = await cookies()
+  cookieStore.set(DEV_SESSION_COOKIE, role, DEV_COOKIE_OPTIONS)
+  revalidatePath('/', 'layout')
+  redirect(homeFor(role))
+}

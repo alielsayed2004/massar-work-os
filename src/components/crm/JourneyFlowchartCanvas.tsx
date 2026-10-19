@@ -221,7 +221,6 @@ export default function JourneyFlowchartCanvas({
                 fontWeight: 600,
                 color: 'var(--color-text-strong)',
                 margin: 0,
-                fontFamily: 'var(--font-serif)',
               }}
             >
               Customer Journeys

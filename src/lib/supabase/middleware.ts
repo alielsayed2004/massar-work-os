@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { readDevRole } from '@/lib/dev-session'
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -27,8 +28,7 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const devSession = request.cookies.get('massar_dev_session')?.value
-  if (devSession) {
+  if (readDevRole(request.cookies)) {
     return supabaseResponse
   }
 

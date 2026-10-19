@@ -158,7 +158,6 @@ export default function CaseDetailDrawer({
                 fontWeight: 600,
                 color: 'var(--color-text)',
                 margin: '6px 0 2px',
-                fontFamily: 'var(--font-serif)',
               }}
             >
               {lead.companyName}

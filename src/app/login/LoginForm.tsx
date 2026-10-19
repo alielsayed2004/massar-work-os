@@ -6,9 +6,12 @@ import { login, loginDirectly } from './actions'
 interface LoginFormProps {
   hasError: boolean
   inactive: boolean
+  devAuth: boolean
 }
 
-export default function LoginForm({ hasError, inactive }: LoginFormProps) {
+const SPLASH_SEEN_KEY = 'massar_splash_seen'
+
+export default function LoginForm({ hasError, inactive, devAuth }: LoginFormProps) {
   // If there's an error or inactive message, immediately show the light login form without splash.
   // Otherwise, start in dark cinematic splash on every refresh / reload.
   const shouldSkipSplash = hasError || inactive
@@ -37,9 +40,22 @@ export default function LoginForm({ hasError, inactive }: LoginFormProps) {
 
     hasFinishedRef.current = false
 
-    const totalDuration = 5000 // total ~5.0s
-    const defocusTime = 3200 // at 3.2s, trigger dramatic out-of-focus camera blur on the logo while still on dark green
-    const whitePageTime = 4200 // at 4.2s ("وبعدين نروح للصفحه البيضا"), dissolve to the light white page
+    // The brand splash plays once per browser session; repeat visits go straight to the form.
+    let seen = false
+    try {
+      seen = sessionStorage.getItem(SPLASH_SEEN_KEY) === '1'
+      sessionStorage.setItem(SPLASH_SEEN_KEY, '1')
+    } catch {
+      seen = true
+    }
+    if (seen) {
+      const skip = setTimeout(skipToLightLogin, 0)
+      return () => clearTimeout(skip)
+    }
+
+    const totalDuration = 1800
+    const defocusTime = 1000
+    const whitePageTime = 1400
     const startTime = Date.now()
 
     const interval = setInterval(() => {
@@ -47,18 +63,15 @@ export default function LoginForm({ hasError, inactive }: LoginFormProps) {
       const p = Math.min(100, (elapsed / totalDuration) * 100)
       setProgress(p)
 
-      // Phase 1 (3.2s - 4.2s): Dramatic camera out-of-focus on the logo while still on dark background
       if (elapsed >= defocusTime && elapsed < whitePageTime) {
         setSplashPhase('defocus')
       }
 
-      // Phase 2 (4.2s - 5.0s): "وبعدين نروح للصفحه البيضا" — dissolve smoothly into the white page
       if (elapsed >= whitePageTime && elapsed < totalDuration) {
         setIsLight(true)
         setSplashPhase('fading')
       }
 
-      // Phase 3 (5.0s): Finish splash and show full light login card
       if (elapsed >= totalDuration) {
         clearInterval(interval)
         skipToLightLogin()
@@ -289,26 +302,28 @@ export default function LoginForm({ hasError, inactive }: LoginFormProps) {
             {isLoggingIn || isPending ? 'Opening Workspace…' : 'Sign In'}
           </button>
 
-          <button
-            type="button"
-            onClick={handleDirectDevLogin}
-            disabled={isLoggingIn || isPending}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: 'var(--massar-green)',
-              fontSize: '12px',
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 500,
-              cursor: 'pointer',
-              padding: 'var(--space-1) 0',
-              opacity: 0.85,
-              textDecoration: 'underline',
-              textAlign: 'center',
-            }}
-          >
-            Instant Dev Sign In (Admin) →
-          </button>
+          {devAuth && (
+            <button
+              type="button"
+              onClick={handleDirectDevLogin}
+              disabled={isLoggingIn || isPending}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--massar-green)',
+                fontSize: '12px',
+                fontFamily: 'var(--font-sans)',
+                fontWeight: 500,
+                cursor: 'pointer',
+                padding: 'var(--space-1) 0',
+                opacity: 0.85,
+                textDecoration: 'underline',
+                textAlign: 'center',
+              }}
+            >
+              Instant Dev Sign In (Admin) →
+            </button>
+          )}
         </form>
       </div>
     </main>

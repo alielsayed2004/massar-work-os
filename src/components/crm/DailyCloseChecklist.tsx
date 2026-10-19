@@ -48,7 +48,6 @@ export default function DailyCloseChecklist() {
               fontWeight: 600,
               color: 'var(--massar-green)',
               margin: 0,
-              fontFamily: 'var(--font-serif)',
             }}
           >
             Daily Close Checklist

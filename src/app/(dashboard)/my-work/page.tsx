@@ -5,7 +5,7 @@ import { formatInTimeZone } from 'date-fns-tz'
 import { updateTaskStatus, addComment } from '@/app/actions/tasks'
 import { requestHandover } from '@/app/actions/handover'
 import { CAIRO, TASK_STATUS, HANDOVER_REASONS, formatCairo, nowMs } from '@/lib/labels'
-import { s, StatusBadge, Flash, Empty } from '@/components/ui'
+import { s, StatusBadge, Flash, Empty, PageHeader, Panel, StatStrip } from '@/components/ui'
 
 type Task = {
   id: string
@@ -18,8 +18,8 @@ type Task = {
 
 // Next step the OWNER may take (the DB enforces the same rules)
 const NEXT_STEPS: Record<string, { status: string; label: string }[]> = {
-  todo: [{ status: 'in_progress', label: 'Start Work' }],
-  in_progress: [{ status: 'completed', label: 'Mark Complete' }],
+  todo: [{ status: 'in_progress', label: 'Start' }],
+  in_progress: [{ status: 'completed', label: 'Complete' }],
   blocked: [{ status: 'in_progress', label: 'Resume' }],
 }
 
@@ -62,124 +62,131 @@ export default async function MyWorkPage({
   const dueToday = open.filter(t => hours(t) > 4 && day(t) === today)
   const upcoming = open.filter(t => hours(t) > 4 && day(t) !== today)
 
+  const attention = overdue.length + dueSoon.length
   const summary = [
-    { label: 'Requires Attention', value: overdue.length + dueSoon.length },
-    { label: 'Due Today', value: dueToday.length + dueSoon.length },
-    { label: 'In Progress', value: tasks.filter(t => t.status === 'in_progress').length },
-    { label: 'Awaiting Handover', value: waiting.length },
+    { label: 'Needs attention', value: attention, attention: attention > 0 },
+    { label: 'Due today', value: dueToday.length + dueSoon.length },
+    { label: 'In progress', value: tasks.filter(t => t.status === 'in_progress').length },
+    { label: 'Awaiting handover', value: waiting.length },
   ]
 
   const renderTable = (title: string, list: Task[], flag?: 'overdue' | 'soon') => {
     if (!list.length) return null
     return (
-      <section style={{ marginBottom: 'var(--space-5)' }}>
-        <h2 style={s.sectionTitle}>{title} ({list.length})</h2>
+      <Panel title={title} count={list.length} attention={flag === 'overdue'} flush>
         <div className="massar-table-wrap">
-          <table style={{ ...s.table, backgroundColor: 'var(--color-surface)' }}>
+          <table className="massar-table">
             <thead>
               <tr>
-                <th style={s.th}>Task</th>
-                <th style={s.th}>Project</th>
-                <th style={s.th}>Due (Cairo)</th>
-                <th style={s.th}>Status</th>
-                <th style={s.th}>Action</th>
+                <th>Task</th>
+                <th>Due (Cairo)</th>
+                <th>Status</th>
+                <th style={{ textAlign: 'end' }}>Action</th>
               </tr>
             </thead>
             <tbody>
-              {list.map(task => (
-                <tr key={task.id}>
-                  <td style={{ ...s.td, fontWeight: 600 }}>{task.title}</td>
-                  <td style={s.td}>{task.projects?.name || '—'}</td>
-                  <td style={s.td}>
-                    <bdi>{formatCairo(task.due_at)}</bdi>
-                    {flag === 'overdue' && <div style={{ marginTop: 'var(--space-1)' }}><StatusBadge status="overdue" label="Overdue" /></div>}
-                    {flag === 'soon' && <div style={{ marginTop: 'var(--space-1)' }}><StatusBadge status="internal_review" label="Due within 4 hrs" /></div>}
-                  </td>
-                  <td style={s.td}>
-                    <StatusBadge status={task.status} label={pendingIds.has(task.id) ? 'Pending Lead Review' : TASK_STATUS[task.status]} />
-                  </td>
-                  <td style={{ ...s.td, minWidth: '260px' }}>
-                    <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
-                      {(NEXT_STEPS[task.status] || []).map(step => (
-                        <form key={step.status} action={updateTaskStatus}>
-                          <input type="hidden" name="task_id" value={task.id} />
-                          <input type="hidden" name="status" value={step.status} />
-                          <button type="submit" style={s.primary}>{step.label}</button>
-                        </form>
-                      ))}
-                      {task.status !== 'blocked' && (
-                        <form action={updateTaskStatus}>
-                          <input type="hidden" name="task_id" value={task.id} />
-                          <input type="hidden" name="status" value="blocked" />
-                          <button type="submit" style={s.textBtn}>Mark Blocked</button>
-                        </form>
-                      )}
-                    </div>
+              {list.map(task => {
+                const steps = NEXT_STEPS[task.status] || []
+                const isWaiting = pendingIds.has(task.id)
+                return (
+                  <tr key={task.id}>
+                    <td>
+                      <div className="massar-cell-title">{task.title}</div>
+                      <div className="massar-cell-sub">{task.projects?.name || 'Internal task'}</div>
+                    </td>
+                    <td style={{ whiteSpace: 'nowrap' }}>
+                      <bdi>{formatCairo(task.due_at)}</bdi>
+                      {flag === 'overdue' && <div style={{ marginTop: 6 }}><StatusBadge status="overdue" label="Overdue" /></div>}
+                      {flag === 'soon' && <div style={{ marginTop: 6 }}><StatusBadge status="internal_review" label="Due within 4 hrs" /></div>}
+                    </td>
+                    <td>
+                      <StatusBadge status={task.status} label={isWaiting ? 'Pending lead decision' : TASK_STATUS[task.status]} />
+                    </td>
+                    <td>
+                      <div className="massar-btn-row" style={{ justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
+                        {steps.map(step => (
+                          <form key={step.status} action={updateTaskStatus}>
+                            <input type="hidden" name="task_id" value={task.id} />
+                            <input type="hidden" name="status" value={step.status} />
+                            <button type="submit" style={s.primary}>{step.label}</button>
+                          </form>
+                        ))}
+                        <details className="massar-disclosure massar-menu">
+                          <summary style={s.secondary} aria-label={`More actions for ${task.title}`}>
+                            More
+                          </summary>
+                          <div className="massar-menu-panel">
+                            <form action={addComment} className="massar-menu-section">
+                              <input type="hidden" name="task_id" value={task.id} />
+                              <label htmlFor={`c-${task.id}`} className="massar-menu-title" style={{ display: 'block' }}>Add a progress note</label>
+                              <div className="massar-btn-row" style={{ flexWrap: 'nowrap' }}>
+                                <input id={`c-${task.id}`} name="content" required style={s.field} />
+                                <button type="submit" style={s.secondary}>Save</button>
+                              </div>
+                            </form>
 
-                    <details style={{ marginTop: 'var(--space-2)' }}>
-                      <summary style={{ cursor: 'pointer', fontSize: 'var(--text-label)', fontWeight: 500 }}>Add Note</summary>
-                      <form action={addComment} style={{ display: 'flex', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>
-                        <input type="hidden" name="task_id" value={task.id} />
-                        <label htmlFor={`c-${task.id}`} style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>Note</label>
-                        <input id={`c-${task.id}`} name="content" placeholder="Add internal progress note…" required style={s.field} />
-                        <button type="submit" style={s.secondary}>Save</button>
-                      </form>
-                    </details>
+                            {!isWaiting && (
+                              <form action={requestHandover} className="massar-menu-section" style={{ display: 'grid', gap: 'var(--space-2)' }}>
+                                <input type="hidden" name="task_id" value={task.id} />
+                                <p className="massar-menu-title" style={{ margin: 0 }}>Request handover</p>
+                                <div>
+                                  <label htmlFor={`r-${task.id}`} style={s.label}>Reason</label>
+                                  <select id={`r-${task.id}`} name="reason" required defaultValue="" style={s.field}>
+                                    <option value="" disabled>Select reason</option>
+                                    {HANDOVER_REASONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
+                                  </select>
+                                </div>
+                                <div>
+                                  <label htmlFor={`n-${task.id}`} style={s.label}>Progress so far (optional)</label>
+                                  <textarea id={`n-${task.id}`} name="internal_note" rows={2} style={{ ...s.field, padding: 'var(--space-2) 12px' }} />
+                                </div>
+                                <p style={{ ...s.muted, margin: 0, fontSize: 13 }}>You stay the owner until your team lead decides.</p>
+                                <button type="submit" style={s.attention}>Send request</button>
+                              </form>
+                            )}
 
-                    {!pendingIds.has(task.id) && (
-                      <details style={{ marginTop: 'var(--space-2)' }}>
-                        <summary style={{ cursor: 'pointer', fontSize: 'var(--text-label)', fontWeight: 500 }}>Request Handover</summary>
-                        <form action={requestHandover} style={{ display: 'grid', gap: 'var(--space-2)', marginTop: 'var(--space-2)' }}>
-                          <input type="hidden" name="task_id" value={task.id} />
-                          <div>
-                            <label htmlFor={`r-${task.id}`} style={s.label}>Reason</label>
-                            <select id={`r-${task.id}`} name="reason" required defaultValue="" style={s.field}>
-                              <option value="" disabled>Select reason</option>
-                              {HANDOVER_REASONS.map(r => <option key={r.value} value={r.value}>{r.label}</option>)}
-                            </select>
+                            {task.status !== 'blocked' && (
+                              <form action={updateTaskStatus} className="massar-menu-section">
+                                <input type="hidden" name="task_id" value={task.id} />
+                                <input type="hidden" name="status" value="blocked" />
+                                <button type="submit" style={{ ...s.textBtn, padding: 0 }}>Mark as blocked</button>
+                              </form>
+                            )}
                           </div>
-                          <div>
-                            <label htmlFor={`n-${task.id}`} style={s.label}>Progress so far (Optional)</label>
-                            <textarea id={`n-${task.id}`} name="internal_note" rows={2} placeholder="Explain progress and handover context…" style={{ ...s.field, padding: 'var(--space-2) var(--space-3)' }} />
-                          </div>
-                          <p style={{ ...s.muted, margin: 0, fontSize: '12px' }}>Ownership remains with you until approved by team lead.</p>
-                          <button type="submit" style={s.attention}>Submit Handover Request</button>
-                        </form>
-                      </details>
-                    )}
-                  </td>
-                </tr>
-              ))}
+                        </details>
+                      </div>
+                    </td>
+                  </tr>
+                )
+              })}
             </tbody>
           </table>
         </div>
-      </section>
+      </Panel>
     )
   }
 
   return (
     <div>
-      <h1 style={s.pageTitle}>My Work</h1>
+      <PageHeader
+        eyebrow={formatInTimeZone(new Date(), CAIRO, 'EEEE, d MMMM')}
+        title="My Work"
+        description="Your open tasks, most urgent first."
+      />
       <Flash error={error} ok={ok} />
-
-      <dl style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 'var(--space-3)', margin: '0 0 var(--space-5)' }}>
-        {summary.map(item => (
-          <div key={item.label} style={{ borderTop: 'var(--border-width) solid var(--color-border-strong)', paddingTop: 'var(--space-2)' }}>
-            <dt style={{ ...s.muted, textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.05em', fontWeight: 600 }}>{item.label}</dt>
-            <dd style={{ margin: 0, fontSize: '36px', fontWeight: 500, fontFamily: 'var(--font-serif)', color: 'var(--color-text-strong)', lineHeight: 1.1 }}>{item.value}</dd>
-          </div>
-        ))}
-      </dl>
+      <StatStrip items={summary} />
 
       {tasks.length === 0 ? (
-        <Empty>No active tasks assigned to you right now.</Empty>
+        <Panel title="Open tasks" count={0}>
+          <Empty>Nothing assigned to you right now.</Empty>
+        </Panel>
       ) : (
         <>
-          {renderTable('Overdue Tasks', overdue, 'overdue')}
-          {renderTable('Due in Next Few Hours', dueSoon, 'soon')}
-          {renderTable('Due Today', dueToday)}
-          {renderTable('Awaiting Handover Decision', waiting)}
-          {renderTable('Upcoming Tasks', upcoming)}
+          {renderTable('Overdue', overdue, 'overdue')}
+          {renderTable('Due in the next 4 hours', dueSoon, 'soon')}
+          {renderTable('Due today', dueToday)}
+          {renderTable('Awaiting handover decision', waiting)}
+          {renderTable('Upcoming', upcoming)}
         </>
       )}
     </div>

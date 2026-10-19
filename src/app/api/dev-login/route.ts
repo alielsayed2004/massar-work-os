@@ -1,17 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { DEV_AUTH_ENABLED, DEV_COOKIE_OPTIONS, DEV_SESSION_COOKIE, homeFor, toDevRole } from '@/lib/dev-session'
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const role = searchParams.get('role') || 'admin'
-  const redirectPath = role === 'client' ? '/client-portal?welcome=1' : '/crm'
+  if (!DEV_AUTH_ENABLED) {
+    return new NextResponse('Not Found', { status: 404 })
+  }
 
-  const response = NextResponse.redirect(new URL(redirectPath, request.url))
-  response.cookies.set('massar_dev_session', role, {
-    path: '/',
-    httpOnly: true,
-    maxAge: 60 * 60 * 24 * 7,
-    sameSite: 'lax',
-  })
-
+  const role = toDevRole(new URL(request.url).searchParams.get('role'))
+  const response = NextResponse.redirect(new URL(homeFor(role), request.url))
+  response.cookies.set(DEV_SESSION_COOKIE, role, DEV_COOKIE_OPTIONS)
   return response
 }

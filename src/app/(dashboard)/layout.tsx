@@ -1,15 +1,18 @@
 export const instant = false;
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import GlobalHeader from '@/components/GlobalHeader'
+import { connection } from 'next/server'
+import AppShell from '@/components/AppShell'
 import WelcomeOverlay from '@/components/WelcomeOverlay'
-import SidebarNav from '@/components/SidebarNav'
+import type { NavGroup } from '@/components/SidebarNav'
+import { readDevRole, homeFor } from '@/lib/dev-session'
+import { ROLE } from '@/lib/labels'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  await connection()
   const cookieStore = await cookies()
-  const devRole = cookieStore.get('massar_dev_session')?.value
+  const devRole = readDevRole(cookieStore)
 
   let user: { id: string; email?: string; user_metadata?: { full_name?: string } } | null = null
   let profile: { role: string; full_name: string | null; status: string } | null = null
@@ -22,7 +25,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       user_metadata: { full_name: 'Ali Elsayed' },
     }
     profile = {
-      role: devRole || 'admin',
+      role: devRole,
       full_name: 'Ali Elsayed',
       status: 'active',
     }
@@ -70,45 +73,45 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const role = profile.role
   const isInternal = role === 'admin' || role === 'manager' || role === 'member'
+  const isLead = role === 'admin' || role === 'manager'
+  const fullName = profile.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Massar'
 
-  const navItems = [
-    isInternal && { href: '/my-work', label: 'My Work' },
-    isInternal && { href: '/crm', label: 'CRM & Journeys' },
-    (role === 'admin' || role === 'manager') && { href: '/my-team', label: 'My Team' },
-    isInternal && { href: '/deliverables', label: 'Deliverables' },
-    (role === 'admin' || role === 'manager') && { href: '/projects', label: 'Clients & Projects' },
-    role === 'admin' && { href: '/admin', label: 'Settings' },
-    role === 'client' && { href: '/client-portal', label: 'Client Portal' },
-  ].filter(Boolean) as { href: string; label: string }[]
+  const groups: NavGroup[] = isInternal
+    ? [
+        {
+          heading: 'Workspace',
+          items: [
+            { href: '/my-work', label: 'My Work', icon: 'work' as const },
+            ...(isLead ? [{ href: '/my-team', label: 'My Team', icon: 'team' as const }] : []),
+            { href: '/deliverables', label: 'Deliverables', icon: 'deliverables' as const },
+          ],
+        },
+        {
+          heading: 'Clients',
+          items: [
+            ...(isLead ? [{ href: '/projects', label: 'Clients & Projects', icon: 'projects' as const }] : []),
+            { href: '/crm', label: 'Leads & Journeys', icon: 'crm' as const },
+          ],
+        },
+        ...(role === 'admin'
+          ? [{ heading: 'System', items: [{ href: '/admin', label: 'Settings', icon: 'settings' as const }] }]
+          : []),
+      ]
+    : [{ heading: 'Client portal', items: [{ href: '/client-portal', label: 'My Deliverables', icon: 'portal' as const }] }]
 
   return (
-    <div className="massar-shell">
-      <WelcomeOverlay
-        fullName={profile.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Ali'}
-        role={role}
-      />
-      <aside className="massar-sidebar">
-        <div className="massar-sidebar-brand">
-          <Link href="/my-work" style={{ display: 'inline-flex', padding: 0, textDecoration: 'none' }} aria-label="Massar Home">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/image/massar_logo.svg"
-              alt="Massar"
-              className="massar-sidebar-logo"
-            />
-          </Link>
-        </div>
-        <SidebarNav items={navItems} />
-      </aside>
-
-      <main className="massar-main">
-        <GlobalHeader
-          unreadNotifications={notifications || []}
-          fullName={profile.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Ali'}
-          canSearch={isInternal}
-        />
+    <>
+      <WelcomeOverlay fullName={fullName} role={role} />
+      <AppShell
+        groups={groups}
+        homeHref={homeFor(role)}
+        fullName={fullName}
+        roleLabel={ROLE[role] || role}
+        notifications={notifications || []}
+        canSearch={isInternal}
+      >
         {children}
-      </main>
-    </div>
+      </AppShell>
+    </>
   )
 }

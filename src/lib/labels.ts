@@ -80,7 +80,7 @@ export const JOURNEY_STAGE_LABEL: Record<string, string> = {
 /** Status tone → only approved palette (see Design System §6 Badges). */
 export function statusTone(status: string): 'neutral' | 'done' | 'waiting' | 'attention' {
   if (['completed', 'approved_internally', 'client_approved', 'converted', 'executed'].includes(status)) return 'done'
-  if (['internal_review', 'shared_with_client', 'contacted', 'follow_up', 'in_progress', 'qualified'].includes(status)) return 'waiting'
+  if (['active', 'internal_review', 'shared_with_client', 'contacted', 'follow_up', 'in_progress', 'qualified'].includes(status)) return 'waiting'
   if (['blocked', 'internal_changes_requested', 'client_changes_requested', 'overdue', 'closed'].includes(status)) return 'attention'
   return 'neutral'
 }
