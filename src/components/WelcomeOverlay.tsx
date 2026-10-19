@@ -1,6 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react'
+
+const emptySubscribe = () => () => {}
 
 interface WelcomeOverlayProps {
   fullName: string
@@ -37,13 +39,28 @@ const ROLE_CONFIGS: Record<string, RoleConfig> = {
 }
 
 export default function WelcomeOverlay({ fullName, role }: WelcomeOverlayProps) {
-  const [mounted, setMounted] = useState<boolean>(false)
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false)
   const [step, setStep] = useState<'active' | 'dissolve' | 'done'>('active')
   const [progress, setProgress] = useState(0)
   const [showGridOverlay, setShowGridOverlay] = useState(false)
-  const [dateStrings, setDateStrings] = useState<{ shortDate: string; longDate: string }>({
-    shortDate: 'Oct 2026',
-    longDate: 'Today',
+  const [dateStrings] = useState<{ shortDate: string; longDate: string }>(() => {
+    try {
+      const now = new Date()
+      const longFmt = new Intl.DateTimeFormat('en-US', {
+        weekday: 'long',
+        month: 'short',
+        day: 'numeric',
+      }).format(now)
+      const shortFmt = new Intl.DateTimeFormat('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      }).format(now)
+      return { longDate: longFmt, shortDate: shortFmt }
+    } catch {
+      return { shortDate: 'Oct 2026', longDate: 'Today' }
+    }
   })
 
   const dismissedRef = useRef(false)
@@ -63,10 +80,12 @@ export default function WelcomeOverlay({ fullName, role }: WelcomeOverlayProps) 
     }, 700)
   }
 
-  const startAnimation = () => {
+  const startAnimation = (resetState = false) => {
     dismissedRef.current = false
-    setStep('active')
-    setProgress(0)
+    if (resetState) {
+      setStep('active')
+      setProgress(0)
+    }
 
     const totalDuration = 3400 // Total loading duration
     const startTime = Date.now()
@@ -92,28 +111,10 @@ export default function WelcomeOverlay({ fullName, role }: WelcomeOverlayProps) 
   }
 
   useEffect(() => {
-    setMounted(true)
-
-    // Format localized date
-    try {
-      const now = new Date()
-      const longFmt = new Intl.DateTimeFormat('en-US', {
-        weekday: 'long',
-        month: 'short',
-        day: 'numeric',
-      }).format(now)
-      const shortFmt = new Intl.DateTimeFormat('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-      }).format(now)
-      setDateStrings({ longDate: longFmt, shortDate: shortFmt })
-    } catch {
-      // Fallback
-    }
-
-    const cleanup = startAnimation()
+    let animCleanup: (() => void) | undefined
+    const mountTimer = setTimeout(() => {
+      animCleanup = startAnimation()
+    }, 0)
 
     // Global Key Listener:
     // "G" or "g" toggles the 12-column dev grid overlay
@@ -127,19 +128,20 @@ export default function WelcomeOverlay({ fullName, role }: WelcomeOverlayProps) 
         setShowGridOverlay((prev) => !prev)
       }
       if (e.key === 'w' || e.key === 'W') {
-        startAnimation()
+        startAnimation(true)
       }
     }
 
     const handleReplay = () => {
-      startAnimation()
+      startAnimation(true)
     }
 
     window.addEventListener('keydown', handleKeyDown)
     window.addEventListener('massar-replay-welcome', handleReplay)
 
     return () => {
-      cleanup?.()
+      clearTimeout(mountTimer)
+      animCleanup?.()
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('massar-replay-welcome', handleReplay)
     }

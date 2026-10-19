@@ -57,11 +57,31 @@ export const HANDOVER_REASON_LABEL: Record<string, string> = Object.fromEntries(
   HANDOVER_REASONS.map(r => [r.value, r.label])
 )
 
+export const LEAD_STATUS_LABEL: Record<string, string> = {
+  new: 'New',
+  assigned: 'Assigned',
+  contacted: 'Contacted',
+  qualified: 'Qualified',
+  follow_up: 'In Follow-up',
+  converted: 'Converted',
+  closed: 'Closed',
+}
+
+export const JOURNEY_STAGE_LABEL: Record<string, string> = {
+  awareness: 'Awareness',
+  consideration: 'Consideration',
+  purchase: 'Purchase',
+  onboarding: 'Onboarding',
+  retention: 'Retention',
+  support: 'Support',
+  advocacy: 'Advocacy',
+}
+
 /** Status tone → only approved palette (see Design System §6 Badges). */
 export function statusTone(status: string): 'neutral' | 'done' | 'waiting' | 'attention' {
-  if (['completed', 'approved_internally', 'client_approved'].includes(status)) return 'done'
-  if (['internal_review', 'shared_with_client'].includes(status)) return 'waiting'
-  if (['blocked', 'internal_changes_requested', 'client_changes_requested', 'overdue'].includes(status)) return 'attention'
+  if (['completed', 'approved_internally', 'client_approved', 'converted', 'executed'].includes(status)) return 'done'
+  if (['internal_review', 'shared_with_client', 'contacted', 'follow_up', 'in_progress', 'qualified'].includes(status)) return 'waiting'
+  if (['blocked', 'internal_changes_requested', 'client_changes_requested', 'overdue', 'closed'].includes(status)) return 'attention'
   return 'neutral'
 }
 

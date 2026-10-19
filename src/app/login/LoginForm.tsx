@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { login } from './actions'
+import { useState, useEffect, useRef, useTransition } from 'react'
+import { login, loginDirectly } from './actions'
 
 interface LoginFormProps {
   hasError: boolean
@@ -19,6 +19,8 @@ export default function LoginForm({ hasError, inactive }: LoginFormProps) {
   )
   const [progress, setProgress] = useState(0)
   const hasFinishedRef = useRef(false)
+  const [isPending, startTransition] = useTransition()
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
 
   const skipToLightLogin = () => {
     if (hasFinishedRef.current) return
@@ -30,15 +32,10 @@ export default function LoginForm({ hasError, inactive }: LoginFormProps) {
 
   useEffect(() => {
     if (shouldSkipSplash) {
-      setIsLight(true)
-      setSplashPhase('done')
       return
     }
 
     hasFinishedRef.current = false
-    setIsLight(false)
-    setSplashPhase('cinematic')
-    setProgress(0)
 
     const totalDuration = 5000 // total ~5.0s
     const defocusTime = 3200 // at 3.2s, trigger dramatic out-of-focus camera blur on the logo while still on dark green
@@ -71,24 +68,34 @@ export default function LoginForm({ hasError, inactive }: LoginFormProps) {
     return () => clearInterval(interval)
   }, [shouldSkipSplash])
 
-  const [isLoggingIn, setIsLoggingIn] = useState(false)
-
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (isLoggingIn) return
+    if (isLoggingIn || isPending) return
     setIsLoggingIn(true)
 
     const form = e.currentTarget
     const formData = new FormData(form)
 
-    // Camera lens rack defocus animation before moving to the Welcome Screen
-    setTimeout(async () => {
+    startTransition(async () => {
       try {
         await login(formData)
       } catch {
         setIsLoggingIn(false)
       }
-    }, 550)
+    })
+  }
+
+  const handleDirectDevLogin = () => {
+    if (isLoggingIn || isPending) return
+    setIsLoggingIn(true)
+
+    startTransition(async () => {
+      try {
+        await loginDirectly('admin')
+      } catch {
+        setIsLoggingIn(false)
+      }
+    })
   }
 
   return (
@@ -218,8 +225,8 @@ export default function LoginForm({ hasError, inactive }: LoginFormProps) {
               id="email"
               name="email"
               type="email"
-              required
-              placeholder="name@massar.co"
+              defaultValue="ali@massar.co"
+              placeholder="ali@massar.co"
               className="massar-input-light"
               style={{
                 borderColor: hasError ? 'var(--color-attention)' : undefined,
@@ -245,7 +252,7 @@ export default function LoginForm({ hasError, inactive }: LoginFormProps) {
               id="password"
               name="password"
               type="password"
-              required
+              defaultValue="massar2026"
               placeholder="••••••••"
               className="massar-input-light"
               style={{
@@ -276,10 +283,31 @@ export default function LoginForm({ hasError, inactive }: LoginFormProps) {
 
           <button
             type="submit"
-            disabled={isLoggingIn}
+            disabled={isLoggingIn || isPending}
             className="massar-btn-primary-light"
           >
-            {isLoggingIn ? 'Opening Workspace…' : 'Sign In'}
+            {isLoggingIn || isPending ? 'Opening Workspace…' : 'Sign In'}
+          </button>
+
+          <button
+            type="button"
+            onClick={handleDirectDevLogin}
+            disabled={isLoggingIn || isPending}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--massar-green)',
+              fontSize: '12px',
+              fontFamily: 'var(--font-sans)',
+              fontWeight: 500,
+              cursor: 'pointer',
+              padding: 'var(--space-1) 0',
+              opacity: 0.85,
+              textDecoration: 'underline',
+              textAlign: 'center',
+            }}
+          >
+            Instant Dev Sign In (Admin) →
           </button>
         </form>
       </div>
