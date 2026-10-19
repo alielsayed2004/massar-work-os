@@ -76,20 +76,25 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const isLead = role === 'admin' || role === 'manager'
   const fullName = profile.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Massar'
 
-  const groups: NavGroup[] = isInternal
-    ? [
+  // Team members see their own work only; partners and leads see the business.
+  const groups: NavGroup[] = !isInternal
+    ? [{ heading: 'Client portal', items: [{ href: '/client-portal', label: 'My Deliverables', icon: 'portal' as const }] }]
+    : !isLead
+    ? [{ heading: 'Workspace', items: [{ href: '/my-work', label: 'My Work', icon: 'work' as const }] }]
+    : [
         {
           heading: 'Workspace',
           items: [
+            { href: '/overview', label: 'Overview', icon: 'board' as const },
             { href: '/my-work', label: 'My Work', icon: 'work' as const },
-            ...(isLead ? [{ href: '/my-team', label: 'My Team', icon: 'team' as const }] : []),
+            { href: '/my-team', label: 'My Team', icon: 'team' as const },
             { href: '/deliverables', label: 'Deliverables', icon: 'deliverables' as const },
           ],
         },
         {
           heading: 'Clients',
           items: [
-            ...(isLead ? [{ href: '/projects', label: 'Clients & Projects', icon: 'projects' as const }] : []),
+            { href: '/projects', label: 'Clients & Projects', icon: 'projects' as const },
             { href: '/crm', label: 'Leads & Journeys', icon: 'crm' as const },
           ],
         },
@@ -97,7 +102,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
           ? [{ heading: 'System', items: [{ href: '/admin', label: 'Settings', icon: 'settings' as const }] }]
           : []),
       ]
-    : [{ heading: 'Client portal', items: [{ href: '/client-portal', label: 'My Deliverables', icon: 'portal' as const }] }]
 
   return (
     <>

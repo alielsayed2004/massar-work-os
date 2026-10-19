@@ -32,8 +32,14 @@ export async function createTask(formData: FormData) {
 
   const title = String(formData.get('title') || '').trim()
   const owner = String(formData.get('owner_id') || '')
-  const teamId = String(formData.get('team_id') || '')
   const dueLocal = String(formData.get('due_at') || '')
+  let teamId = String(formData.get('team_id') || '')
+  if (!teamId && owner) {
+    // Partners pick a person, not a team: the task lands in that person's team.
+    const { data: person } = await supabase.from('profiles').select('team_id').eq('id', owner).single()
+    teamId = person?.team_id || ''
+    if (!teamId) backWithError(back, 'TASK_TEAM_REQUIRED')
+  }
   if (!title || !owner || !teamId || !dueLocal) backWithError(back, 'MISSING_FIELDS')
 
   const { error } = await supabase.from('tasks').insert({
@@ -51,6 +57,7 @@ export async function createTask(formData: FormData) {
 
   revalidatePath('/my-team')
   revalidatePath('/my-work')
+  revalidatePath('/overview')
   backWithOk(back, 'TASK_CREATED')
 }
 

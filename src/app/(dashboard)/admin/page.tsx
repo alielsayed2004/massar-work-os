@@ -8,6 +8,7 @@ import {
   createDepartment,
   assignTask,
   setTeamManager,
+  setUserActive,
 } from '@/app/actions/admin'
 import { ROLE } from '@/lib/labels'
 import { s, Flash, PageHeader, Panel, CreatePanel, StatusBadge, Empty } from '@/components/ui'
@@ -141,7 +142,7 @@ export default async function AdminPage({
       <PageHeader
         eyebrow="Administration"
         title="Settings"
-        description="People, roles, and the team structure that routes handover requests."
+        description="Add or remove people, set roles, and organise teams. Partners see and approve everything."
         actions={
           <>
             <CreatePanel label="Assign task" secondary>{assignForm}</CreatePanel>
@@ -183,7 +184,18 @@ export default async function AdminPage({
                     )}
                   </td>
                   <td>
-                    <StatusBadge status={u.status === 'active' ? 'active' : 'archived'} label={u.status === 'active' ? 'Active' : 'Archived'} />
+                    <div className="massar-btn-row" style={{ flexWrap: 'nowrap' }}>
+                      <StatusBadge status={u.status === 'active' ? 'active' : 'archived'} label={u.status === 'active' ? 'Active' : 'No access'} />
+                      {u.id !== user.id && (
+                        <form action={setUserActive}>
+                          <input type="hidden" name="user_id" value={u.id} />
+                          <input type="hidden" name="active" value={u.status === 'active' ? 'false' : 'true'} />
+                          <button type="submit" style={{ ...s.textBtn, color: u.status === 'active' ? 'var(--color-text-muted)' : 'var(--color-text-strong)' }}>
+                            {u.status === 'active' ? 'Remove access' : 'Restore'}
+                          </button>
+                        </form>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

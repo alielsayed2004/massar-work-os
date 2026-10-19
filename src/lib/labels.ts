@@ -39,7 +39,7 @@ export const CLIENT_STATUS: Record<string, string> = {
 }
 
 export const ROLE: Record<string, string> = {
-  admin: 'System Admin',
+  admin: 'Partner',
   manager: 'Team Lead',
   member: 'Team Member',
   client: 'Client',
@@ -94,7 +94,7 @@ export const MESSAGES: Record<string, string> = {
   MISSING_SERVICE_ROLE_KEY: 'Server configuration incomplete (SUPABASE_SERVICE_ROLE_KEY). Check .env.local.',
   // tasks
   TASK_NOT_FOUND: 'Task not found or not in your workspace scope.',
-  TASK_TEAM_REQUIRED: 'Please select a team for this task.',
+  TASK_TEAM_REQUIRED: 'This person isn’t in a team yet. Add them to a team in Settings first.',
   TASK_OWNER_INVALID: 'Selected owner is not available.',
   INVALID_STATUS_TRANSITION: 'Task cannot transition to this status directly.',
   TASK_CREATED: 'Task created and owner notified.',
@@ -134,6 +134,17 @@ export const MESSAGES: Record<string, string> = {
   INVITE_FAILED: 'Could not send invitation. Verify the email address and ensure it is not already registered.',
   INVITE_SENT: 'Invitation sent successfully.',
   CLIENT_REQUIRED: 'Select the client organization associated with this client account.',
+  USER_DEACTIVATED: 'Access removed. Their history stays in the system.',
+  USER_REACTIVATED: 'Access restored.',
+  CLIENT_ADDED: 'Client added.',
+  // delivery flow
+  TASK_HAS_NO_CLIENT: 'This task isn’t linked to a client project, so it can’t be sent to a client. Mark it complete instead.',
+  TASK_ALREADY_CLOSED: 'This task is already closed.',
+  DELIVERY_IN_PROGRESS: 'This work is already with the reviewer or the client.',
+  DELIVERY_OPENED: 'Upload your files, then send them for check.',
+  SENT_FOR_CHECK: 'Sent for check. You’ll be notified when it’s reviewed.',
+  SENT_TO_CLIENT: 'Approved and sent to the client. Use the WhatsApp button to let them know.',
+  CHANGES_SENT: 'Changes sent back to the owner.',
 }
 
 /** Pull a known code out of a Supabase / thrown error message. */

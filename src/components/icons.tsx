@@ -16,6 +16,8 @@ const paths = {
   logout: 'M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l-5-5 5-5M5 12h11',
   plus: 'M12 5v14M5 12h14',
   more: 'M5 12h.01M12 12h.01M19 12h.01',
+  chat: 'M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.4A8.4 8.4 0 1 1 21 11.5Z',
+  board: 'M4 5h4v14H4zM10 5h4v9h-4zM16 5h4v6h-4z',
   file: 'M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5Zm0 0v5h5',
 } as const
 

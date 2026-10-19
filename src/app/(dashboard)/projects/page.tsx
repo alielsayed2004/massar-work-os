@@ -1,6 +1,8 @@
 export const instant = false;
 import { createClient } from '@/lib/supabase/server'
-import { createProject, createClientRecord, archiveProject } from '@/app/actions/projects'
+import { createProject, createClientRecord, archiveProject, updateClientContact } from '@/app/actions/projects'
+import { whatsappLink } from '@/lib/workflow'
+import { Icon } from '@/components/icons'
 import { s, Flash, Empty, PageHeader, Panel, CreatePanel, StatusBadge } from '@/components/ui'
 
 const PROJECT_STATUS: Record<string, string> = {
@@ -35,7 +37,7 @@ export default async function ProjectsPage({
 
   const teamsQuery = supabase.from('teams').select('id, name').order('name')
   const [{ data: clients }, { data: teams }, { data: rows }] = await Promise.all([
-    supabase.from('clients').select('id, company_name').eq('status', 'active').order('company_name'),
+    supabase.from('clients').select('id, company_name, contact_name, whatsapp_phone').eq('status', 'active').order('company_name'),
     isAdmin ? teamsQuery : teamsQuery.eq('manager_user_id', user.id),
     supabase
       .from('projects')
@@ -80,6 +82,21 @@ export default async function ProjectsPage({
         <label htmlFor="c-name" style={s.label}>Company name</label>
         <input id="c-name" name="company_name" required style={s.field} />
       </div>
+      <div>
+        <label htmlFor="c-contact" style={s.label}>Contact person</label>
+        <input id="c-contact" name="contact_name" style={s.field} />
+      </div>
+      <div>
+        <label htmlFor="c-wa" style={s.label}>WhatsApp number</label>
+        <input id="c-wa" name="whatsapp_phone" type="tel" inputMode="tel" placeholder="01x xxxx xxxx" style={s.field} />
+      </div>
+      <div>
+        <label htmlFor="c-email" style={s.label}>Portal email (optional)</label>
+        <input id="c-email" name="portal_email" type="email" style={s.field} />
+      </div>
+      <p style={{ ...s.muted, fontSize: 13, margin: 0, gridColumn: '1 / -1' }}>
+        With an email, the client gets an invite to the portal where they approve work.
+      </p>
       <div>
         <button type="submit" style={s.primary}>Add client</button>
       </div>
@@ -133,6 +150,52 @@ export default async function ProjectsPage({
         }
       />
       <Flash error={error} ok={ok} />
+
+      <Panel title="Clients" count={clients?.length || 0} subtitle="The WhatsApp number powers the “Send on WhatsApp” button when work reaches the client." flush>
+        {!clients?.length ? (
+          <Empty>No clients yet.</Empty>
+        ) : (
+          <div className="massar-table-wrap">
+            <table className="massar-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Projects</th>
+                  <th>Contact &amp; WhatsApp</th>
+                </tr>
+              </thead>
+              <tbody>
+                {clients.map(c => {
+                  const wa = whatsappLink(c.whatsapp_phone, `Hi${c.contact_name ? ` ${c.contact_name}` : ''}, `)
+                  return (
+                    <tr key={c.id}>
+                      <td className="massar-cell-title">{c.company_name}</td>
+                      <td>{projects.filter(p => p.clients?.company_name === c.company_name && p.status !== 'archived').length}</td>
+                      <td>
+                        {isAdmin ? (
+                          <form action={updateClientContact} className="massar-btn-row">
+                            <input type="hidden" name="client_id" value={c.id} />
+                            <input name="contact_name" aria-label={`Contact at ${c.company_name}`} placeholder="Contact name" defaultValue={c.contact_name || ''} style={{ ...s.field, width: 170 }} />
+                            <input name="whatsapp_phone" type="tel" aria-label={`WhatsApp for ${c.company_name}`} placeholder="WhatsApp" defaultValue={c.whatsapp_phone || ''} style={{ ...s.field, width: 170 }} />
+                            <button type="submit" style={s.secondary}>Save</button>
+                            {wa && (
+                              <a href={wa} target="_blank" rel="noopener" className="massar-icon-btn" aria-label={`Open WhatsApp chat with ${c.company_name}`} title="Open WhatsApp" style={{ color: 'var(--color-text-strong)' }}>
+                                <Icon name="chat" />
+                              </a>
+                            )}
+                          </form>
+                        ) : (
+                          <span>{c.contact_name || '—'} · <bdi>{c.whatsapp_phone || 'no number'}</bdi></span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Panel>
 
       <Panel title="Projects" count={active.length} flush>
         {active.length === 0 ? <Empty>No projects yet.</Empty> : table(active)}

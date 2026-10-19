@@ -27,5 +27,6 @@ export const DEV_COOKIE_OPTIONS = {
 }
 
 export function homeFor(role: string): string {
-  return role === 'client' ? '/client-portal' : '/my-work'
+  if (role === 'client') return '/client-portal'
+  return role === 'admin' || role === 'manager' ? '/overview' : '/my-work'
 }

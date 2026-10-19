@@ -4,15 +4,25 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { registerVersionFile } from '@/app/actions/deliverables'
+import { registerTaskFile } from '@/app/actions/delivery'
 import { MESSAGES } from '@/lib/labels'
 import { s } from '@/components/ui'
 
 /**
  * Uploads straight from the browser to the private `massar_files` bucket
  * (Storage RLS: internal staff only), then records the file on the draft
- * version. Every upload is a new file — nothing is overwritten.
+ * version — or, with `taskId`, on the task as brief material.
+ * Every upload is a new file — nothing is overwritten.
  */
-export default function VersionUpload({ versionId }: { versionId: string }) {
+export default function VersionUpload({
+  versionId,
+  taskId,
+  label = 'Upload files',
+}: {
+  versionId?: string
+  taskId?: string
+  label?: string
+}) {
   const router = useRouter()
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
@@ -26,7 +36,9 @@ export default function VersionUpload({ versionId }: { versionId: string }) {
 
     for (const file of files) {
       const safeName = file.name.replace(/[^\w.\-]+/g, '_')
-      const key = `versions/${versionId}/${crypto.randomUUID()}-${safeName}`
+      const key = taskId
+        ? `tasks/${taskId}/${crypto.randomUUID()}-${safeName}`
+        : `versions/${versionId}/${crypto.randomUUID()}-${safeName}`
       const { error: upErr } = await supabase.storage
         .from('massar_files')
         .upload(key, file, { upsert: false, contentType: file.type || undefined })
@@ -35,13 +47,10 @@ export default function VersionUpload({ versionId }: { versionId: string }) {
         setBusy(false)
         return
       }
-      const res = await registerVersionFile({
-        versionId,
-        storageKey: key,
-        name: file.name,
-        type: file.type,
-        size: file.size,
-      })
+      const meta = { storageKey: key, name: file.name, type: file.type, size: file.size }
+      const res = taskId
+        ? await registerTaskFile({ taskId, ...meta })
+        : await registerVersionFile({ versionId: versionId || '', ...meta })
       if (!res.ok) {
         setMessage(MESSAGES[res.code || 'FILE_UPLOAD_FAILED'])
         setBusy(false)
@@ -54,11 +63,11 @@ export default function VersionUpload({ versionId }: { versionId: string }) {
     router.refresh()
   }
 
-  const inputId = `upload-${versionId}`
+  const inputId = `upload-${taskId || versionId}`
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
       <label htmlFor={inputId} style={{ ...s.secondary, display: 'inline-flex', alignItems: 'center', opacity: busy ? 0.6 : 1 }}>
-        {busy ? 'Uploading…' : 'Upload files'}
+        {busy ? 'Uploading…' : label}
       </label>
       <input
         id={inputId}

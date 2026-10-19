@@ -240,7 +240,7 @@ export default async function DeliverablesPage({
                         <label htmlFor={`rc-${current.id}`} style={s.label}>Review note (required when requesting changes)</label>
                         <input id={`rc-${current.id}`} name="comment" style={s.field} />
                       </div>
-                      <button type="submit" name="decision" value="approved" style={s.primary}>Approve internally</button>
+                      <button type="submit" name="decision" value="approved" style={s.primary}>Approve &amp; send to client</button>
                       <button type="submit" name="decision" value="changes_requested" style={s.secondary}>Request changes</button>
                     </form>
                   )}

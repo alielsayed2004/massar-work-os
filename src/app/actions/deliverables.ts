@@ -72,8 +72,21 @@ export async function processReview(formData: FormData) {
   })
   if (error) backWithError(back, error)
 
+  // Internal approval goes straight to the client (owners' decision, Oct 2026).
+  if (stage === 'internal' && formData.get('decision') === 'approved') {
+    const { error: shareErr } = await supabase.rpc('share_version_with_client', {
+      p_version_id: String(formData.get('version_id') || ''),
+    })
+    revalidatePath('/deliverables')
+    if (shareErr) backWithError(back, shareErr)
+    revalidatePath('/client-portal')
+    revalidatePath('/overview')
+    backWithOk(back, 'SENT_TO_CLIENT')
+  }
+
   revalidatePath('/deliverables')
   revalidatePath('/client-portal')
+  revalidatePath('/overview')
   backWithOk(back)
 }
 

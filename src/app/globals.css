@@ -869,6 +869,397 @@ body {
   align-items: center;
 }
 
+/* Deadline alert at the top of My Work */
+.massar-due-alert {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px var(--space-3);
+  margin-bottom: var(--space-4);
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-attention);
+  border-inline-start-width: 4px;
+  border-radius: var(--radius-control);
+  color: var(--color-text);
+}
+
+.massar-due-alert svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-attention);
+  margin-top: 1px;
+}
+
+/* ── Overview: team strip + stage board ───────────────────────────────
+   Columns read left→right as the path work travels; connector dots and
+   arrows between columns make the "network" of the reference design. */
+.massar-people {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding: 4px 2px var(--space-3);
+  margin-bottom: var(--space-2);
+  scrollbar-width: thin;
+}
+
+.massar-person {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  min-height: 48px;
+  padding: 6px 12px 6px 6px;
+  border-radius: 28px;
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: border-color var(--motion-fast) var(--motion-ease), background-color var(--motion-fast) var(--motion-ease);
+}
+
+.massar-person .massar-avatar {
+  background: var(--massar-green);
+  color: var(--bone);
+}
+
+.massar-person:hover {
+  border-color: var(--color-line-strong);
+}
+
+.massar-person[aria-current='true'] {
+  background: var(--massar-green);
+  border-color: var(--massar-green);
+  color: var(--white);
+}
+
+.massar-person[aria-current='true'] .massar-avatar {
+  background: var(--bone);
+  color: var(--massar-green);
+}
+
+.massar-person-count {
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  border-radius: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--color-hover-strong);
+  color: var(--color-text-strong);
+}
+
+.massar-person[aria-current='true'] .massar-person-count {
+  background: var(--sidebar-active);
+  color: var(--white);
+}
+
+.massar-person-count[data-tone='attention'],
+.massar-person[aria-current='true'] .massar-person-count[data-tone='attention'] {
+  background: var(--color-attention);
+  color: var(--color-attention-text);
+}
+
+.massar-board-summary {
+  margin: 0 0 var(--space-3);
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.massar-board-summary strong {
+  color: var(--color-text);
+}
+
+.massar-board {
+  --board-gap: 18px;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(196px, 1fr));
+  gap: var(--board-gap);
+  overflow-x: auto;
+  padding-bottom: var(--space-3);
+  align-items: start;
+}
+
+.massar-col {
+  position: relative;
+  min-width: 0;
+  background: var(--color-surface-sunken);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
+  min-height: 240px;
+}
+
+.massar-col[data-hot='true'] {
+  border-color: var(--color-attention);
+  box-shadow: 0 0 0 1px var(--color-attention);
+}
+
+/* arrow to the next stage */
+.massar-col + .massar-col::before {
+  content: '';
+  position: absolute;
+  top: 30px;
+  inset-inline-start: calc(-1 * var(--board-gap) + 3px);
+  width: calc(var(--board-gap) - 8px);
+  height: 2px;
+  background: var(--color-line-strong);
+}
+
+.massar-col + .massar-col::after {
+  content: '';
+  position: absolute;
+  top: 26px;
+  inset-inline-start: -9px;
+  border: 5px solid transparent;
+  border-inline-start: 6px solid var(--color-line-strong);
+}
+
+.massar-col-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-line);
+}
+
+.massar-col-step {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  background: var(--massar-green);
+  color: var(--bone);
+}
+
+.massar-col-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+}
+
+.massar-col-hint {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.massar-col-body {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+}
+
+.massar-col-empty {
+  margin: 0;
+  padding: var(--space-3) 0;
+  text-align: center;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.massar-flow-card {
+  position: relative;
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
+  padding: 12px;
+  display: grid;
+  gap: 4px;
+}
+
+/* connector dots on both edges, like nodes in a flow */
+.massar-flow-card::before,
+.massar-flow-card::after {
+  content: '';
+  position: absolute;
+  top: 22px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-surface-raised);
+  border: 1.5px solid var(--color-line-strong);
+}
+
+.massar-flow-card::before { inset-inline-start: -5px; }
+.massar-flow-card::after { inset-inline-end: -5px; }
+
+.massar-flow-card[data-late='true'] {
+  border-inline-start: 3px solid var(--color-attention);
+}
+
+.massar-flow-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.massar-flow-owner {
+  font-size: 13px;
+  font-weight: 500;
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.massar-flow-due {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.massar-flow-due[data-late='true'] {
+  color: var(--color-attention-text);
+  background: var(--color-attention);
+  border-radius: 10px;
+  padding: 2px 8px;
+}
+
+.massar-flow-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.massar-flow-client {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.massar-flow-flag {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.massar-flow-flag::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-attention);
+}
+
+.massar-flow-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: var(--border-width) solid var(--color-line);
+}
+
+.massar-flow-files {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.massar-flow-files li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.massar-flow-files svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.massar-flow-files a {
+  color: var(--color-text-strong);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.massar-flow-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.massar-flow-brief {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.massar-flow-more {
+  margin-top: 6px;
+}
+
+.massar-flow-more > summary {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  padding: 4px 0;
+}
+
+.massar-wa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  border-radius: var(--radius-control);
+  background: var(--color-action-primary);
+  color: var(--color-action-primary-text);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.massar-wa-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.massar-wa-btn:hover {
+  filter: brightness(1.12);
+}
+
+@media (max-width: 900px) {
+  .massar-board {
+    grid-template-columns: repeat(5, 82vw);
+    scroll-snap-type: x mandatory;
+  }
+  .massar-col {
+    scroll-snap-align: start;
+  }
+}
+
 /* ── Responsive ─────────────────────────────────────────────────────── */
 @media (max-width: 1100px) {
   .massar-split {

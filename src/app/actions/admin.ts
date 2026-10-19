@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { createAdminClient } from '@/lib/supabase/admin'
+import { inviteAccount } from '@/lib/invite'
 import { revalidatePath } from 'next/cache'
 import { cairoInputToUtcIso } from '@/lib/labels'
 import { backWithError, backWithOk } from '@/lib/flash'
@@ -32,35 +32,14 @@ export async function inviteUser(formData: FormData) {
   if (!email || !full_name || !ROLES.includes(role as (typeof ROLES)[number])) backWithError('/admin', 'MISSING_FIELDS')
   if (role === 'client' && !client_id) backWithError('/admin', 'CLIENT_REQUIRED')
 
-  const admin = (() => {
-    try {
-      return createAdminClient()
-    } catch (e) {
-      return backWithError('/admin', e)
-    }
-  })()
-
-  const { data, error } = await admin.auth.admin.inviteUserByEmail(email, { data: { full_name } })
-  if (error || !data?.user) backWithError('/admin', 'INVITE_FAILED')
-
-  const { error: metaErr } = await admin.auth.admin.updateUserById(data.user.id, {
-    app_metadata: { role, client_id },
+  const failure = await inviteAccount({
+    email,
+    fullName: full_name,
+    role: role as (typeof ROLES)[number],
+    teamId: team_id,
+    clientId: client_id,
   })
-  if (metaErr) backWithError('/admin', 'INVITE_FAILED')
-
-  // The trigger already created a locked-down profile; set the real values.
-  const { error: profErr } = await admin.from('profiles').upsert({
-    id: data.user.id,
-    full_name,
-    role,
-    status: 'active',
-    team_id: role === 'client' ? null : team_id,
-  })
-  if (profErr) backWithError('/admin', profErr)
-
-  if (role === 'client' && client_id) {
-    await admin.from('client_memberships').upsert({ client_id, user_id: data.user.id })
-  }
+  if (failure) backWithError('/admin', failure)
 
   revalidatePath('/admin')
   backWithOk('/admin', 'INVITE_SENT')
@@ -84,6 +63,33 @@ export async function updateUserRole(formData: FormData) {
 
   revalidatePath('/admin')
   backWithOk('/admin')
+}
+
+// ── Remove / restore access ────────────────────────────────────────────────
+// Archive, never delete: history, files and decisions stay attributed.
+export async function setUserActive(formData: FormData) {
+  const { supabase, user } = await requireAdmin()
+  const target_id = String(formData.get('user_id') || '')
+  const active = formData.get('active') === 'true'
+  if (!target_id) backWithError('/admin', 'MISSING_FIELDS')
+  if (target_id === user.id) backWithError('/admin', 'NOT_ALLOWED')
+
+  const { error } = await supabase
+    .from('profiles')
+    .update({ status: active ? 'active' : 'archived' })
+    .eq('id', target_id)
+  if (error) backWithError('/admin', error)
+
+  await supabase.from('activity_events').insert({
+    actor_user_id: user.id,
+    event_type: active ? 'user_reactivated' : 'user_deactivated',
+    reference_id: target_id,
+    scope: 'internal',
+  })
+
+  revalidatePath('/admin')
+  revalidatePath('/overview')
+  backWithOk('/admin', active ? 'USER_REACTIVATED' : 'USER_DEACTIVATED')
 }
 
 // ── Departments & teams ─────────────────────────────────────────────────────
