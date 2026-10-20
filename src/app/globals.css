@@ -1862,6 +1862,14 @@ html[data-intro='skip'] .massar-intro {
   transform: translateY(-1px);
 }
 
+.massar-login-alert[data-tone='ok'] {
+  background: color-mix(in srgb, var(--massar-green) 7%, var(--bone));
+}
+
+.massar-login-alert[data-tone='ok']::before {
+  background: var(--color-action-primary);
+}
+
 /* Signing in: the card settles back quietly while the workspace loads */
 .massar-login-card[aria-busy='true'] {
   opacity: 0.7;

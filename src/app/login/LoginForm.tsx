@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useState, useTransition } from 'react'
-import { login, loginDirectly } from './actions'
+import { login, loginDirectly, requestPasswordReset } from './actions'
 
 interface LoginFormProps {
   hasError: boolean
   inactive: boolean
+  resetSent: boolean
   devAuth: boolean
 }
 
@@ -15,8 +16,9 @@ interface LoginFormProps {
  * handles Skip and marks the intro finished so later visits to this page in
  * the same tab (e.g. after a wrong password) show the card straight away.
  */
-export default function LoginForm({ hasError, inactive, devAuth }: LoginFormProps) {
-  const showIntro = !hasError && !inactive
+export default function LoginForm({ hasError, inactive, resetSent, devAuth }: LoginFormProps) {
+  const showIntro = !hasError && !inactive && !resetSent
+  const [forgot, setForgot] = useState(false)
   const [skipped, setSkipped] = useState(false)
   const [isPending, startTransition] = useTransition()
   const [busy, setBusy] = useState(false)
@@ -100,6 +102,21 @@ export default function LoginForm({ hasError, inactive, devAuth }: LoginFormProp
         <h1 className="massar-login-title">Sign in</h1>
         <p className="massar-login-sub">Massar Work OS</p>
 
+        {forgot ? (
+          <form action={requestPasswordReset} className="massar-login-form">
+            <p style={{ margin: 0, fontSize: 14, color: 'var(--color-text-muted)', textAlign: 'center' }}>
+              Type the email you sign in with. We’ll email you a link to choose a new password.
+            </p>
+            <div>
+              <label htmlFor="reset-email">Email</label>
+              <input id="reset-email" name="email" type="email" autoComplete="email" required className="massar-input-light" />
+            </div>
+            <button type="submit" className="massar-btn-primary-light">Email me a link</button>
+            <button type="button" onClick={() => setForgot(false)} className="massar-login-dev" style={{ textDecoration: 'none' }}>
+              ← Back to sign in
+            </button>
+          </form>
+        ) : (
         <form onSubmit={handleSubmit} className="massar-login-form">
           <div>
             <label htmlFor="email">Email</label>
@@ -128,6 +145,12 @@ export default function LoginForm({ hasError, inactive, devAuth }: LoginFormProp
             />
           </div>
 
+          {resetSent && (
+            <p role="status" className="massar-login-alert" data-tone="ok">
+              If that email has a Massar account, a link to choose a new password is on its way. Check spam too.
+            </p>
+          )}
+
           {(hasError || inactive) && (
             <p role="alert" className="massar-login-alert">
               {inactive ? 'This account can’t sign in. Ask a Massar partner if you think that’s wrong.' : 'Wrong email or password.'}
@@ -138,12 +161,17 @@ export default function LoginForm({ hasError, inactive, devAuth }: LoginFormProp
             {working ? 'Opening your workspace…' : 'Sign in'}
           </button>
 
+          <button type="button" onClick={() => setForgot(true)} className="massar-login-dev" style={{ textDecoration: 'none' }}>
+            Forgot password?
+          </button>
+
           {devAuth && (
             <button type="button" onClick={handleDevLogin} disabled={working} className="massar-login-dev">
               Instant dev sign-in (partner)
             </button>
           )}
         </form>
+        )}
       </section>
     </main>
   )
