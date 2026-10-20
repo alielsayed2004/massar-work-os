@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { connection } from 'next/server'
 import { formatInTimeZone } from 'date-fns-tz'
 import { createClient } from '@/lib/supabase/server'
+import { getSessionUser, getMyProfile } from '@/lib/session'
 import { checkDelivery } from '@/app/actions/delivery'
 import { CAIRO, nowMs } from '@/lib/labels'
 import { whatsappLink, dueLabel, hoursUntil } from '@/lib/workflow'
@@ -44,10 +45,10 @@ export default async function TodayPage({
   await connection()
   const { error, ok, send } = await searchParams
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getSessionUser()
   if (!user) return null
 
-  const { data: me } = await supabase.from('profiles').select('role, full_name').eq('id', user.id).single()
+  const me = await getMyProfile()
   if (me?.role !== 'admin' && me?.role !== 'manager') {
     return (
       <div>

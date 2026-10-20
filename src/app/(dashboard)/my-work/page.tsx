@@ -1,6 +1,7 @@
 export const instant = false
 import { connection } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getSessionUser } from '@/lib/session'
 import { formatInTimeZone } from 'date-fns-tz'
 import { updateTaskStatus, addComment } from '@/app/actions/tasks'
 import { requestHandover } from '@/app/actions/handover'
@@ -52,7 +53,7 @@ export default async function MyWorkPage({
   await connection()
   const { error, ok } = await searchParams
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getSessionUser()
   if (!user) return null
 
   const { data } = await supabase
