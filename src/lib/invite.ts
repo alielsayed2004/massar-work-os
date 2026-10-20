@@ -28,6 +28,8 @@ export async function inviteAccount(input: {
     data: { full_name: input.fullName },
     redirectTo: `${await siteOrigin()}/auth/set-password`,
   })
+  // Already has an account (e.g. invited before): a fresh sign-in link is the fix
+  if (error && (error as { code?: string }).code === 'email_exists') return 'EMAIL_EXISTS'
   if (error || !data?.user) return 'INVITE_FAILED'
 
   const { error: metaErr } = await admin.auth.admin.updateUserById(data.user.id, {

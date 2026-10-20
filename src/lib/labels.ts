@@ -111,7 +111,8 @@ export const MESSAGES: Record<string, string> = {
   FILE_UPLOAD_FAILED: 'File upload failed. Please try again.',
   SAVED: 'Saved successfully.',
   // admin
-  INVITE_FAILED: 'Could not send invitation. Verify the email address and ensure it is not already registered.',
+  INVITE_FAILED: 'Could not send the invite. Check the email address and try again.',
+  EMAIL_EXISTS: 'This email already has an account. Use “Send sign-in link” next to their name to email them a fresh link.',
   INVITE_SENT: 'Invite emailed. They open the link and choose their own password.',
   SIGN_IN_LINK_SENT: 'Sign-in link emailed. They open it and choose a new password.',
   USER_DEACTIVATED: 'Access removed. Their history stays in the system.',

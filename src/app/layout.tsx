@@ -69,6 +69,12 @@ export const metadata: Metadata = {
   },
 };
 
+// Invite and reset emails come back with a one-time credential in the URL
+// hash. If Supabase sends them to the site root (its Redirect URLs list
+// doesn't include our page), forward them to the set-password page before
+// anything renders, so the link works wherever it lands.
+const AUTH_LINK_FORWARD = `try{var h=location.hash;if(location.pathname!=='/auth/set-password'&&/(^#|&)(type=(invite|recovery|signup|magiclink)|error_code=)/.test(h)){location.replace('/auth/set-password'+h)}}catch(e){}`
+
 export default function RootLayout({
   children,
 }: {
@@ -77,6 +83,7 @@ export default function RootLayout({
   return (
     <html lang="en" dir="ltr" className={`${ibmPlex.variable} ${switzer.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
+        <script dangerouslySetInnerHTML={{ __html: AUTH_LINK_FORWARD }} />
         {children}
       </body>
     </html>
