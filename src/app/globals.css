@@ -11,7 +11,7 @@
   --ink: #101815;
   --clay: #B85333;
   --stone: #9A9791;
-  --white: #FFFFFF;
+  --white: #FFFFFF; /* kept for reference only: the product uses no pure white */
 
   /* Semantic roles; semantic colors resolve only to approved palette values */
   --color-page: var(--bone);
@@ -19,19 +19,21 @@
   --color-surface-subtle: var(--bone);
   --color-text: var(--ink);
   --color-text-strong: var(--massar-green);
-  --color-text-on-dark: var(--white);
+  --color-text-on-dark: var(--bone);
   --color-navigation: var(--massar-green);
   --color-action-primary: var(--massar-green);
-  --color-action-primary-text: var(--white);
+  --color-action-primary-text: var(--bone);
   --color-attention: var(--clay);
-  --color-attention-text: var(--white);
+  --color-attention-text: var(--bone);
   --color-border-strong: var(--ink);
   --color-border-focus: var(--massar-green);
   --color-divider: var(--stone);
 
-  /* Product-surface tints. color-mix() of palette values only — no new hues. */
-  --color-surface-raised: var(--white);
-  --color-surface-sunken: color-mix(in srgb, var(--bone) 55%, var(--white));
+  /* Product-surface tints. color-mix() of palette values only — no new hues.
+     No pure white anywhere: raised surfaces are a warm cream a step above Bone. */
+  --cream: color-mix(in srgb, var(--bone) 62%, var(--white));
+  --color-surface-raised: var(--cream);
+  --color-surface-sunken: color-mix(in srgb, var(--bone) 88%, var(--stone));
   --color-text-muted: color-mix(in srgb, var(--ink) 68%, var(--bone));
   --color-line: color-mix(in srgb, var(--ink) 11%, transparent);
   --color-line-strong: color-mix(in srgb, var(--ink) 22%, transparent);
@@ -220,7 +222,7 @@ body {
 
 .massar-nav-link[aria-current='page'] {
   background-color: var(--sidebar-active);
-  color: var(--white);
+  color: var(--bone);
   font-weight: 600;
 }
 
@@ -272,7 +274,7 @@ body {
 .massar-sidebar-user-name {
   font-size: 14px;
   font-weight: 600;
-  color: var(--white);
+  color: var(--bone);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -310,7 +312,7 @@ body {
 
 .massar-sidebar .massar-icon-btn:hover {
   background: var(--sidebar-hover);
-  color: var(--white);
+  color: var(--bone);
 }
 
 /* Main column */
@@ -1105,7 +1107,7 @@ body {
 .massar-flow-change {
   padding: 8px 10px;
   border-radius: 6px;
-  background: color-mix(in srgb, var(--clay) 10%, var(--white));
+  background: color-mix(in srgb, var(--clay) 10%, var(--cream));
   color: var(--color-text) !important;
   font-size: 13px !important;
   line-height: 1.45;
@@ -1216,7 +1218,7 @@ body {
 .massar-flow-step.done .massar-flow-node {
   border-color: var(--color-action-primary);
   color: var(--color-action-primary);
-  background: color-mix(in srgb, var(--massar-green) 8%, var(--white));
+  background: color-mix(in srgb, var(--massar-green) 8%, var(--cream));
 }
 
 .massar-flow-step.done .massar-flow-node::before,
@@ -1228,7 +1230,7 @@ body {
 .massar-flow-step.now .massar-flow-node {
   border: 1px solid var(--color-action-primary);
   background: var(--color-action-primary);
-  color: var(--white);
+  color: var(--bone);
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--massar-green) 10%, transparent);
 }
 
@@ -1568,342 +1570,251 @@ body {
   }
 }
 
-/* ── Massar Cinematic Splash Screen & Grand Logo Experience ──────────── */
-
-/* Dedicated out-of-focus camera defocus on the logo */
-
-/* Atmospheric vignette overlay */
-.massar-splash-vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at center, transparent 40%, rgba(4, 18, 16, 0.75) 100%);
-  pointer-events: none;
+/* ── Sign-in: brand intro, then the sign-in card ───────────────────────
+   The intro is pure CSS so it starts on first paint, before any script
+   loads. Only transform / opacity / filter move (GPU-composited), and one
+   timeline drives everything:
+     0      logo comes into focus (blur, scale, fade)
+     350ms  caption rises in
+     0–1.7s hairline fills
+     1.6s   intro lifts away while the card rises in underneath
+   It plays once per browser session; an inline script marks repeat visits
+   (html[data-intro='skip']) before the first paint, so nothing flashes. */
+:root {
+  --intro-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --intro-out: 1600ms;
 }
 
-/* Ambient pulsing aura behind the massive emblem */
-.massar-splash-ambient {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 650px;
-  height: 650px;
-  max-width: 90vw;
-  max-height: 90vh;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(241, 236, 226, 0.16) 0%, rgba(19, 78, 69, 0.08) 45%, transparent 70%);
-  pointer-events: none;
-  animation: massarCinematicAura 5s ease-in-out infinite;
-}
-
-@keyframes massarCinematicAura {
-  0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.2; }
-  50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.65; }
-  100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.25; }
-}
-
-/* Hero Grand Logo Wrapper — takes up substantial screen space */
-.massar-splash-logo-wrap {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: massarCinematicHero 5s cubic-bezier(0.2, 0, 0.2, 1) forwards;
-}
-
-.massar-splash-logo {
-  height: min(58vh, 520px);
-  width: auto;
-  max-width: min(85vw, 560px);
-  object-fit: contain;
-  filter: drop-shadow(0 16px 36px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 28px rgba(241, 236, 226, 0.2));
-  display: block;
-}
-
-@media (max-width: 767px) {
-  .massar-splash-logo {
-    height: min(48vh, 360px);
-    max-width: 85vw;
-  }
-}
-
-/* Full cinematic arc: dramatic reveal -> slow drift -> grand out-of-focus camera defocus */
-@keyframes massarCinematicHero {
-  0% {
-    opacity: 0;
-    transform: scale(0.84);
-    filter: blur(14px) brightness(0.65);
-  }
-  24% {
-    opacity: 1;
-    transform: scale(1.0);
-    filter: blur(0px) brightness(1.05);
-  }
-  64% {
-    opacity: 1;
-    transform: scale(1.02);
-    filter: blur(0px) brightness(1);
-  }
-  84% {
-    opacity: 0.92;
-    transform: scale(1.14);
-    filter: blur(26px) brightness(1.22);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.18);
-    filter: blur(34px) brightness(1.3);
-  }
-}
-
-/* The emblem displays clean and unoccluded */
-
-/* Small, subtle, editorial caption text */
-.massar-cinematic-caption {
-  margin-top: var(--space-4);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  text-align: center;
-  animation: massarCaptionFade 5s cubic-bezier(0.2, 0, 0.2, 1) forwards;
-}
-
-@keyframes massarCaptionFade {
-  0%, 15% {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  35% {
-    opacity: 0.85;
-    transform: translateY(0);
-  }
-  75% {
-    opacity: 0.85;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-}
-
-.massar-caption-small-en {
-  font-family: var(--font-latin);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  color: rgba(241, 236, 226, 0.7);
-}
-
-.massar-caption-subtitle {
-  font-family: var(--font-latin);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: rgba(241, 236, 226, 0.55);
-}
-
-/* Discreet cinematic hairline progress bar at the very bottom */
-.massar-cinematic-progress {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: rgba(241, 236, 226, 0.12);
-}
-
-.massar-cinematic-progress-fill {
-  height: 100%;
-  background: var(--bone);
-  box-shadow: 0 0 8px rgba(241, 236, 226, 0.7);
-  transition: width 0.05s linear;
-}
-
-/* Subtle corner skip hint */
-.massar-cinematic-skip {
-  position: absolute;
-  bottom: 24px;
-  right: 32px;
-  color: rgba(241, 236, 226, 0.45);
-  font-family: var(--font-arabic);
-  font-size: 12px;
-  letter-spacing: 1px;
-  background: transparent;
-  border: 1px solid rgba(241, 236, 226, 0.18);
-  padding: 4px 12px;
-  border-radius: var(--radius-control);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  animation: massarCaptionFade 5s cubic-bezier(0.2, 0, 0.2, 1) forwards;
-}
-
-.massar-cinematic-skip:hover {
-  color: var(--bone);
-  border-color: rgba(241, 236, 226, 0.4);
-  background: rgba(241, 236, 226, 0.08);
-}
-
-/* ── Seamless Cinematic to Light Login Transition ─────────────────────── */
 .massar-auth-page {
   min-height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-3);
+  box-sizing: border-box;
+  background: var(--bone);
   position: relative;
   overflow: hidden;
-  box-sizing: border-box;
-  padding: var(--space-3);
-  transition: background 0.75s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.massar-auth-page.massar-theme-dark {
-  background: radial-gradient(circle at 50% 50%, #15554b 0%, #0D3B34 45%, #051614 100%);
-}
-
-.massar-auth-page.massar-theme-light {
-  background: var(--color-page); /* #F1ECE2 Bone */
-}
-
-.massar-splash-overlay {
+.massar-intro {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
   z-index: 50;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at 50% 50%, #15554b 0%, #0D3B34 45%, #051614 100%);
-  overflow: hidden;
-  user-select: none;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--space-5);
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--massar-green) 82%, var(--bone)) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, var(--massar-green) 40%, color-mix(in srgb, var(--massar-green) 65%, var(--ink)) 100%);
+  color: var(--bone);
   cursor: pointer;
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  animation: massarIntroOut 600ms cubic-bezier(0.7, 0, 0.2, 1) var(--intro-out) forwards;
 }
 
-/* Dedicated out-of-focus camera defocus on the logo while still on dark green */
-.massar-splash-overlay.massar-splash-defocus .massar-splash-logo-wrap,
-.massar-splash-overlay.massar-splash-defocus .massar-splash-logo {
-  filter: blur(26px) brightness(1.22) drop-shadow(0 0 45px rgba(241, 236, 226, 0.55));
-  transform: scale(1.14);
-  opacity: 0.92;
-  transition: filter 1s cubic-bezier(0.25, 1, 0.3, 1), transform 1s cubic-bezier(0.25, 1, 0.3, 1), opacity 1s cubic-bezier(0.25, 1, 0.3, 1);
+.massar-intro-mark {
+  animation: massarIntroLift 600ms cubic-bezier(0.7, 0, 0.2, 1) var(--intro-out) forwards;
 }
 
-.massar-splash-overlay.massar-splash-defocus .massar-cinematic-caption {
-  opacity: 0;
-  transform: translateY(-8px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+.massar-intro-logo {
+  display: block;
+  width: min(40vw, 200px);
+  height: auto;
+  will-change: transform, opacity, filter;
+  animation: massarIntroLogo 1100ms var(--intro-ease) both;
 }
 
-/* Smooth dissolve to the white page ("وبعدين نروح للصفحه البيضا") */
-.massar-splash-overlay.massar-splash-fading {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+.massar-intro-caption {
+  display: grid;
+  gap: 6px;
+  text-align: center;
+  font-family: var(--font-sans);
+  animation: massarIntroRise 700ms var(--intro-ease) 350ms both;
 }
 
-.massar-splash-overlay.massar-splash-fading .massar-splash-logo-wrap,
-.massar-splash-overlay.massar-splash-fading .massar-splash-logo {
-  filter: blur(34px) brightness(1.28) drop-shadow(0 0 50px rgba(241, 236, 226, 0.6)) !important;
-  transform: scale(1.18) !important;
-  opacity: 0 !important;
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) !important;
+.massar-intro-caption strong {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  color: var(--bone);
 }
 
-/* ── Light Login Card (Pure Massar Editorial Light Theme) ─────────────── */
-.massar-login-card-light {
-  background: var(--color-surface); /* #FFFFFF */
-  padding: var(--space-5);
-  border-radius: var(--radius-surface);
+.massar-intro-caption span {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: color-mix(in srgb, var(--bone) 55%, var(--massar-green));
+}
+
+.massar-intro-line {
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
+  height: 2px;
+  background: color-mix(in srgb, var(--bone) 70%, transparent);
+  transform-origin: left center;
+  animation: massarIntroLine 1700ms cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+
+.massar-intro-skip {
+  position: absolute;
+  top: max(20px, env(safe-area-inset-top));
+  right: 24px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, var(--bone) 25%, transparent);
+  border-radius: 20px;
+  background: transparent;
+  color: color-mix(in srgb, var(--bone) 75%, var(--massar-green));
+  font: 500 12px/1 var(--font-sans);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  animation: massarIntroRise 500ms var(--intro-ease) 500ms both;
+}
+
+.massar-intro-skip:hover {
+  color: var(--bone);
+  border-color: color-mix(in srgb, var(--bone) 45%, transparent);
+}
+
+@keyframes massarIntroLogo {
+  from { opacity: 0; transform: scale(0.86); filter: blur(14px); }
+  60% { filter: blur(0); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+@keyframes massarIntroRise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes massarIntroLine {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes massarIntroLift {
+  to { transform: scale(1.06); opacity: 0; }
+}
+
+@keyframes massarIntroOut {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* Skip: the same exit, now and faster */
+.massar-auth-page[data-skipped] .massar-intro {
+  animation: massarIntroOut 320ms var(--motion-ease) forwards;
+}
+
+.massar-auth-page[data-skipped] .massar-intro-mark {
+  animation: massarIntroLift 320ms var(--motion-ease) forwards;
+}
+
+/* Sign-in card */
+.massar-login-card {
   width: 100%;
   max-width: 420px;
-  border: var(--border-width) solid var(--color-divider);
-  box-shadow: 0 16px 40px rgba(16, 24, 21, 0.07);
   box-sizing: border-box;
-  position: relative;
-  z-index: 10;
-  animation: massarCardReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transition: filter 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: var(--space-6) var(--space-5) var(--space-5);
+  border-radius: 14px;
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  box-shadow: 0 24px 48px -28px color-mix(in srgb, var(--ink) 30%, transparent);
+  animation: massarCardIn 700ms var(--intro-ease) both;
 }
 
-@keyframes massarCardReveal {
-  0% {
-    opacity: 0;
-    transform: translateY(18px) scale(0.98);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+/* While the intro plays, the card waits underneath and rises as it lifts */
+html[data-intro='play'] .massar-login-card {
+  animation-delay: calc(var(--intro-out) + 150ms);
 }
 
-/* Login submission defocus transition (Camera Lens Rack Defocus bloom) */
-.massar-auth-page.massar-logging-in {
-  pointer-events: none;
+html[data-intro='play'] .massar-auth-page[data-skipped] .massar-login-card {
+  animation-name: massarCardInAgain;
+  animation-delay: 120ms;
 }
 
-.massar-auth-page.massar-logging-in .massar-login-card-light {
-  filter: blur(28px) brightness(1.2) drop-shadow(0 0 60px rgba(13, 59, 52, 0.2));
-  transform: scale(1.08);
-  opacity: 0.12;
+html[data-intro='skip'] .massar-intro {
+  display: none;
 }
 
-.massar-auth-page.massar-logging-in::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(13, 59, 52, 0.15) 0%, rgba(241, 236, 226, 0.92) 80%);
-  backdrop-filter: blur(20px);
-  z-index: 9999;
-  animation: massarBloomIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+@keyframes massarCardIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: none; }
 }
 
-@keyframes massarBloomIn {
-  0% {
-    opacity: 0;
-    backdrop-filter: blur(0px);
-  }
-  100% {
-    opacity: 1;
-    backdrop-filter: blur(20px);
-  }
+/* Same motion under a new name, so a skip restarts it cleanly */
+@keyframes massarCardInAgain {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: none; }
 }
 
-.massar-logo-green-mask {
-  width: 76px;
-  height: 86px;
-  margin: 0 auto var(--space-3);
+.massar-login-mark {
+  width: 64px;
+  height: 72px;
+  margin: 0 auto var(--space-4);
   background-color: var(--massar-green);
   -webkit-mask: url(/image/massar_logo.svg) no-repeat center / contain;
   mask: url(/image/massar_logo.svg) no-repeat center / contain;
+}
+
+.massar-login-title {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--color-text-strong);
+}
+
+.massar-login-sub {
+  margin: 6px 0 var(--space-5);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.massar-login-form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.massar-login-form label {
   display: block;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text);
 }
 
 .massar-input-light {
   height: var(--control-height);
   padding: 0 var(--space-3);
   border-radius: var(--radius-control);
-  border: var(--border-width) solid var(--color-border-strong);
-  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-line-strong);
+  background-color: var(--bone);
   color: var(--color-text);
   font-size: var(--text-body);
   width: 100%;
   box-sizing: border-box;
   font-family: var(--font-ui);
   outline: none;
-  transition: border-color var(--motion-fast) var(--motion-ease);
+  transition: border-color var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease);
 }
 
 .massar-input-light:focus {
   border-color: var(--color-border-focus);
-  outline: var(--focus-width) solid var(--color-border-focus);
-  outline-offset: 1px;
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.massar-input-light[aria-invalid='true'] {
+  border-color: var(--color-attention);
 }
 
 .massar-btn-primary-light {
@@ -1918,58 +1829,61 @@ body {
   font-weight: 600;
   width: 100%;
   font-family: var(--font-ui);
-  transition: background-color var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+  transition: background-color var(--motion-fast) var(--motion-ease), opacity var(--motion-fast) var(--motion-ease);
 }
 
-.massar-btn-primary-light:hover {
-  background-color: var(--ink);
+.massar-btn-primary-light:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--massar-green) 85%, var(--ink));
 }
 
-/* ── Session greeting ─────────────────────────────────────────────── */
-.massar-welcome {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
+.massar-btn-primary-light:disabled {
+  opacity: 0.75;
+  cursor: progress;
+}
+
+.massar-login-alert {
+  margin: 0;
+  padding: 10px var(--space-3);
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--clay) 8%, var(--bone));
+  font-size: 14px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  background: var(--massar-green);
-  color: var(--bone);
+  gap: 10px;
+  align-items: baseline;
+}
+
+.massar-login-alert::before {
+  content: '';
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-attention);
+  transform: translateY(-1px);
+}
+
+/* Signing in: the card settles back quietly while the workspace loads */
+.massar-login-card[aria-busy='true'] {
+  opacity: 0.7;
+  transform: scale(0.99);
+  transition: opacity 300ms var(--motion-ease), transform 300ms var(--motion-ease);
+}
+
+.massar-login-dev {
+  background: none;
+  border: none;
+  padding: var(--space-1) 0;
+  color: var(--color-text-strong);
+  font: 500 12px var(--font-sans);
+  text-decoration: underline;
   cursor: pointer;
-  animation: massarFadeIn var(--motion-standard) var(--motion-ease);
-  transition: opacity 400ms var(--motion-ease);
+  opacity: 0.8;
 }
 
-.massar-welcome[data-leaving='true'] {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.massar-welcome-logo {
-  width: 120px;
-  height: auto;
-  margin-bottom: var(--space-4);
-}
-
-.massar-welcome-eyebrow {
-  margin: 0;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--sidebar-text-muted);
-}
-
-.massar-welcome-title {
-  margin: 0;
-  font-size: clamp(28px, 4vw, 40px);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--white);
-  text-align: center;
-  padding: 0 var(--space-3);
+@media (prefers-reduced-motion: reduce) {
+  .massar-intro {
+    display: none;
+  }
 }
 
 /* Inline-styled buttons get one shared, quiet hover state. */

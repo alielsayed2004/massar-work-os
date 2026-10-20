@@ -4,7 +4,6 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { connection } from 'next/server'
 import AppShell from '@/components/AppShell'
-import WelcomeOverlay from '@/components/WelcomeOverlay'
 import type { NavGroup } from '@/components/SidebarNav'
 import { readDevRole, homeFor } from '@/lib/dev-session'
 import { ROLE } from '@/lib/labels'
@@ -123,7 +122,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <>
-      <WelcomeOverlay fullName={fullName} role={role} />
       <AppShell
         groups={groups}
         homeHref={homeFor(role)}
