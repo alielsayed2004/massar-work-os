@@ -2,6 +2,7 @@ export const instant = false
 import Link from 'next/link'
 import { connection } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { getSessionUser, getMyProfile } from '@/lib/session'
 import { inviteUser, setUserWhatsApp } from '@/app/actions/admin'
 import { decideHandover } from '@/app/actions/handover'
 import { ROLE, HANDOVER_REASON_LABEL, formatCairo, nowMs } from '@/lib/labels'
@@ -29,10 +30,10 @@ export default async function TeamPage({
   await connection()
   const { error, ok } = await searchParams
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getSessionUser()
   if (!user) return null
 
-  const { data: me } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const me = await getMyProfile()
   const isPartner = me?.role === 'admin'
   if (!isPartner && me?.role !== 'manager') return <Empty>The team page is for partners and team leads.</Empty>
 

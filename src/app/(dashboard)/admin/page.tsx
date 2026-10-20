@@ -1,5 +1,6 @@
 export const instant = false;
 import { createClient } from '@/lib/supabase/server'
+import { getSessionUser, getMyProfile } from '@/lib/session'
 import { redirect } from 'next/navigation'
 import {
   inviteUser,
@@ -24,10 +25,10 @@ export default async function AdminPage({
 }) {
   const { error, ok } = await searchParams
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getSessionUser()
   if (!user) redirect('/login')
 
-  const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const profile = await getMyProfile()
   if (profile?.role !== 'admin') redirect('/my-work')
 
   const [{ data: userRows }, { data: teamRows }, { data: departments }, { data: projects }] = await Promise.all([

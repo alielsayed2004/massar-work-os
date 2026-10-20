@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { connection } from 'next/server'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getSessionUser, getMyProfile } from '@/lib/session'
 import { createTask } from '@/app/actions/tasks'
 import { updateClientContact } from '@/app/actions/projects'
 import { checkDelivery, recordClientDecision } from '@/app/actions/delivery'
@@ -37,10 +38,10 @@ export default async function SpacePage({
   const { clientId } = await params
   const { tab, error, ok, send } = await searchParams
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getSessionUser()
   if (!user) return null
 
-  const { data: me } = await supabase.from('profiles').select('role').eq('id', user.id).single()
+  const me = await getMyProfile()
   if (me?.role !== 'admin' && me?.role !== 'manager') return <Empty>Client spaces are for partners and team leads.</Empty>
 
   const { data: clientRow } = await supabase

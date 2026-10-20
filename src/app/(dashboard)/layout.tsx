@@ -6,6 +6,7 @@ import { connection } from 'next/server'
 import AppShell from '@/components/AppShell'
 import type { NavGroup } from '@/components/SidebarNav'
 import { readDevRole, homeFor } from '@/lib/dev-session'
+import { getSessionUser, getMyProfile } from '@/lib/session'
 import { ROLE } from '@/lib/labels'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -29,45 +30,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
       status: 'active',
     }
   } else {
-    const supabase = await createClient()
-    try {
-      const userPromise = supabase.auth.getUser()
-      const timeoutPromise = new Promise<{ data: { user: null } }>((resolve) =>
-        setTimeout(() => resolve({ data: { user: null } }), 1500)
-      )
-      const { data } = await Promise.race([userPromise, timeoutPromise])
-      user = data.user
-    } catch {
-      user = null
-    }
-
+    user = await getSessionUser()
     if (!user) redirect('/login')
-
-    try {
-      const { data } = await supabase
-        .from('profiles')
-        .select('role, full_name, status')
-        .eq('id', user.id)
-        .single()
-      profile = data
-    } catch {
-      profile = null
-    }
+    profile = await getMyProfile()
 
     if (!profile || profile.status !== 'active') redirect('/login?message=inactive')
-
-    try {
-      const { data } = await supabase
-        .from('notifications')
-        .select('id, message, internal_link, created_at')
-        .eq('recipient_user_id', user.id)
-        .is('read_at', null)
-        .order('created_at', { ascending: false })
-        .limit(30)
-      notifications = data
-    } catch {
-      notifications = []
-    }
   }
 
   const role = profile.role
@@ -81,19 +48,29 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // Leads get each client space in the sidebar, with what's waiting for their check
   let spaceItems: NavGroup['items'] = []
   let waitingTotal = 0
-  if (isLead && !devRole) {
+  if (!devRole) {
+    // One parallel round: notifications for everyone, client spaces for leads
     const supabase = await createClient()
-    const [{ data: clientRows }, { data: checkRows }] = await Promise.all([
-      supabase.from('clients').select('id, company_name').eq('status', 'active').order('company_name'),
-      supabase.from('deliverables').select('projects ( client_id )').eq('summary_status', 'internal_review'),
+    const none = Promise.resolve({ data: [] as unknown[] })
+    const [{ data: notificationRows }, { data: clientRows }, { data: checkRows }] = await Promise.all([
+      supabase
+        .from('notifications')
+        .select('id, message, internal_link, created_at')
+        .eq('recipient_user_id', user.id)
+        .is('read_at', null)
+        .order('created_at', { ascending: false })
+        .limit(30),
+      isLead ? supabase.from('clients').select('id, company_name').eq('status', 'active').order('company_name') : none,
+      isLead ? supabase.from('deliverables').select('projects ( client_id )').eq('summary_status', 'internal_review') : none,
     ])
+    notifications = (notificationRows || []) as typeof notifications
     const waiting = new Map<string, number>()
     for (const row of (checkRows || []) as unknown as { projects: { client_id: string } | null }[]) {
       const id = row.projects?.client_id
       if (id) waiting.set(id, (waiting.get(id) || 0) + 1)
     }
     waitingTotal = (checkRows || []).length
-    spaceItems = (clientRows || []).map(c => ({
+    spaceItems = ((clientRows || []) as { id: string; company_name: string }[]).map(c => ({
       href: `/spaces/${c.id}`,
       label: c.company_name,
       dot: true,
