@@ -22,6 +22,8 @@ async function requireAdmin() {
 // user can never pick their own role at sign-up.
 export async function inviteUser(formData: FormData) {
   await requireAdmin()
+  // Settings and the Team page both invite; each gets its answer back
+  const back = String(formData.get('back') || '') === '/team' ? '/team' : '/admin'
 
   const email = String(formData.get('email') || '').trim()
   const full_name = String(formData.get('full_name') || '').trim()
@@ -29,8 +31,8 @@ export async function inviteUser(formData: FormData) {
   const team_id = String(formData.get('team_id') || '') || null
   const client_id = String(formData.get('client_id') || '') || null
 
-  if (!email || !full_name || !ROLES.includes(role as (typeof ROLES)[number])) backWithError('/admin', 'MISSING_FIELDS')
-  if (role === 'client' && !client_id) backWithError('/admin', 'CLIENT_REQUIRED')
+  if (!email || !full_name || !ROLES.includes(role as (typeof ROLES)[number])) backWithError(back, 'MISSING_FIELDS')
+  if (role === 'client' && !client_id) backWithError(back, 'CLIENT_REQUIRED')
 
   const failure = await inviteAccount({
     email,
@@ -40,10 +42,11 @@ export async function inviteUser(formData: FormData) {
     clientId: client_id,
     whatsapp: String(formData.get('whatsapp_phone') || '').trim() || null,
   })
-  if (failure) backWithError('/admin', failure)
+  if (failure) backWithError(back, failure)
 
   revalidatePath('/admin')
-  backWithOk('/admin', 'INVITE_SENT')
+  revalidatePath('/team')
+  backWithOk(back, 'INVITE_SENT')
 }
 
 // ── Update role / team ──────────────────────────────────────────────────────
@@ -68,33 +71,36 @@ export async function updateUserRole(formData: FormData) {
 
 // ── WhatsApp for nudges ────────────────────────────────────────────────────
 export async function setUserWhatsApp(formData: FormData) {
+  const back = String(formData.get('back') || '') === '/team' ? '/team' : '/admin'
   const { supabase } = await requireAdmin()
   const target_id = String(formData.get('user_id') || '')
   const whatsapp_phone = String(formData.get('whatsapp_phone') || '').trim() || null
-  if (!target_id) backWithError('/admin', 'MISSING_FIELDS')
+  if (!target_id) backWithError(back, 'MISSING_FIELDS')
 
   const { error } = await supabase.from('profiles').update({ whatsapp_phone }).eq('id', target_id)
-  if (error) backWithError('/admin', error)
+  if (error) backWithError(back, error)
 
   revalidatePath('/admin')
+  revalidatePath('/team')
   revalidatePath('/today')
-  backWithOk('/admin', 'WHATSAPP_SAVED')
+  backWithOk(back, 'WHATSAPP_SAVED')
 }
 
 // ── Remove / restore access ────────────────────────────────────────────────
 // Archive, never delete: history, files and decisions stay attributed.
 export async function setUserActive(formData: FormData) {
+  const back = String(formData.get('back') || '') === '/team' ? '/team' : '/admin'
   const { supabase, user } = await requireAdmin()
   const target_id = String(formData.get('user_id') || '')
   const active = formData.get('active') === 'true'
-  if (!target_id) backWithError('/admin', 'MISSING_FIELDS')
-  if (target_id === user.id) backWithError('/admin', 'NOT_ALLOWED')
+  if (!target_id) backWithError(back, 'MISSING_FIELDS')
+  if (target_id === user.id) backWithError(back, 'NOT_ALLOWED')
 
   const { error } = await supabase
     .from('profiles')
     .update({ status: active ? 'active' : 'archived' })
     .eq('id', target_id)
-  if (error) backWithError('/admin', error)
+  if (error) backWithError(back, error)
 
   await supabase.from('activity_events').insert({
     actor_user_id: user.id,
@@ -104,8 +110,9 @@ export async function setUserActive(formData: FormData) {
   })
 
   revalidatePath('/admin')
+  revalidatePath('/team')
   revalidatePath('/overview')
-  backWithOk('/admin', active ? 'USER_REACTIVATED' : 'USER_DEACTIVATED')
+  backWithOk(back, active ? 'USER_REACTIVATED' : 'USER_DEACTIVATED')
 }
 
 // ── Departments & teams ─────────────────────────────────────────────────────

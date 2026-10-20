@@ -800,6 +800,10 @@ body {
   white-space: nowrap;
 }
 
+.massar-tab {
+  text-decoration: none;
+}
+
 .massar-tab:hover {
   color: var(--color-text);
 }
@@ -929,6 +933,436 @@ body {
   .massar-today-actions {
     flex-basis: 100%;
   }
+  .massar-flows {
+    padding: 4px 12px;
+  }
+}
+
+/* ── Client spaces ──────────────────────────────────────────────── */
+.massar-spaces {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-3);
+}
+
+.massar-space-card {
+  display: grid;
+  gap: var(--space-3);
+  padding: 20px;
+  border-radius: 12px;
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease);
+}
+
+.massar-space-card:hover {
+  border-color: var(--color-line-strong);
+  box-shadow: var(--shadow-overlay);
+}
+
+.massar-space-card-top {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.massar-space-card h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.massar-space-card p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.massar-space-mono {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  background: var(--massar-green);
+  color: var(--bone);
+}
+
+.massar-space-mono-lg {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  font-size: 18px;
+}
+
+.massar-space-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 0;
+}
+
+.massar-space-stats div {
+  padding: 10px;
+  border-radius: 8px;
+  background: var(--color-surface-sunken);
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.massar-space-stats dd {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.massar-space-stats dd[data-hot='true'] {
+  color: var(--color-attention);
+}
+
+.massar-space-stats dt {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.massar-space-head {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+/* One task = one path of five nodes; the action sits under the active node */
+.massar-flows {
+  background-color: var(--color-surface-sunken);
+  background-image: radial-gradient(color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1.3px);
+  background-size: 20px 20px;
+  border: var(--border-width) solid var(--color-line);
+  border-radius: 14px;
+  padding: 4px 18px;
+  overflow-x: auto;
+}
+
+.massar-flow-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.4fr) repeat(5, minmax(118px, 1fr));
+  align-items: start;
+  padding: 20px 0;
+  border-bottom: var(--border-width) dashed var(--color-line-strong);
+  min-width: 920px;
+}
+
+.massar-flow-row:last-child {
+  border-bottom: none;
+}
+
+.massar-flow-info {
+  display: grid;
+  gap: 4px;
+  padding: 4px 16px 0 2px;
+  min-width: 0;
+}
+
+.massar-flow-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.massar-flow-info > p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.massar-flow-change {
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--clay) 10%, var(--white));
+  color: var(--color-text) !important;
+  font-size: 13px !important;
+  line-height: 1.45;
+  margin-top: 4px !important;
+}
+
+.massar-flow-more-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  padding: 4px 0;
+}
+
+.massar-flow-file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-strong);
+  text-decoration: none;
+  min-width: 0;
+}
+
+.massar-flow-file svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.massar-flow-file span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.massar-flow-file small {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.massar-flow-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.massar-flow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 27px;
+  left: calc(50% + 32px);
+  right: calc(-50% + 32px);
+  height: 2px;
+  background: var(--color-line-strong);
+}
+
+.massar-flow-step.done:not(:last-child)::after {
+  background: var(--color-action-primary);
+}
+
+.massar-flow-step.now:not(:last-child)::after {
+  background: repeating-linear-gradient(90deg, var(--color-action-primary) 0 6px, transparent 6px 12px);
+}
+
+.massar-flow-node {
+  position: relative;
+  z-index: 1;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-raised);
+  border: 1.5px solid var(--color-line-strong);
+  color: color-mix(in srgb, var(--ink) 32%, var(--bone));
+}
+
+.massar-flow-node svg {
+  width: 22px;
+  height: 22px;
+}
+
+.massar-flow-node::before,
+.massar-flow-node::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: var(--color-surface-raised);
+  border: 1.5px solid var(--color-line-strong);
+}
+
+.massar-flow-node::before { left: -5px; }
+.massar-flow-node::after { right: -5px; }
+.massar-flow-step:nth-child(2) .massar-flow-node::before,
+.massar-flow-step:last-child .massar-flow-node::after { display: none; }
+
+.massar-flow-step.done .massar-flow-node {
+  border-color: var(--color-action-primary);
+  color: var(--color-action-primary);
+  background: color-mix(in srgb, var(--massar-green) 8%, var(--white));
+}
+
+.massar-flow-step.done .massar-flow-node::before,
+.massar-flow-step.done .massar-flow-node::after {
+  border-color: var(--color-action-primary);
+  background: var(--color-action-primary);
+}
+
+.massar-flow-step.now .massar-flow-node {
+  border: 2px solid var(--color-action-primary);
+  background: var(--color-action-primary);
+  color: var(--white);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--massar-green) 14%, transparent);
+}
+
+.massar-flow-step.now.wait .massar-flow-node {
+  border-color: var(--color-attention);
+  background: var(--color-attention);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--clay) 18%, transparent);
+}
+
+.massar-flow-step-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.massar-flow-step.done .massar-flow-step-label { color: var(--color-text-strong); }
+.massar-flow-step.now .massar-flow-step-label { color: var(--color-text); }
+
+.massar-flow-step-sub {
+  margin-top: -4px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.massar-flow-step.now.wait .massar-flow-step-sub {
+  color: var(--color-attention);
+  font-weight: 600;
+}
+
+.massar-flow-step-act {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  max-width: 172px;
+  margin-top: 4px;
+  text-align: start;
+}
+
+.massar-node-btn {
+  min-height: 38px;
+  font-size: 13px;
+  padding: 0 10px;
+}
+
+.massar-node-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.massar-node-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  text-align: center;
+}
+
+/* Team page */
+.massar-people-list {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 900px;
+}
+
+.massar-person-card {
+  margin: 0;
+  padding: 18px 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.massar-person-card[data-late='true'] {
+  border-color: color-mix(in srgb, var(--clay) 55%, transparent);
+  box-shadow: inset 4px 0 0 var(--color-attention);
+}
+
+.massar-person-card-top {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.massar-person-card h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.massar-person-card-top p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.massar-person-card-load {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.massar-person-card-load strong {
+  color: var(--color-text);
+}
+
+.massar-person-card-load[data-late='true'] strong:last-child {
+  color: var(--color-attention);
+}
+
+.massar-person-late {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--clay) 9%, var(--white));
+  font-size: 14px;
+}
+
+/* Sidebar: client spaces listed under the nav */
+.massar-nav-mono {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--bone);
+  color: var(--massar-green);
+}
+
+.massar-nav-count {
+  margin-inline-start: auto;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  background: var(--clay);
+  color: var(--white);
 }
 
 /* ── Overview: team strip + stage board ───────────────────────────────

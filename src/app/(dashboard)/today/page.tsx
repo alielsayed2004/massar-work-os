@@ -57,7 +57,7 @@ export default async function TodayPage({
   }
 
   const now = nowMs()
-  const [{ data: deliveryRows }, { data: taskRows }] = await Promise.all([
+  const [{ data: deliveryRows }, { data: taskRows }, { count: handovers }] = await Promise.all([
     supabase
       .from('deliverables')
       .select(`id, title, summary_status, current_version_id, source_task_id,
@@ -72,6 +72,7 @@ export default async function TodayPage({
       .in('status', ['todo', 'in_progress', 'blocked'])
       .lt('due_at', new Date(now).toISOString())
       .order('due_at', { ascending: true }),
+    supabase.from('handover_requests').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
   ])
 
   const deliveries = ((deliveryRows || []) as unknown as Delivery[]).map(d => ({
@@ -85,7 +86,7 @@ export default async function TodayPage({
   const withClient = deliveries.filter(d => d.summary_status === 'shared_with_client' && d.version?.shared_at)
   const slowClients = withClient.filter(d => hoursUntil(d.version!.shared_at!, now) < -WAITING_ON_CLIENT_HOURS)
   const justSent = send ? deliveries.find(d => d.version?.id === send && d.summary_status === 'shared_with_client') : undefined
-  const total = toCheck.length + late.length + slowClients.length
+  const total = toCheck.length + late.length + slowClients.length + (handovers || 0)
   const clientLine = (p: Delivery['projects'] | Task['projects']) => (p?.clients ? `${p.clients.company_name} · ${p.name}` : 'Internal')
 
   return (
@@ -109,6 +110,17 @@ export default async function TodayPage({
           <a href={`/api/review-link/whatsapp?version=${justSent.version!.id}`} target="_blank" rel="noopener" className="massar-wa-btn" style={{ padding: '0 16px' }}>
             <Icon name="chat" /> Send on WhatsApp
           </a>
+        </div>
+      )}
+
+      {!!handovers && (
+        <div className="massar-due-alert" style={{ alignItems: 'center' }}>
+          <Icon name="team" />
+          <div style={{ flex: 1 }}>
+            <strong>{handovers} handover {handovers === 1 ? 'request' : 'requests'}</strong>
+            <div style={{ fontSize: 14 }}>Someone can’t finish on time and needs you to pick who takes over.</div>
+          </div>
+          <Link href="/my-team" style={{ ...s.primary, textDecoration: 'none' }}>Decide</Link>
         </div>
       )}
 

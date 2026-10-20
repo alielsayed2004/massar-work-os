@@ -77,6 +77,30 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const fullName = profile.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Massar'
 
   // Team members see their own work only; partners and leads see the business.
+  // Leads get each client space in the sidebar, with what's waiting for their check
+  let spaceItems: NavGroup['items'] = []
+  let waitingTotal = 0
+  if (isLead && !devRole) {
+    const supabase = await createClient()
+    const [{ data: clientRows }, { data: checkRows }] = await Promise.all([
+      supabase.from('clients').select('id, company_name').eq('status', 'active').order('company_name'),
+      supabase.from('deliverables').select('projects ( client_id )').eq('summary_status', 'internal_review'),
+    ])
+    const waiting = new Map<string, number>()
+    for (const row of (checkRows || []) as unknown as { projects: { client_id: string } | null }[]) {
+      const id = row.projects?.client_id
+      if (id) waiting.set(id, (waiting.get(id) || 0) + 1)
+    }
+    waitingTotal = (checkRows || []).length
+    spaceItems = (clientRows || []).map(c => ({
+      href: `/spaces/${c.id}`,
+      label: c.company_name,
+      mono: c.company_name.split(/\s+/).slice(0, 2).map((w: string) => w[0]?.toUpperCase()).join(''),
+      count: waiting.get(c.id),
+    }))
+  }
+
+  // Team members see their own work only; partners and leads run the business.
   const groups: NavGroup[] = !isInternal
     ? [{ heading: 'Client portal', items: [{ href: '/client-portal', label: 'My Deliverables', icon: 'portal' as const }] }]
     : !isLead
@@ -85,23 +109,24 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {
           heading: 'Workspace',
           items: [
-            { href: '/today', label: 'Today', icon: 'bell' as const },
-            { href: '/overview', label: 'All work', icon: 'board' as const },
+            { href: '/today', label: 'Today', icon: 'bell' as const, count: waitingTotal },
+            { href: '/spaces', label: 'Client spaces', icon: 'spaces' as const, exact: true },
+            { href: '/team', label: 'Team', icon: 'team' as const },
             { href: '/my-work', label: 'My Work', icon: 'work' as const },
-            { href: '/my-team', label: 'My Team', icon: 'team' as const },
-            { href: '/deliverables', label: 'Deliverables', icon: 'deliverables' as const },
           ],
         },
+        ...(spaceItems.length ? [{ heading: 'Clients', items: spaceItems }] : []),
         {
-          heading: 'Clients',
+          heading: 'More',
           items: [
-            { href: '/projects', label: 'Clients & Projects', icon: 'projects' as const },
-            { href: '/crm', label: 'Leads & Journeys', icon: 'crm' as const },
+            { href: '/overview', label: 'All work board', icon: 'board' as const },
+            { href: '/my-team', label: 'Handovers', icon: 'team' as const },
+            { href: '/deliverables', label: 'Deliverables', icon: 'deliverables' as const },
+            { href: '/projects', label: 'Clients & projects', icon: 'projects' as const },
+            { href: '/crm', label: 'Leads', icon: 'crm' as const },
+            ...(role === 'admin' ? [{ href: '/admin', label: 'Settings', icon: 'settings' as const }] : []),
           ],
         },
-        ...(role === 'admin'
-          ? [{ heading: 'System', items: [{ href: '/admin', label: 'Settings', icon: 'settings' as const }] }]
-          : []),
       ]
 
   return (

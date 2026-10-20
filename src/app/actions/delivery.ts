@@ -8,7 +8,7 @@ import { backWithError, backWithOk } from '@/lib/flash'
 // caller and the current state; these actions only route the result.
 
 function refresh() {
-  for (const path of ['/today', '/overview', '/my-work', '/my-team', '/deliverables', '/client-portal']) revalidatePath(path)
+  for (const path of ['/today', '/spaces', '/team', '/overview', '/my-work', '/my-team', '/deliverables', '/client-portal']) revalidatePath(path)
 }
 
 /** The task owner opens a draft version on their task (created on first delivery). */
@@ -92,4 +92,19 @@ export async function registerTaskFile(input: {
 
   refresh()
   return { ok: true }
+}
+
+/** The client answered on WhatsApp: a partner records it on their behalf. */
+export async function recordClientDecision(formData: FormData) {
+  const supabase = await createClient()
+  const back = String(formData.get('back') || '/today')
+  const decision = String(formData.get('decision') || '')
+  const { error } = await supabase.rpc('record_client_decision', {
+    p_version_id: String(formData.get('version_id') || ''),
+    p_decision: decision,
+    p_comment: String(formData.get('comment') || ''),
+  })
+  if (error) backWithError(back, error)
+  refresh()
+  backWithOk(back, decision === 'approved' ? 'CLIENT_DECISION_RECORDED' : 'CHANGES_SENT')
 }
