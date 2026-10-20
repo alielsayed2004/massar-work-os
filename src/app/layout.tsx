@@ -56,7 +56,7 @@ const switzer = localFont({
 
 export const metadata: Metadata = {
   title: "Massar Work OS",
-  description: "Internal Operations and Client Portal",
+  description: "Internal operations for Massar",
   icons: {
     icon: [
       { url: '/icon.svg', type: 'image/svg+xml' },

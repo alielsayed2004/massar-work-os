@@ -1,7 +1,12 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { DEV_AUTH_ENABLED } from '@/lib/dev-session';
 
 export async function GET() {
+  if (!DEV_AUTH_ENABLED) {
+    return new NextResponse('Not Found', { status: 404 });
+  }
+
   const supabase = await createClient();
 
   // 1. Get current user session

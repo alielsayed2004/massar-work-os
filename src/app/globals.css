@@ -11,7 +11,7 @@
   --ink: #101815;
   --clay: #B85333;
   --stone: #9A9791;
-  --white: #FFFFFF;
+  --white: #FFFFFF; /* kept for reference only: the product uses no pure white */
 
   /* Semantic roles; semantic colors resolve only to approved palette values */
   --color-page: var(--bone);
@@ -19,15 +19,34 @@
   --color-surface-subtle: var(--bone);
   --color-text: var(--ink);
   --color-text-strong: var(--massar-green);
-  --color-text-on-dark: var(--white);
+  --color-text-on-dark: var(--bone);
   --color-navigation: var(--massar-green);
   --color-action-primary: var(--massar-green);
-  --color-action-primary-text: var(--white);
+  --color-action-primary-text: var(--bone);
   --color-attention: var(--clay);
-  --color-attention-text: var(--white);
+  --color-attention-text: var(--bone);
   --color-border-strong: var(--ink);
   --color-border-focus: var(--massar-green);
   --color-divider: var(--stone);
+
+  /* Product-surface tints. color-mix() of palette values only — no new hues.
+     No pure white anywhere: raised surfaces are a warm cream a step above Bone. */
+  --cream: color-mix(in srgb, var(--bone) 62%, var(--white));
+  --color-surface-raised: var(--cream);
+  --color-surface-sunken: color-mix(in srgb, var(--bone) 88%, var(--stone));
+  --color-text-muted: color-mix(in srgb, var(--ink) 68%, var(--bone));
+  --color-line: color-mix(in srgb, var(--ink) 11%, transparent);
+  --color-line-strong: color-mix(in srgb, var(--ink) 22%, transparent);
+  --color-hover: color-mix(in srgb, var(--massar-green) 4%, transparent);
+  --color-hover-strong: color-mix(in srgb, var(--massar-green) 9%, transparent);
+  --color-focus-ring: color-mix(in srgb, var(--massar-green) 18%, transparent);
+  --color-scrim: color-mix(in srgb, var(--ink) 40%, transparent);
+  --shadow-overlay: 0 12px 32px color-mix(in srgb, var(--ink) 12%, transparent);
+  --sidebar-text: color-mix(in srgb, var(--bone) 82%, var(--massar-green));
+  --sidebar-text-muted: color-mix(in srgb, var(--bone) 55%, var(--massar-green));
+  --sidebar-hover: color-mix(in srgb, var(--bone) 8%, transparent);
+  --sidebar-active: color-mix(in srgb, var(--bone) 14%, transparent);
+  --sidebar-line: color-mix(in srgb, var(--bone) 14%, transparent);
 
   /* Fonts: Switzer Swiss Neo-Grotesque paired with Editorial Serif */
   --font-serif: Georgia, "Cormorant Garamond", "Times New Roman", serif;
@@ -53,11 +72,11 @@
   --text-body: 16px;
   --text-subhead: 20px;
   --text-section: 24px;
-  --text-page: 32px;
+  --text-page: 28px;
 
   /* Layout */
-  --sidebar-width: 256px;
-  --content-max-width: 1440px;
+  --sidebar-width: 232px;
+  --content-max-width: 1280px;
   --grid-columns-desktop: 12;
   --grid-gap: 24px;
   --control-height: 48px;
@@ -98,7 +117,6 @@ html {
 
 @media (max-width: 767px) {
   :root {
-    --sidebar-width: 0px;
     --grid-gap: 16px;
     --control-height: 48px;
     --text-page: 24px;
@@ -106,101 +124,1440 @@ html {
 }
 
 /* ── App shell ──────────────────────────────────────────────────────────
-   row-reverse inside dir="rtl" keeps the fixed navigation on the LEFT
-   (brand guideline) while the content itself stays RTL. */
+   Fixed Green navigation on the left (brand guideline), a quiet top bar,
+   and one content column. Every colour below resolves to the palette;
+   tints are color-mix() of approved values, never new hues. */
 body {
   margin: 0;
   background: var(--color-page);
+  color: var(--color-text);
+  font-family: var(--font-ui);
+  -webkit-font-smoothing: antialiased;
 }
 
 .massar-shell {
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   min-height: 100vh;
 }
-html[dir="ltr"] .massar-shell {
-  flex-direction: row;
-}
-html[dir="rtl"] .massar-shell {
-  flex-direction: row-reverse;
-}
 
+/* Sidebar */
 .massar-sidebar {
-  width: var(--sidebar-width);
-  flex-shrink: 0;
-  background-color: var(--massar-green);
-  border-right: 1px solid rgba(241, 236, 226, 0.12);
-  padding: var(--space-5) var(--space-3);
+  background-color: var(--color-navigation);
+  color: var(--bone);
   position: sticky;
   top: 0;
   height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4) var(--space-3) var(--space-3);
   box-sizing: border-box;
   overflow-y: auto;
-}
-
-.massar-sidebar a {
-  color: rgba(241, 236, 226, 0.85);
-  text-decoration: none;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-control);
-  font-size: var(--text-body);
-  font-weight: 500;
-  font-family: var(--font-sans);
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-  transition: all var(--motion-fast) var(--motion-ease);
-}
-
-.massar-sidebar a:hover,
-.massar-sidebar a:focus-visible {
-  background-color: rgba(241, 236, 226, 0.12);
-  color: var(--white);
-  outline: none;
+  z-index: 30;
 }
 
 .massar-sidebar-brand {
-  margin-bottom: var(--space-6);
-  padding: 0 var(--space-3);
   display: flex;
-  justify-content: flex-start;
   align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-2);
+  margin-bottom: var(--space-5);
 }
 
 .massar-sidebar-logo {
-  width: 135px;
+  width: 104px;
   height: auto;
-  max-width: 100%;
   display: block;
 }
 
-.massar-main {
+.massar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
   flex: 1;
-  min-width: 0;
-  padding: var(--space-5);
-  max-width: var(--content-max-width);
-  box-sizing: border-box;
 }
 
-@media (max-width: 767px) {
-  .massar-shell {
-    flex-direction: column;
+.massar-nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.massar-nav-heading {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sidebar-text-muted);
+  padding: 0 var(--space-2) var(--space-1);
+  margin: 0;
+}
+
+.massar-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 40px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-control);
+  color: var(--sidebar-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  position: relative;
+  transition: background-color var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease);
+}
+
+.massar-nav-link svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.massar-nav-link:hover {
+  background-color: var(--sidebar-hover);
+  color: var(--bone);
+}
+
+.massar-nav-link[aria-current='page'] {
+  background-color: var(--sidebar-active);
+  color: var(--bone);
+  font-weight: 600;
+}
+
+.massar-nav-link[aria-current='page']::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: calc(-1 * var(--space-3));
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  border-radius: 0 2px 2px 0;
+  background: var(--bone);
+}
+
+.massar-nav-link[aria-current='page'] svg {
+  opacity: 1;
+}
+
+.massar-sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: var(--space-3) var(--space-2) 0;
+  margin-top: var(--space-4);
+  border-top: var(--border-width) solid var(--sidebar-line);
+}
+
+.massar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: var(--bone);
+  color: var(--massar-green);
+}
+
+.massar-sidebar-user-meta {
+  min-width: 0;
+  flex: 1;
+  line-height: 1.3;
+}
+
+.massar-sidebar-user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--bone);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.massar-sidebar-user-role {
+  font-size: 12px;
+  color: var(--sidebar-text-muted);
+}
+
+.massar-icon-btn {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-control);
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: background-color var(--motion-fast) var(--motion-ease);
+}
+
+.massar-icon-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.massar-sidebar .massar-icon-btn {
+  color: var(--sidebar-text);
+}
+
+.massar-sidebar .massar-icon-btn:hover {
+  background: var(--sidebar-hover);
+  color: var(--bone);
+}
+
+/* Main column */
+.massar-main {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.massar-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  height: 64px;
+  padding: 0 var(--space-5);
+  background: color-mix(in srgb, var(--bone) 88%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.massar-topbar-title {
+  display: none;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  margin: 0;
+  white-space: nowrap;
+}
+
+.massar-topbar-spacer {
+  flex: 1;
+}
+
+.massar-topbar .massar-icon-btn {
+  color: var(--color-text-strong);
+}
+
+.massar-topbar .massar-icon-btn:hover {
+  background: var(--color-hover);
+}
+
+.massar-menu-btn {
+  display: none;
+}
+
+.massar-search {
+  position: relative;
+  width: min(360px, 40vw);
+}
+
+.massar-search svg {
+  position: absolute;
+  inset-inline-start: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.massar-search input {
+  width: 100%;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 var(--space-3) 0 36px;
+  border-radius: var(--radius-control);
+  border: var(--border-width) solid var(--color-line-strong);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 14px;
+}
+
+.massar-search input:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.massar-badge-count {
+  position: absolute;
+  top: 4px;
+  inset-inline-end: 4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  background: var(--color-attention);
+  color: var(--color-attention-text);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+}
+
+.massar-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-overlay);
+  z-index: 40;
+  overflow: hidden;
+}
+
+.massar-popover-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px var(--space-3);
+  border-bottom: var(--border-width) solid var(--color-line);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+}
+
+.massar-popover-group {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: 10px var(--space-3) 4px;
+}
+
+.massar-popover-item {
+  display: block;
+  padding: 8px var(--space-3);
+  font-size: 14px;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.massar-popover-item:hover {
+  background: var(--color-hover);
+}
+
+.massar-content {
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-5) var(--space-8);
+  box-sizing: border-box;
+  animation: massarFadeIn var(--motion-standard) var(--motion-ease);
+}
+
+@keyframes massarFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.massar-scrim {
+  display: none;
+}
+
+/* ── Page building blocks ───────────────────────────────────────────── */
+.massar-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-6);
+}
+
+.massar-page-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  margin: 0 0 6px;
+}
+
+.massar-page-title {
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 3.2vw, 42px);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  color: var(--color-text-strong);
+  margin: 0;
+}
+
+.massar-page-description {
+  font-size: 15px;
+  color: var(--color-text-muted);
+  margin: 12px 0 0;
+  max-width: 60ch;
+  line-height: 1.5;
+}
+
+.massar-page-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Stat strip: one surface split by hairlines, not a grid of cards */
+.massar-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  border-block: var(--border-width) solid var(--color-line);
+  margin: 0 0 var(--space-6);
+  overflow: hidden;
+}
+
+.massar-stat {
+  padding: 20px var(--space-4);
+  border-inline-start: var(--border-width) solid var(--color-line);
+  margin: 0;
+}
+
+.massar-stat:first-child {
+  border-inline-start: none;
+  padding-inline-start: 0;
+}
+
+.massar-stat dt {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.massar-stat dd {
+  margin: 10px 0 0;
+  font-family: var(--font-serif);
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--color-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.massar-stat[data-tone='attention'] dd {
+  color: var(--color-text);
+}
+
+.massar-stat-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-attention);
+}
+
+/* Panel: the one surface type for grouped content */
+.massar-panel {
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
+  margin-bottom: var(--space-4);
+}
+
+.massar-panel-head {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-line);
+}
+
+.massar-panel-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.massar-panel-count {
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  box-sizing: border-box;
+  border-radius: 11px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-hover-strong);
+  color: var(--color-text-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+.massar-panel-count[data-tone='attention'] {
+  background: var(--color-attention);
+  color: var(--color-attention-text);
+}
+
+.massar-panel-sub {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin: 2px 0 0;
+}
+
+.massar-panel-body {
+  padding: var(--space-4);
+}
+
+.massar-panel-body[data-flush] {
+  padding: 0;
+}
+
+.massar-panel > .massar-table-wrap,
+.massar-panel-body[data-flush] > .massar-table-wrap {
+  border-radius: 0 0 var(--radius-surface) var(--radius-surface);
+}
+
+/* Panel sections (the Panel component): no box, a serif heading over a
+   hairline, rows separated by hairlines. Cards keep .massar-panel alone. */
+.massar-section {
+  background: none;
+  border: none;
+  border-radius: 0;
+  margin-bottom: var(--space-7);
+}
+
+.massar-section > .massar-panel-head {
+  padding: 0 0 12px;
+  border-bottom-color: var(--color-line-strong);
+}
+
+.massar-section .massar-panel-title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.massar-section .massar-panel-count {
+  background: none;
+  min-width: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.massar-section .massar-panel-count[data-tone='attention'] {
+  background: none;
+  color: var(--color-text);
+  gap: 6px;
+}
+
+.massar-section .massar-panel-count[data-tone='attention']::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-attention);
+}
+
+.massar-section > .massar-panel-body {
+  padding: var(--space-4) 0;
+}
+
+.massar-section > .massar-panel-body[data-flush] {
+  padding: 0;
+}
+
+.massar-section .massar-row {
+  padding: 20px 0;
+}
+
+.massar-section .massar-table-wrap {
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  border-top: none;
+}
+
+/* Stacked rows inside a flush panel */
+.massar-row {
+  padding: var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-line);
+}
+
+.massar-row:last-child {
+  border-bottom: none;
+}
+
+/* Two-column page layout: main work + supporting rail */
+
+/* Tables. Overflow stays visible on desktop so row menus aren't clipped;
+   narrow screens scroll the table instead of squeezing columns. */
+.massar-table-wrap {
+  overflow: visible;
+}
+
+.massar-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: start;
+  font-size: 14px;
+}
+
+.massar-table th {
+  padding: 10px var(--space-4);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  text-align: start;
+  background: var(--color-surface-sunken);
+  border-bottom: var(--border-width) solid var(--color-line);
+  white-space: nowrap;
+}
+
+.massar-table td {
+  padding: 12px var(--space-4);
+  height: var(--row-height);
+  box-sizing: border-box;
+  border-bottom: var(--border-width) solid var(--color-line);
+  vertical-align: middle;
+}
+
+.massar-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.massar-table tbody tr:hover td {
+  background: var(--color-hover);
+}
+
+.massar-cell-title {
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.massar-cell-sub {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* Disclosure: a summary that looks like a button, revealing an inline form */
+.massar-disclosure > summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.massar-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.massar-page-actions {
+  position: relative;
+}
+
+.massar-create > summary {
+  display: inline-flex;
+}
+
+.massar-create-body {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + 8px);
+  width: min(760px, calc(100vw - 48px));
+  box-sizing: border-box;
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-overlay);
+  padding: var(--space-4);
+  z-index: 18;
+}
+
+/* Row actions menu */
+.massar-menu {
+  position: relative;
+}
+
+.massar-menu > summary {
+  display: inline-flex;
+}
+
+.massar-menu-panel {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + 6px);
+  width: 320px;
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
+  box-shadow: var(--shadow-overlay);
+  padding: var(--space-3);
+  z-index: 15;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.massar-menu-section + .massar-menu-section {
+  border-top: var(--border-width) solid var(--color-line);
+  padding-top: var(--space-3);
+}
+
+.massar-menu-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  margin: 0 0 var(--space-2);
+}
+
+/* Tabs (in-page segmented navigation) */
+.massar-tabs {
+  display: flex;
+  gap: var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-line);
+  margin-bottom: var(--space-4);
+  overflow-x: auto;
+}
+
+.massar-tab {
+  appearance: none;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  padding: 0 0 12px;
+  min-height: 44px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.massar-tab {
+  text-decoration: none;
+}
+
+.massar-tab:hover {
+  color: var(--color-text);
+}
+
+.massar-tab[aria-selected='true'] {
+  color: var(--color-text-strong);
+  font-weight: 600;
+  border-bottom-color: var(--color-action-primary);
+}
+
+/* Key–value metadata row */
+
+/* Workload list in the side rail */
+
+.massar-btn-row {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Deadline alert at the top of My Work */
+.massar-due-alert {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px var(--space-3);
+  margin-bottom: var(--space-4);
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
+  color: var(--color-text);
+}
+
+.massar-due-alert svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-attention);
+  margin-top: 1px;
+}
+
+/* Today: one row per thing that needs a partner, action on the right */
+.massar-today-row {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.massar-today-main {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.massar-today-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.massar-today-title span {
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.massar-today-actions {
+  flex: 0 0 220px;
+  display: grid;
+  gap: 8px;
+}
+
+.massar-today-actions .massar-wa-btn {
+  padding: 0 14px;
+}
+
+@media (max-width: 640px) {
+  .massar-today-actions {
+    flex-basis: 100%;
   }
-  .massar-sidebar {
-    width: 100%;
-    height: auto;
-    position: static;
-    padding: var(--space-3);
+  .massar-flows {
+    padding: 4px 12px;
   }
-  .massar-sidebar nav {
-    flex-direction: row !important;
-    flex-wrap: wrap;
+}
+
+/* ── Client spaces ──────────────────────────────────────────────── */
+.massar-spaces {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-3);
+}
+
+.massar-space-card {
+  display: grid;
+  gap: var(--space-3);
+  padding: 20px;
+  border-radius: 12px;
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  color: var(--color-text);
+  text-decoration: none;
+  transition: border-color var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease);
+}
+
+.massar-space-card:hover {
+  border-color: var(--color-line-strong);
+}
+
+.massar-space-card-top {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.massar-space-card h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.massar-space-card p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.massar-space-mono {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: var(--color-hover-strong);
+  color: var(--color-text-strong);
+}
+
+.massar-space-mono-lg {
+  width: 56px;
+  height: 56px;
+  font-size: 17px;
+}
+
+.massar-space-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 0;
+}
+
+.massar-space-stats div {
+  padding: 10px 0 0;
+  border-top: var(--border-width) solid var(--color-line);
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.massar-space-stats dd {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.massar-space-stats dd[data-hot='true']::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-inline-start: 6px;
+  vertical-align: super;
+  border-radius: 50%;
+  background: var(--color-attention);
+}
+
+.massar-space-stats dt {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.massar-space-head {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+/* One task = one path of five nodes; the action sits under the active node */
+.massar-flows {
+  background-color: var(--color-surface-sunken);
+  background-image: radial-gradient(color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1.3px);
+  background-size: 20px 20px;
+  border: var(--border-width) solid var(--color-line);
+  border-radius: 12px;
+  padding: 4px 18px;
+  overflow-x: auto;
+}
+
+.massar-flow-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.4fr) repeat(5, minmax(118px, 1fr));
+  align-items: start;
+  padding: 20px 0;
+  border-bottom: var(--border-width) dashed var(--color-line-strong);
+  min-width: 920px;
+}
+
+.massar-flow-row:last-child {
+  border-bottom: none;
+}
+
+.massar-flow-info {
+  display: grid;
+  gap: 4px;
+  padding: 4px 16px 0 2px;
+  min-width: 0;
+}
+
+.massar-flow-info h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.massar-flow-info > p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.massar-flow-change {
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--clay) 10%, var(--cream));
+  color: var(--color-text) !important;
+  font-size: 13px !important;
+  line-height: 1.45;
+  margin-top: 4px !important;
+}
+
+.massar-flow-more-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  padding: 4px 0;
+}
+
+.massar-flow-file {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--color-text-strong);
+  text-decoration: none;
+  min-width: 0;
+}
+
+.massar-flow-file svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.massar-flow-file span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.massar-flow-file small {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+
+.massar-flow-step {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.massar-flow-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 19px;
+  left: calc(50% + 26px);
+  right: calc(-50% + 26px);
+  height: 1px;
+  background: var(--color-line-strong);
+}
+
+.massar-flow-step.done:not(:last-child)::after {
+  background: var(--color-action-primary);
+}
+
+.massar-flow-step.now:not(:last-child)::after {
+  background: repeating-linear-gradient(90deg, var(--color-action-primary) 0 6px, transparent 6px 12px);
+}
+
+.massar-flow-node {
+  position: relative;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-line-strong);
+  color: color-mix(in srgb, var(--ink) 32%, var(--bone));
+}
+
+.massar-flow-node svg {
+  width: 18px;
+  height: 18px;
+}
+
+.massar-flow-node::before,
+.massar-flow-node::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-line-strong);
+}
+
+.massar-flow-node::before { left: -5px; }
+.massar-flow-node::after { right: -5px; }
+.massar-flow-step:nth-child(2) .massar-flow-node::before,
+.massar-flow-step:last-child .massar-flow-node::after { display: none; }
+
+.massar-flow-step.done .massar-flow-node {
+  border-color: var(--color-action-primary);
+  color: var(--color-action-primary);
+  background: color-mix(in srgb, var(--massar-green) 8%, var(--cream));
+}
+
+.massar-flow-step.done .massar-flow-node::before,
+.massar-flow-step.done .massar-flow-node::after {
+  border-color: var(--color-action-primary);
+  background: var(--color-action-primary);
+}
+
+.massar-flow-step.now .massar-flow-node {
+  border: 1px solid var(--color-action-primary);
+  background: var(--color-action-primary);
+  color: var(--bone);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--massar-green) 10%, transparent);
+}
+
+.massar-flow-step.now.wait .massar-flow-node::after {
+  display: block;
+  top: -1px;
+  right: -1px;
+  margin: 0;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--color-surface-raised);
+  background: var(--color-attention);
+}
+
+.massar-flow-step-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.massar-flow-step.done .massar-flow-step-label { color: var(--color-text-strong); }
+.massar-flow-step.now .massar-flow-step-label { color: var(--color-text); }
+
+.massar-flow-step-sub {
+  margin-top: -4px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+}
+
+.massar-flow-step.now.wait .massar-flow-step-sub {
+  color: var(--color-attention);
+  font-weight: 600;
+}
+
+.massar-flow-step-act {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  max-width: 172px;
+  margin-top: 4px;
+  text-align: start;
+}
+
+.massar-node-btn {
+  min-height: 38px;
+  font-size: 13px;
+  padding: 0 10px;
+}
+
+.massar-node-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.massar-node-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+  text-align: center;
+}
+
+/* Team page */
+.massar-people-list {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 900px;
+}
+
+.massar-person-card {
+  margin: 0;
+  padding: 18px 20px;
+  display: grid;
+  gap: 12px;
+}
+
+.massar-person-card[data-late='true'] h2::after {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-inline-start: 8px;
+  vertical-align: middle;
+  border-radius: 50%;
+  background: var(--color-attention);
+}
+
+.massar-person-card-top {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.massar-person-card h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.massar-person-card-top p {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.massar-person-card-load {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.massar-person-card-load strong {
+  color: var(--color-text);
+}
+
+.massar-person-card-load[data-late='true'] strong:last-child {
+  color: var(--color-attention);
+}
+
+.massar-person-late {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 10px 0 0;
+  border-top: var(--border-width) solid var(--color-line);
+  font-size: 14px;
+}
+
+.massar-nav-count {
+  margin-inline-start: auto;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--sidebar-active);
+  color: var(--bone);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Shared row bits: file lists and the WhatsApp button ───────────── */
+.massar-flow-files {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.massar-flow-files li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.massar-flow-files svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.massar-flow-files a {
+  color: var(--color-text-strong);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.massar-wa-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  border-radius: var(--radius-control);
+  background: var(--color-action-primary);
+  color: var(--color-action-primary-text);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.massar-wa-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.massar-wa-btn:hover {
+  filter: brightness(1.12);
+}
+
+@media (max-width: 900px) {
+  .massar-topbar-title {
+    display: block;
   }
-  .massar-main {
-    padding: var(--space-3);
+  /* Task paths: title on its own line, the five nodes scroll sideways under it */
+  .massar-flow-row {
+    grid-template-columns: repeat(5, minmax(108px, 1fr));
+    min-width: 600px;
   }
-  /* Tables become scrollable rather than squeezed */
+  .massar-flow-info {
+    grid-column: 1 / -1;
+    padding: 0 0 14px;
+    position: sticky;
+    left: 0;
+    max-width: calc(100vw - 64px);
+  }
   .massar-table-wrap {
     overflow-x: auto;
+  }
+  .massar-page-actions {
+    width: 100%;
+  }
+  .massar-create {
+    width: 100%;
+  }
+  .massar-create-body {
+    position: static;
+    width: 100%;
+    margin-top: var(--space-3);
+    box-shadow: none;
+  }
+  .massar-shell {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .massar-sidebar {
+    position: fixed;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform var(--motion-standard) var(--motion-ease);
+  }
+  .massar-shell[data-nav-open='true'] .massar-sidebar {
+    transform: none;
+    box-shadow: var(--shadow-overlay);
+  }
+  .massar-shell[data-nav-open='true'] .massar-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 25;
+    background: var(--color-scrim);
+  }
+  .massar-menu-btn {
+    display: inline-flex;
+  }
+  .massar-topbar {
+    padding: 0 var(--space-3);
+  }
+  .massar-content {
+    padding: var(--space-4) var(--space-3) var(--space-7);
+  }
+}
+
+@media (max-width: 640px) {
+  .massar-search {
+    display: none;
+  }
+  .massar-page-title {
+    font-size: 24px;
+  }
+  .massar-stat {
+    padding: var(--space-3);
+  }
+  .massar-stat dd {
+    font-size: 24px;
+  }
+  .massar-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+  .massar-stat:nth-child(odd) {
+    border-inline-start: none;
+  }
+  .massar-stat:nth-child(n + 3) {
+    border-top: var(--border-width) solid var(--color-line);
+  }
+  /* Tables become stacked rows instead of shrinking columns (Design System §4) */
+  .massar-table thead {
+    display: none;
+  }
+  .massar-table,
+  .massar-table tbody,
+  .massar-table tr,
+  .massar-table td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .massar-table tr {
+    padding: 14px var(--space-3);
+    border-bottom: var(--border-width) solid var(--color-line);
+  }
+  .massar-table tbody tr:last-child {
+    border-bottom: none;
+  }
+  .massar-table td {
+    height: auto;
+    padding: 4px 0;
+    border: none;
+    text-align: start !important;
+    max-width: none !important;
+  }
+  .massar-table tbody tr:hover td {
+    background: none;
+  }
+  .massar-table td .massar-btn-row {
+    justify-content: flex-start !important;
+    flex-wrap: wrap !important;
+    margin-top: 8px;
+  }
+  .massar-menu-panel {
+    width: min(320px, calc(100vw - 32px));
   }
 }
 
@@ -213,385 +1570,251 @@ html[dir="rtl"] .massar-shell {
   }
 }
 
-/* ── Massar Cinematic Splash Screen & Grand Logo Experience ──────────── */
-.massar-splash-container {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 99999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at 50% 50%, #15554b 0%, #0D3B34 45%, #051614 100%);
-  overflow: hidden;
-  user-select: none;
-  cursor: pointer;
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+/* ── Sign-in: brand intro, then the sign-in card ───────────────────────
+   The intro is pure CSS so it starts on first paint, before any script
+   loads. Only transform / opacity / filter move (GPU-composited), and one
+   timeline drives everything:
+     0      logo comes into focus (blur, scale, fade)
+     350ms  caption rises in
+     0–1.7s hairline fills
+     1.6s   intro lifts away while the card rises in underneath
+   It plays once per browser session; an inline script marks repeat visits
+   (html[data-intro='skip']) before the first paint, so nothing flashes. */
+:root {
+  --intro-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --intro-out: 1600ms;
 }
 
-/* Dedicated out-of-focus camera defocus on the logo */
-.massar-splash-container.massar-splash-defocus .massar-splash-logo-wrap,
-.massar-splash-container.massar-splash-defocus .massar-splash-logo {
-  filter: blur(26px) brightness(1.22) drop-shadow(0 0 45px rgba(241, 236, 226, 0.55));
-  transform: scale(1.14);
-  opacity: 0.92;
-  transition: filter 1s cubic-bezier(0.25, 1, 0.3, 1), transform 1s cubic-bezier(0.25, 1, 0.3, 1), opacity 1s cubic-bezier(0.25, 1, 0.3, 1);
-}
-
-.massar-splash-container.massar-splash-defocus .massar-cinematic-caption {
-  opacity: 0;
-  transform: translateY(-8px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.massar-splash-container.massar-splash-exit {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.massar-splash-container.massar-splash-exit .massar-splash-logo-wrap,
-.massar-splash-container.massar-splash-exit .massar-splash-logo {
-  filter: blur(34px) brightness(1.28) drop-shadow(0 0 50px rgba(241, 236, 226, 0.6));
-  transform: scale(1.18);
-  opacity: 0;
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Atmospheric vignette overlay */
-.massar-splash-vignette {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at center, transparent 40%, rgba(4, 18, 16, 0.75) 100%);
-  pointer-events: none;
-}
-
-/* Ambient pulsing aura behind the massive emblem */
-.massar-splash-ambient {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 650px;
-  height: 650px;
-  max-width: 90vw;
-  max-height: 90vh;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(241, 236, 226, 0.16) 0%, rgba(19, 78, 69, 0.08) 45%, transparent 70%);
-  pointer-events: none;
-  animation: massarCinematicAura 5s ease-in-out infinite;
-}
-
-@keyframes massarCinematicAura {
-  0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.2; }
-  50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.65; }
-  100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.25; }
-}
-
-/* Hero Grand Logo Wrapper — takes up substantial screen space */
-.massar-splash-logo-wrap {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  animation: massarCinematicHero 5s cubic-bezier(0.2, 0, 0.2, 1) forwards;
-}
-
-.massar-splash-logo {
-  height: min(58vh, 520px);
-  width: auto;
-  max-width: min(85vw, 560px);
-  object-fit: contain;
-  filter: drop-shadow(0 16px 36px rgba(0, 0, 0, 0.6)) drop-shadow(0 0 28px rgba(241, 236, 226, 0.2));
-  display: block;
-}
-
-@media (max-width: 767px) {
-  .massar-splash-logo {
-    height: min(48vh, 360px);
-    max-width: 85vw;
-  }
-}
-
-/* Full cinematic arc: dramatic reveal -> slow drift -> grand out-of-focus camera defocus */
-@keyframes massarCinematicHero {
-  0% {
-    opacity: 0;
-    transform: scale(0.84);
-    filter: blur(14px) brightness(0.65);
-  }
-  24% {
-    opacity: 1;
-    transform: scale(1.0);
-    filter: blur(0px) brightness(1.05);
-  }
-  64% {
-    opacity: 1;
-    transform: scale(1.02);
-    filter: blur(0px) brightness(1);
-  }
-  84% {
-    opacity: 0.92;
-    transform: scale(1.14);
-    filter: blur(26px) brightness(1.22);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(1.18);
-    filter: blur(34px) brightness(1.3);
-  }
-}
-
-/* The emblem displays clean and unoccluded */
-
-/* Small, subtle, editorial caption text */
-.massar-cinematic-caption {
-  margin-top: var(--space-4);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  text-align: center;
-  animation: massarCaptionFade 5s cubic-bezier(0.2, 0, 0.2, 1) forwards;
-}
-
-@keyframes massarCaptionFade {
-  0%, 15% {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  35% {
-    opacity: 0.85;
-    transform: translateY(0);
-  }
-  75% {
-    opacity: 0.85;
-    transform: translateY(0);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-6px);
-  }
-}
-
-.massar-caption-small-en {
-  font-family: var(--font-latin);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  color: rgba(241, 236, 226, 0.7);
-}
-
-.massar-caption-subtitle {
-  font-family: var(--font-latin);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  color: rgba(241, 236, 226, 0.55);
-}
-
-/* Discreet cinematic hairline progress bar at the very bottom */
-.massar-cinematic-progress {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: rgba(241, 236, 226, 0.12);
-}
-
-.massar-cinematic-progress-fill {
-  height: 100%;
-  background: var(--bone);
-  box-shadow: 0 0 8px rgba(241, 236, 226, 0.7);
-  transition: width 0.05s linear;
-}
-
-/* Subtle corner skip hint */
-.massar-cinematic-skip {
-  position: absolute;
-  bottom: 24px;
-  right: 32px;
-  color: rgba(241, 236, 226, 0.45);
-  font-family: var(--font-arabic);
-  font-size: 12px;
-  letter-spacing: 1px;
-  background: transparent;
-  border: 1px solid rgba(241, 236, 226, 0.18);
-  padding: 4px 12px;
-  border-radius: var(--radius-control);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  animation: massarCaptionFade 5s cubic-bezier(0.2, 0, 0.2, 1) forwards;
-}
-
-.massar-cinematic-skip:hover {
-  color: var(--bone);
-  border-color: rgba(241, 236, 226, 0.4);
-  background: rgba(241, 236, 226, 0.08);
-}
-
-/* ── Seamless Cinematic to Light Login Transition ─────────────────────── */
 .massar-auth-page {
   min-height: 100vh;
-  width: 100vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-3);
+  box-sizing: border-box;
+  background: var(--bone);
   position: relative;
   overflow: hidden;
-  box-sizing: border-box;
-  padding: var(--space-3);
-  transition: background 0.75s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.massar-auth-page.massar-theme-dark {
-  background: radial-gradient(circle at 50% 50%, #15554b 0%, #0D3B34 45%, #051614 100%);
-}
-
-.massar-auth-page.massar-theme-light {
-  background: var(--color-page); /* #F1ECE2 Bone */
-}
-
-.massar-splash-overlay {
+.massar-intro {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
   z-index: 50;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at 50% 50%, #15554b 0%, #0D3B34 45%, #051614 100%);
-  overflow: hidden;
-  user-select: none;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--space-5);
+  background:
+    radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--massar-green) 82%, var(--bone)) 0%, transparent 55%),
+    radial-gradient(circle at 50% 50%, var(--massar-green) 40%, color-mix(in srgb, var(--massar-green) 65%, var(--ink)) 100%);
+  color: var(--bone);
   cursor: pointer;
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  animation: massarIntroOut 600ms cubic-bezier(0.7, 0, 0.2, 1) var(--intro-out) forwards;
 }
 
-/* Dedicated out-of-focus camera defocus on the logo while still on dark green */
-.massar-splash-overlay.massar-splash-defocus .massar-splash-logo-wrap,
-.massar-splash-overlay.massar-splash-defocus .massar-splash-logo {
-  filter: blur(26px) brightness(1.22) drop-shadow(0 0 45px rgba(241, 236, 226, 0.55));
-  transform: scale(1.14);
-  opacity: 0.92;
-  transition: filter 1s cubic-bezier(0.25, 1, 0.3, 1), transform 1s cubic-bezier(0.25, 1, 0.3, 1), opacity 1s cubic-bezier(0.25, 1, 0.3, 1);
+.massar-intro-mark {
+  animation: massarIntroLift 600ms cubic-bezier(0.7, 0, 0.2, 1) var(--intro-out) forwards;
 }
 
-.massar-splash-overlay.massar-splash-defocus .massar-cinematic-caption {
-  opacity: 0;
-  transform: translateY(-8px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+.massar-intro-logo {
+  display: block;
+  width: min(40vw, 200px);
+  height: auto;
+  will-change: transform, opacity, filter;
+  animation: massarIntroLogo 1100ms var(--intro-ease) both;
 }
 
-/* Smooth dissolve to the white page ("وبعدين نروح للصفحه البيضا") */
-.massar-splash-overlay.massar-splash-fading {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+.massar-intro-caption {
+  display: grid;
+  gap: 6px;
+  text-align: center;
+  font-family: var(--font-sans);
+  animation: massarIntroRise 700ms var(--intro-ease) 350ms both;
 }
 
-.massar-splash-overlay.massar-splash-fading .massar-splash-logo-wrap,
-.massar-splash-overlay.massar-splash-fading .massar-splash-logo {
-  filter: blur(34px) brightness(1.28) drop-shadow(0 0 50px rgba(241, 236, 226, 0.6)) !important;
-  transform: scale(1.18) !important;
-  opacity: 0 !important;
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) !important;
+.massar-intro-caption strong {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  color: var(--bone);
 }
 
-/* ── Light Login Card (Pure Massar Editorial Light Theme) ─────────────── */
-.massar-login-card-light {
-  background: var(--color-surface); /* #FFFFFF */
-  padding: var(--space-5);
-  border-radius: var(--radius-surface);
+.massar-intro-caption span {
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: color-mix(in srgb, var(--bone) 55%, var(--massar-green));
+}
+
+.massar-intro-line {
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
+  height: 2px;
+  background: color-mix(in srgb, var(--bone) 70%, transparent);
+  transform-origin: left center;
+  animation: massarIntroLine 1700ms cubic-bezier(0.45, 0, 0.2, 1) both;
+}
+
+.massar-intro-skip {
+  position: absolute;
+  top: max(20px, env(safe-area-inset-top));
+  right: 24px;
+  min-height: 40px;
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, var(--bone) 25%, transparent);
+  border-radius: 20px;
+  background: transparent;
+  color: color-mix(in srgb, var(--bone) 75%, var(--massar-green));
+  font: 500 12px/1 var(--font-sans);
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  animation: massarIntroRise 500ms var(--intro-ease) 500ms both;
+}
+
+.massar-intro-skip:hover {
+  color: var(--bone);
+  border-color: color-mix(in srgb, var(--bone) 45%, transparent);
+}
+
+@keyframes massarIntroLogo {
+  from { opacity: 0; transform: scale(0.86); filter: blur(14px); }
+  60% { filter: blur(0); }
+  to { opacity: 1; transform: none; filter: blur(0); }
+}
+
+@keyframes massarIntroRise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes massarIntroLine {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes massarIntroLift {
+  to { transform: scale(1.06); opacity: 0; }
+}
+
+@keyframes massarIntroOut {
+  to { opacity: 0; visibility: hidden; }
+}
+
+/* Skip: the same exit, now and faster */
+.massar-auth-page[data-skipped] .massar-intro {
+  animation: massarIntroOut 320ms var(--motion-ease) forwards;
+}
+
+.massar-auth-page[data-skipped] .massar-intro-mark {
+  animation: massarIntroLift 320ms var(--motion-ease) forwards;
+}
+
+/* Sign-in card */
+.massar-login-card {
   width: 100%;
   max-width: 420px;
-  border: var(--border-width) solid var(--color-divider);
-  box-shadow: 0 16px 40px rgba(16, 24, 21, 0.07);
   box-sizing: border-box;
-  position: relative;
-  z-index: 10;
-  animation: massarCardReveal 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transition: filter 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: var(--space-6) var(--space-5) var(--space-5);
+  border-radius: 14px;
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  box-shadow: 0 24px 48px -28px color-mix(in srgb, var(--ink) 30%, transparent);
+  animation: massarCardIn 700ms var(--intro-ease) both;
 }
 
-@keyframes massarCardReveal {
-  0% {
-    opacity: 0;
-    transform: translateY(18px) scale(0.98);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+/* While the intro plays, the card waits underneath and rises as it lifts */
+html[data-intro='play'] .massar-login-card {
+  animation-delay: calc(var(--intro-out) + 150ms);
 }
 
-/* Login submission defocus transition (Camera Lens Rack Defocus bloom) */
-.massar-auth-page.massar-logging-in {
-  pointer-events: none;
+html[data-intro='play'] .massar-auth-page[data-skipped] .massar-login-card {
+  animation-name: massarCardInAgain;
+  animation-delay: 120ms;
 }
 
-.massar-auth-page.massar-logging-in .massar-login-card-light {
-  filter: blur(28px) brightness(1.2) drop-shadow(0 0 60px rgba(13, 59, 52, 0.2));
-  transform: scale(1.08);
-  opacity: 0.12;
+html[data-intro='skip'] .massar-intro {
+  display: none;
 }
 
-.massar-auth-page.massar-logging-in::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(circle at 50% 50%, rgba(13, 59, 52, 0.15) 0%, rgba(241, 236, 226, 0.92) 80%);
-  backdrop-filter: blur(20px);
-  z-index: 9999;
-  animation: massarBloomIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+@keyframes massarCardIn {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: none; }
 }
 
-@keyframes massarBloomIn {
-  0% {
-    opacity: 0;
-    backdrop-filter: blur(0px);
-  }
-  100% {
-    opacity: 1;
-    backdrop-filter: blur(20px);
-  }
+/* Same motion under a new name, so a skip restarts it cleanly */
+@keyframes massarCardInAgain {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+  to { opacity: 1; transform: none; }
 }
 
-.massar-logo-green-mask {
-  width: 76px;
-  height: 86px;
-  margin: 0 auto var(--space-3);
+.massar-login-mark {
+  width: 64px;
+  height: 72px;
+  margin: 0 auto var(--space-4);
   background-color: var(--massar-green);
   -webkit-mask: url(/image/massar_logo.svg) no-repeat center / contain;
   mask: url(/image/massar_logo.svg) no-repeat center / contain;
+}
+
+.massar-login-title {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 34px;
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  color: var(--color-text-strong);
+}
+
+.massar-login-sub {
+  margin: 6px 0 var(--space-5);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.massar-login-form {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.massar-login-form label {
   display: block;
+  margin-bottom: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text);
 }
 
 .massar-input-light {
   height: var(--control-height);
   padding: 0 var(--space-3);
   border-radius: var(--radius-control);
-  border: var(--border-width) solid var(--color-border-strong);
-  background-color: var(--color-surface);
+  border: var(--border-width) solid var(--color-line-strong);
+  background-color: var(--bone);
   color: var(--color-text);
   font-size: var(--text-body);
   width: 100%;
   box-sizing: border-box;
   font-family: var(--font-ui);
   outline: none;
-  transition: border-color var(--motion-fast) var(--motion-ease);
+  transition: border-color var(--motion-fast) var(--motion-ease), box-shadow var(--motion-fast) var(--motion-ease);
 }
 
 .massar-input-light:focus {
   border-color: var(--color-border-focus);
-  outline: var(--focus-width) solid var(--color-border-focus);
-  outline-offset: 1px;
+  box-shadow: 0 0 0 3px var(--color-focus-ring);
+}
+
+.massar-input-light[aria-invalid='true'] {
+  border-color: var(--color-attention);
 }
 
 .massar-btn-primary-light {
@@ -606,612 +1829,94 @@ html[dir="rtl"] .massar-shell {
   font-weight: 600;
   width: 100%;
   font-family: var(--font-ui);
-  transition: background-color var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+  transition: background-color var(--motion-fast) var(--motion-ease), opacity var(--motion-fast) var(--motion-ease);
 }
 
-.massar-btn-primary-light:hover {
-  background-color: var(--ink);
+.massar-btn-primary-light:hover:not(:disabled) {
+  background-color: color-mix(in srgb, var(--massar-green) 85%, var(--ink));
 }
 
-/* ── Welcome / Splash Screen — Split Layout, Left-Aligned on 12-Col Grid ── */
+.massar-btn-primary-light:disabled {
+  opacity: 0.75;
+  cursor: progress;
+}
 
-.massar-welcome-viewport {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  z-index: 99999;
-  background-color: var(--bone, #F1ECE2);
+.massar-login-alert {
+  margin: 0;
+  padding: 10px var(--space-3);
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--clay) 8%, var(--bone));
+  font-size: 14px;
   display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-sizing: border-box;
-  animation: massarSplitLensEntrance 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  gap: 10px;
+  align-items: baseline;
 }
 
-.massar-welcome-viewport.massar-welcome-dissolving {
-  opacity: 0;
-  filter: blur(16px) brightness(1.05);
-  transform: scale(1.025);
-  pointer-events: none;
-}
-
-/* Optical rack focus entrance */
-@keyframes massarSplitLensEntrance {
-  0% {
-    opacity: 0.2;
-    filter: blur(20px) brightness(1.15);
-    transform: scale(1.03);
-  }
-  100% {
-    opacity: 1;
-    filter: blur(0px) brightness(1);
-    transform: scale(1);
-  }
-}
-
-/* Grid Frame: max-width 1440px, outer margins 64px desktop / 24px tablet / 16px mobile */
-.massar-grid-frame {
-  max-width: 1440px;
-  width: 100%;
-  margin-inline: auto;
-  padding-inline: 64px;
-  box-sizing: border-box;
-}
-
-@media (max-width: 1023px) {
-  .massar-grid-frame {
-    padding-inline: 24px;
-  }
-}
-
-@media (max-width: 767px) {
-  .massar-grid-frame {
-    padding-inline: 16px;
-  }
-}
-
-/* 12-column grid container with 24px column gap */
-.massar-12-col-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  column-gap: 24px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-/* ── 1. Top Bar (72px) ── */
-.massar-split-topbar {
-  height: 72px;
-  min-height: 72px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid rgba(13, 59, 52, 0.06);
-}
-
-.massar-welcome-brand {
-  grid-column: 1 / 4;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  text-decoration: none;
-}
-
-.massar-welcome-brand-mark {
-  width: 26px;
-  height: 29px;
-  display: block;
-  object-fit: contain;
-}
-
-.massar-welcome-brand-text {
-  font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  color: var(--massar-green, #0D3B34);
-}
-
-.massar-split-topbar-action {
-  grid-column: 10 / 13;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-/* "Enter Workspace →" button (Right edge aligns exactly with col 12) */
-.massar-enter-workspace-btn {
-  background: transparent;
-  color: var(--massar-green, #0D3B34);
-  border: 1px solid rgba(13, 59, 52, 0.22);
-  border-radius: var(--radius-control, 4px);
-  padding: 9px 20px;
-  font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.massar-enter-workspace-btn:hover {
-  background: rgba(13, 59, 52, 0.08);
-  border-color: var(--massar-green, #0D3B34);
-  transform: translateX(2px);
-}
-
-/* When loading completes, button becomes primary filled green */
-.massar-enter-workspace-btn.massar-enter-active {
-  background-color: var(--massar-green, #0D3B34);
-  color: var(--bone, #F1ECE2);
-  border-color: var(--massar-green, #0D3B34);
-  box-shadow: 0 4px 14px rgba(13, 59, 52, 0.25);
-}
-
-.massar-enter-workspace-btn.massar-enter-active:hover {
-  background-color: var(--ink, #101815);
-  border-color: var(--ink, #101815);
-}
-
-/* ── 2. Middle Split Area ── */
-.massar-split-middle {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  min-height: 0;
-  padding: 32px 0;
-  box-sizing: border-box;
-}
-
-/* Middle grid alignment: height 100% */
-.massar-split-middle-grid {
-  align-items: center;
-  height: 100%;
-}
-
-/* Left Content: cols 1–6 */
-.massar-split-content {
-  grid-column: 1 / 7;
-  text-align: start;
-  align-self: center;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Eyebrow: 12px, uppercase, letter-spacing 0.08em, medium, muted green, small dot */
-.massar-split-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #2D5A4C;
-  margin-bottom: 16px;
-  opacity: 0;
-  animation: massarSplitFadeUp 250ms cubic-bezier(0.16, 1, 0.3, 1) 0ms forwards;
-}
-
-.massar-split-eyebrow-dot {
-  width: 6px;
-  height: 6px;
+.massar-login-alert::before {
+  content: '';
+  flex-shrink: 0;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background-color: #2D5A4C;
-  display: inline-block;
+  background: var(--color-attention);
+  transform: translateY(-1px);
+}
+
+/* Signing in: the card settles back quietly while the workspace loads */
+.massar-login-card[aria-busy='true'] {
+  opacity: 0.7;
+  transform: scale(0.99);
+  transition: opacity 300ms var(--motion-ease), transform 300ms var(--motion-ease);
+}
+
+.massar-login-dev {
+  background: none;
+  border: none;
+  padding: var(--space-1) 0;
+  color: var(--color-text-strong);
+  font: 500 12px var(--font-sans);
+  text-decoration: underline;
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .massar-intro {
+    display: none;
+  }
+}
+
+/* Inline-styled buttons get one shared, quiet hover state. */
+.massar-content button:not(:disabled):hover,
+.massar-content summary:hover {
+  filter: brightness(1.12);
+}
+
+.massar-content button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Client spaces in the sidebar: a small dot, not a badge */
+.massar-nav-dot {
+  width: 18px;
+  display: inline-flex;
+  justify-content: center;
   flex-shrink: 0;
 }
 
-/* Headline: serif display, clamp(48px, 6vw, 88px), line-height 1.05, letter-spacing -0.02em, 2 lines */
-.massar-split-headline {
-  margin: 0 0 24px 0;
-  font-family: var(--font-serif);
-  font-size: clamp(48px, 6vw, 88px);
-  line-height: 1.05;
-  letter-spacing: -0.02em;
-  color: var(--ink, #101815);
-  font-weight: 500;
-  display: flex;
-  flex-direction: column;
-  opacity: 0;
-  animation: massarSplitFadeUp 250ms cubic-bezier(0.16, 1, 0.3, 1) 60ms forwards;
-}
-
-.massar-split-headline span {
-  display: block;
-}
-
-/* Supporting text: 16–18px sans, line-height 1.6, muted, max-width 45ch */
-.massar-split-support-text {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: clamp(16px, 1.2vw, 18px);
-  line-height: 1.6;
-  color: #5A655F;
-  max-width: 45ch;
-  opacity: 0;
-  animation: massarSplitFadeUp 250ms cubic-bezier(0.16, 1, 0.3, 1) 120ms forwards;
-}
-
-@keyframes massarSplitFadeUp {
-  0% {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Col 7 stays empty: grid-column: 7 / 8 is unoccupied */
-
-/* Right Visual Panel: cols 8–12 */
-.massar-split-panel {
-  grid-column: 8 / 13;
-  height: 100%;
-  min-height: 380px;
-  max-height: 480px;
-  background-color: var(--massar-green, #0D3B34);
-  background-image: radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.06) 0%, transparent 60%);
-  border-radius: 16px;
-  position: relative;
-  overflow: hidden;
-  box-sizing: border-box;
-  padding: 36px 32px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  box-shadow: 0 16px 48px -12px rgba(13, 59, 52, 0.28);
-  opacity: 0;
-  animation: massarSplitPanelFade 350ms cubic-bezier(0.16, 1, 0.3, 1) 180ms forwards;
-}
-
-@keyframes massarSplitPanelFade {
-  0% {
-    opacity: 0;
-    transform: scale(0.985);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Oversized watermark emblem cropped off edge at 8% opacity */
-.massar-split-panel-watermark {
-  position: absolute;
-  inset-inline-end: -40px;
-  bottom: -40px;
-  width: 300px;
-  height: 330px;
-  opacity: 0.08;
-  pointer-events: none;
-  background-color: #F1ECE2;
-  -webkit-mask: url(/image/massar_logo.svg) no-repeat center / contain;
-  mask: url(/image/massar_logo.svg) no-repeat center / contain;
-}
-
-/* Visual Panel Content: Calm "Today" Preview */
-.massar-panel-header {
-  position: relative;
-  z-index: 2;
-}
-
-.massar-panel-tag {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(241, 236, 226, 0.6);
-  margin-bottom: 6px;
-}
-
-.massar-panel-date {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 500;
-  color: var(--bone, #F1ECE2);
-  letter-spacing: -0.01em;
-}
-
-.massar-panel-stats {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.massar-panel-stat-card {
-  padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(241, 236, 226, 0.1);
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.massar-panel-stat-num {
-  font-family: var(--font-sans);
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--bone, #F1ECE2);
-  line-height: 1;
-}
-
-.massar-panel-stat-meta {
-  font-family: var(--font-sans);
-  font-size: 12px;
-  color: rgba(241, 236, 226, 0.72);
-  margin-top: 2px;
-}
-
-.massar-panel-status {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: rgba(241, 236, 226, 0.75);
-}
-
-.massar-status-dot-pulse {
+.massar-nav-dot::before {
+  content: '';
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background-color: #34D399;
-  box-shadow: 0 0 8px #34D399;
+  background: var(--sidebar-text-muted);
 }
 
-/* ── 3. Bottom Bar (72px) ── */
-.massar-split-bottombar {
-  height: 72px;
-  min-height: 72px;
-  display: flex;
-  align-items: center;
-  border-top: 1px solid rgba(13, 59, 52, 0.06);
+.massar-nav-link[aria-current='page'] .massar-nav-dot::before {
+  background: var(--bone);
 }
 
-/* Progress: cols 1–4 */
-.massar-split-progress-wrap {
-  grid-column: 1 / 5;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  transition: opacity 0.4s ease;
+.massar-nav-dot[data-hot='true']::before {
+  background: var(--clay);
 }
-
-.massar-split-progress-wrap.massar-progress-done {
-  opacity: 0;
-}
-
-.massar-split-progress-label {
-  font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: #5A655F;
-}
-
-.massar-split-progress-track {
-  height: 2px;
-  width: 100%;
-  background-color: rgba(13, 59, 52, 0.12);
-  border-radius: 999px;
-  overflow: hidden;
-}
-
-.massar-split-progress-fill {
-  height: 100%;
-  background-color: var(--massar-green, #0D3B34);
-  border-radius: 999px;
-  transition: width 35ms linear;
-}
-
-/* Right side of bottom bar: ending on col 12 */
-.massar-split-bottom-meta {
-  grid-column: 8 / 13;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  font-family: var(--font-sans);
-  font-size: 12px;
-  letter-spacing: 0.04em;
-  color: var(--stone, #9A9791);
-}
-
-/* ── 4. Dev-Only Grid Overlay (Toggle with key "G") ── */
-.massar-dev-grid-overlay {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 100000;
-}
-
-.massar-overlay-frame {
-  height: 100%;
-}
-
-.massar-overlay-grid {
-  height: 100%;
-}
-
-.massar-overlay-col {
-  height: 100%;
-  background-color: rgba(220, 38, 38, 0.05);
-  border-inline: 1px dashed rgba(220, 38, 38, 0.35);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 8px 4px;
-  box-sizing: border-box;
-}
-
-.massar-overlay-col-num {
-  font-family: monospace;
-  font-size: 11px;
-  font-weight: 700;
-  color: rgba(220, 38, 38, 0.75);
-  background: rgba(255, 255, 255, 0.85);
-  padding: 1px 4px;
-  border-radius: 2px;
-  align-self: flex-start;
-}
-
-.massar-overlay-pill {
-  position: fixed;
-  bottom: 24px;
-  inset-inline-end: 24px;
-  background: rgba(16, 24, 21, 0.92);
-  color: #FFFFFF;
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 500;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  pointer-events: auto;
-  user-select: none;
-}
-
-.massar-overlay-pill kbd {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-family: monospace;
-  font-size: 11px;
-}
-
-/* ── 5. Responsive Breakpoints ── */
-
-/* Tablet (768px – 1023px) */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .massar-split-content {
-    grid-column: 1 / 8;
-  }
-  .massar-split-panel {
-    grid-column: 9 / 13;
-    padding: 24px 20px;
-  }
-  .massar-split-progress-wrap {
-    grid-column: 1 / 6;
-  }
-  .massar-split-bottom-meta {
-    grid-column: 7 / 13;
-  }
-}
-
-/* Mobile (< 768px) */
-@media (max-width: 767px) {
-  .massar-welcome-viewport {
-    overflow-y: auto;
-  }
-  .massar-split-topbar {
-    height: 60px;
-    min-height: 60px;
-  }
-  .massar-welcome-brand {
-    grid-column: 1 / 9;
-  }
-  .massar-split-topbar-action {
-    display: none;
-  }
-  .massar-split-middle {
-    padding: 24px 0;
-    align-items: flex-start;
-  }
-  .massar-split-middle-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-    height: auto;
-  }
-  .massar-split-content {
-    width: 100%;
-  }
-  .massar-split-headline {
-    font-size: clamp(38px, 10vw, 54px);
-    margin-bottom: 16px;
-  }
-  .massar-split-panel {
-    width: 100%;
-    min-height: 200px;
-    max-height: none;
-    padding: 20px;
-  }
-  .massar-split-panel-watermark {
-    width: 180px;
-    height: 200px;
-  }
-  .massar-split-bottombar {
-    height: auto;
-    min-height: 64px;
-    padding: 16px 0;
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-  }
-  .massar-split-progress-wrap {
-    width: 100%;
-  }
-  .massar-split-bottom-meta {
-    width: 100%;
-    justify-content: flex-start;
-  }
-  .massar-mobile-enter-btn {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    margin-top: 12px;
-  }
-}
-
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  .massar-welcome-viewport,
-  .massar-split-eyebrow,
-  .massar-split-headline,
-  .massar-split-support-text,
-  .massar-split-panel {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-    filter: none !important;
-  }
-  .massar-split-progress-fill {
-    transition: none !important;
-  }
-}
-
-/* Cascading Dashboard Entrance Reveal ("وبعدين يبدا يظهر الشغل بتاعه") */
-@keyframes massarDashboardCascade {
-  0% {
-    opacity: 0.65;
-    transform: translateY(16px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.massar-main {
-  animation: massarDashboardCascade 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-
-

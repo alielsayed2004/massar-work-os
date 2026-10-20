@@ -39,7 +39,7 @@ export const CLIENT_STATUS: Record<string, string> = {
 }
 
 export const ROLE: Record<string, string> = {
-  admin: 'System Admin',
+  admin: 'Partner',
   manager: 'Team Lead',
   member: 'Team Member',
   client: 'Client',
@@ -57,30 +57,10 @@ export const HANDOVER_REASON_LABEL: Record<string, string> = Object.fromEntries(
   HANDOVER_REASONS.map(r => [r.value, r.label])
 )
 
-export const LEAD_STATUS_LABEL: Record<string, string> = {
-  new: 'New',
-  assigned: 'Assigned',
-  contacted: 'Contacted',
-  qualified: 'Qualified',
-  follow_up: 'In Follow-up',
-  converted: 'Converted',
-  closed: 'Closed',
-}
-
-export const JOURNEY_STAGE_LABEL: Record<string, string> = {
-  awareness: 'Awareness',
-  consideration: 'Consideration',
-  purchase: 'Purchase',
-  onboarding: 'Onboarding',
-  retention: 'Retention',
-  support: 'Support',
-  advocacy: 'Advocacy',
-}
-
 /** Status tone → only approved palette (see Design System §6 Badges). */
 export function statusTone(status: string): 'neutral' | 'done' | 'waiting' | 'attention' {
   if (['completed', 'approved_internally', 'client_approved', 'converted', 'executed'].includes(status)) return 'done'
-  if (['internal_review', 'shared_with_client', 'contacted', 'follow_up', 'in_progress', 'qualified'].includes(status)) return 'waiting'
+  if (['active', 'internal_review', 'shared_with_client', 'contacted', 'follow_up', 'in_progress', 'qualified'].includes(status)) return 'waiting'
   if (['blocked', 'internal_changes_requested', 'client_changes_requested', 'overdue', 'closed'].includes(status)) return 'attention'
   return 'neutral'
 }
@@ -94,7 +74,7 @@ export const MESSAGES: Record<string, string> = {
   MISSING_SERVICE_ROLE_KEY: 'Server configuration incomplete (SUPABASE_SERVICE_ROLE_KEY). Check .env.local.',
   // tasks
   TASK_NOT_FOUND: 'Task not found or not in your workspace scope.',
-  TASK_TEAM_REQUIRED: 'Please select a team for this task.',
+  TASK_TEAM_REQUIRED: 'This person isn’t in a team yet. Add them to a team in Settings first.',
   TASK_OWNER_INVALID: 'Selected owner is not available.',
   INVALID_STATUS_TRANSITION: 'Task cannot transition to this status directly.',
   TASK_CREATED: 'Task created and owner notified.',
@@ -133,7 +113,24 @@ export const MESSAGES: Record<string, string> = {
   // admin
   INVITE_FAILED: 'Could not send invitation. Verify the email address and ensure it is not already registered.',
   INVITE_SENT: 'Invitation sent successfully.',
-  CLIENT_REQUIRED: 'Select the client organization associated with this client account.',
+  USER_DEACTIVATED: 'Access removed. Their history stays in the system.',
+  USER_REACTIVATED: 'Access restored.',
+  CLIENT_ADDED: 'Client added.',
+  // delivery flow
+  TASK_HAS_NO_CLIENT: 'This task isn’t linked to a client project, so it can’t be sent to a client. Mark it complete instead.',
+  TASK_ALREADY_CLOSED: 'This task is already closed.',
+  DELIVERY_IN_PROGRESS: 'This work is already with the reviewer or the client.',
+  DELIVERY_OPENED: 'Upload your files, then send them for check.',
+  SENT_FOR_CHECK: 'Sent for check. You’ll be notified when it’s reviewed.',
+  SENT_TO_CLIENT: 'Approved and sent to the client.',
+  CHANGES_SENT: 'Changes sent back to the owner.',
+  // review links
+  LINK_INVALID: 'This link has expired or doesn’t work. Ask your Massar contact for a new one.',
+  LINK_ALREADY_DECIDED: 'This version was already answered or replaced by a newer one.',
+  CLIENT_APPROVED: 'Thank you. Your approval was sent to the Massar team.',
+  CLIENT_CHANGES_SENT: 'Thank you. The team got your notes and will send a new version.',
+  WHATSAPP_SAVED: 'WhatsApp number saved.',
+  CLIENT_DECISION_RECORDED: 'Recorded: the client approved. The task is closed.',
 }
 
 /** Pull a known code out of a Supabase / thrown error message. */

@@ -1,15 +1,17 @@
 export const instant = false;
-import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import GlobalHeader from '@/components/GlobalHeader'
-import WelcomeOverlay from '@/components/WelcomeOverlay'
-import SidebarNav from '@/components/SidebarNav'
+import { connection } from 'next/server'
+import AppShell from '@/components/AppShell'
+import type { NavGroup } from '@/components/SidebarNav'
+import { readDevRole, homeFor } from '@/lib/dev-session'
+import { ROLE } from '@/lib/labels'
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  await connection()
   const cookieStore = await cookies()
-  const devRole = cookieStore.get('massar_dev_session')?.value
+  const devRole = readDevRole(cookieStore)
 
   let user: { id: string; email?: string; user_metadata?: { full_name?: string } } | null = null
   let profile: { role: string; full_name: string | null; status: string } | null = null
@@ -22,7 +24,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       user_metadata: { full_name: 'Ali Elsayed' },
     }
     profile = {
-      role: devRole || 'admin',
+      role: devRole,
       full_name: 'Ali Elsayed',
       status: 'active',
     }
@@ -70,45 +72,66 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const role = profile.role
   const isInternal = role === 'admin' || role === 'manager' || role === 'member'
+  const isLead = role === 'admin' || role === 'manager'
+  // Clients have no account any more: they review from the WhatsApp link
+  if (!isInternal) redirect('/login?message=inactive')
+  const fullName = profile.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Massar'
 
-  const navItems = [
-    isInternal && { href: '/my-work', label: 'My Work' },
-    isInternal && { href: '/crm', label: 'CRM & Journeys' },
-    (role === 'admin' || role === 'manager') && { href: '/my-team', label: 'My Team' },
-    isInternal && { href: '/deliverables', label: 'Deliverables' },
-    (role === 'admin' || role === 'manager') && { href: '/projects', label: 'Clients & Projects' },
-    role === 'admin' && { href: '/admin', label: 'Settings' },
-    role === 'client' && { href: '/client-portal', label: 'Client Portal' },
-  ].filter(Boolean) as { href: string; label: string }[]
+  // Team members see their own work only; partners and leads see the business.
+  // Leads get each client space in the sidebar, with what's waiting for their check
+  let spaceItems: NavGroup['items'] = []
+  let waitingTotal = 0
+  if (isLead && !devRole) {
+    const supabase = await createClient()
+    const [{ data: clientRows }, { data: checkRows }] = await Promise.all([
+      supabase.from('clients').select('id, company_name').eq('status', 'active').order('company_name'),
+      supabase.from('deliverables').select('projects ( client_id )').eq('summary_status', 'internal_review'),
+    ])
+    const waiting = new Map<string, number>()
+    for (const row of (checkRows || []) as unknown as { projects: { client_id: string } | null }[]) {
+      const id = row.projects?.client_id
+      if (id) waiting.set(id, (waiting.get(id) || 0) + 1)
+    }
+    waitingTotal = (checkRows || []).length
+    spaceItems = (clientRows || []).map(c => ({
+      href: `/spaces/${c.id}`,
+      label: c.company_name,
+      dot: true,
+      count: waiting.get(c.id),
+    }))
+  }
+
+  // Team members see their own work only; partners and leads run the business.
+  const groups: NavGroup[] = !isLead
+    ? [{ heading: 'Workspace', items: [{ href: '/my-work', label: 'My Work', icon: 'work' as const }] }]
+    : [
+        {
+          heading: 'Workspace',
+          items: [
+            { href: '/today', label: 'Today', icon: 'bell' as const, count: waitingTotal },
+            { href: '/spaces', label: 'Client spaces', icon: 'spaces' as const, exact: true },
+            { href: '/team', label: 'Team', icon: 'team' as const },
+            { href: '/my-work', label: 'My Work', icon: 'work' as const },
+          ],
+        },
+        ...(spaceItems.length ? [{ heading: 'Clients', items: spaceItems }] : []),
+        ...(role === 'admin'
+          ? [{ heading: 'System', items: [{ href: '/admin', label: 'Settings', icon: 'settings' as const }] }]
+          : []),
+      ]
 
   return (
-    <div className="massar-shell">
-      <WelcomeOverlay
-        fullName={profile.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Ali'}
-        role={role}
-      />
-      <aside className="massar-sidebar">
-        <div className="massar-sidebar-brand">
-          <Link href="/my-work" style={{ display: 'inline-flex', padding: 0, textDecoration: 'none' }} aria-label="Massar Home">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/image/massar_logo.svg"
-              alt="Massar"
-              className="massar-sidebar-logo"
-            />
-          </Link>
-        </div>
-        <SidebarNav items={navItems} />
-      </aside>
-
-      <main className="massar-main">
-        <GlobalHeader
-          unreadNotifications={notifications || []}
-          fullName={profile.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Ali'}
-          canSearch={isInternal}
-        />
+    <>
+      <AppShell
+        groups={groups}
+        homeHref={homeFor(role)}
+        fullName={fullName}
+        roleLabel={ROLE[role] || role}
+        notifications={notifications || []}
+        canSearch={isInternal}
+      >
         {children}
-      </main>
-    </div>
+      </AppShell>
+    </>
   )
 }

@@ -15,9 +15,9 @@ SUPABASE_SERVICE_ROLE_KEY=...
 لا تضع قبله `NEXT_PUBLIC_` أبدًا، ولا ترفعه على Git.
 
 ### 2. قاعدة البيانات
-- **قاعدة بيانات شغّلت عليها 001–006 قبل كده** → شغّل في SQL Editor ملف واحد بس:
-  `supabase/migrations/20261007000007_security_hardening.sql`
-- **قاعدة بيانات جديدة فاضية** → شغّل `init.sql` (فيه 001→007 بالترتيب) أو `supabase db push`.
+- **قاعدة بيانات شغّلت عليها 001–010 قبل كده** → شغّل في SQL Editor ملف واحد بس:
+  `supabase/migrations/20261020000011_record_client_decision.sql`
+- **قاعدة بيانات جديدة فاضية** → شغّل `init.sql` (فيه 001→011 بالترتيب) أو `supabase db push`.
 - لا تشغّل `init.sql` على قاعدة فيها الجداول بالفعل؛ هيطلع `already exists`.
 
 ### 3. بيانات تجريبية (اختياري — محلي/Staging فقط)

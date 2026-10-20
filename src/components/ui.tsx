@@ -1,118 +1,125 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { MESSAGES, statusTone } from '@/lib/labels'
+import { Icon } from '@/components/icons'
 
 /* Shared, token-only styles (Design System §6). No HEX values here. */
 
 export const s = {
   pageTitle: {
-    fontFamily: 'var(--font-serif)',
-    fontSize: '34px',
-    fontWeight: 500,
+    fontSize: 'var(--text-page)',
+    fontWeight: 600,
     letterSpacing: '-0.02em',
     color: 'var(--color-text-strong)',
     margin: '0 0 var(--space-4)',
-    lineHeight: 1.2,
+    lineHeight: 1.15,
   } as CSSProperties,
   sectionTitle: {
-    fontFamily: 'var(--font-serif)',
-    fontSize: '24px',
-    fontWeight: 500,
-    letterSpacing: '-0.01em',
+    fontSize: '16px',
+    fontWeight: 600,
     color: 'var(--color-text-strong)',
     margin: '0 0 var(--space-3)',
-    lineHeight: 1.25,
+    lineHeight: 1.3,
   } as CSSProperties,
   section: {
-    backgroundColor: 'var(--color-surface)',
-    border: 'var(--border-width) solid var(--color-divider)',
+    backgroundColor: 'var(--color-surface-raised)',
+    border: 'var(--border-width) solid var(--color-line)',
     borderRadius: 'var(--radius-surface)',
     padding: 'var(--space-4)',
-    marginBottom: 'var(--space-5)',
+    marginBottom: 'var(--space-4)',
   } as CSSProperties,
   label: {
     display: 'block',
-    fontSize: '11px',
-    fontWeight: 600,
-    letterSpacing: '0.06em',
-    textTransform: 'uppercase',
-    fontFamily: 'var(--font-sans)',
+    fontSize: '13px',
+    fontWeight: 500,
     color: 'var(--color-text)',
-    marginBottom: 'var(--space-1)',
+    marginBottom: '6px',
   } as CSSProperties,
   field: {
     width: '100%',
-    minHeight: 'var(--control-height)',
-    padding: '0 var(--space-3)',
+    minHeight: '44px',
+    padding: '0 12px',
     borderRadius: 'var(--radius-control)',
-    border: 'var(--border-width) solid var(--color-border-strong)',
-    backgroundColor: 'var(--color-surface)',
+    border: 'var(--border-width) solid var(--color-line-strong)',
+    backgroundColor: 'var(--color-surface-raised)',
     color: 'var(--color-text)',
-    fontSize: 'var(--text-body)',
-    fontFamily: 'var(--font-sans)',
+    fontSize: '15px',
+    fontFamily: 'inherit',
     boxSizing: 'border-box',
   } as CSSProperties,
   primary: {
-    minHeight: 'var(--control-height)',
-    padding: '0 var(--space-4)',
+    minHeight: '44px',
+    padding: '0 18px',
     backgroundColor: 'var(--color-action-primary)',
     color: 'var(--color-action-primary-text)',
-    border: 'none',
+    border: 'var(--border-width) solid var(--color-action-primary)',
     borderRadius: 'var(--radius-control)',
-    fontSize: 'var(--text-body)',
+    fontSize: '14px',
     fontWeight: 600,
     fontFamily: 'inherit',
     cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    whiteSpace: 'nowrap',
   } as CSSProperties,
   secondary: {
-    minHeight: 'var(--control-height)',
-    padding: '0 var(--space-4)',
-    backgroundColor: 'var(--color-surface)',
+    minHeight: '44px',
+    padding: '0 18px',
+    backgroundColor: 'var(--color-surface-raised)',
     color: 'var(--color-text-strong)',
-    border: 'var(--border-width) solid var(--color-text-strong)',
+    border: 'var(--border-width) solid var(--color-line-strong)',
     borderRadius: 'var(--radius-control)',
-    fontSize: 'var(--text-body)',
-    fontWeight: 500,
-    fontFamily: 'inherit',
-    cursor: 'pointer',
-  } as CSSProperties,
-  attention: {
-    minHeight: 'var(--control-height)',
-    padding: '0 var(--space-4)',
-    backgroundColor: 'var(--color-attention)',
-    color: 'var(--color-attention-text)',
-    border: 'none',
-    borderRadius: 'var(--radius-control)',
-    fontSize: 'var(--text-body)',
+    fontSize: '14px',
     fontWeight: 600,
     fontFamily: 'inherit',
     cursor: 'pointer',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    whiteSpace: 'nowrap',
+  } as CSSProperties,
+  attention: {
+    minHeight: '44px',
+    padding: '0 18px',
+    backgroundColor: 'var(--color-attention)',
+    color: 'var(--color-attention-text)',
+    border: 'var(--border-width) solid var(--color-attention)',
+    borderRadius: 'var(--radius-control)',
+    fontSize: '14px',
+    fontWeight: 600,
+    fontFamily: 'inherit',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap',
   } as CSSProperties,
   textBtn: {
     background: 'none',
     border: 'none',
     padding: 'var(--space-2) 0',
     color: 'var(--color-text-strong)',
-    fontSize: 'var(--text-label)',
-    fontWeight: 500,
+    fontSize: '14px',
+    fontWeight: 600,
     fontFamily: 'inherit',
     cursor: 'pointer',
-    textDecoration: 'underline',
   } as CSSProperties,
   table: { width: '100%', borderCollapse: 'collapse', textAlign: 'start' } as CSSProperties,
   th: {
-    padding: 'var(--space-2)',
-    fontSize: '11px',
+    padding: '10px var(--space-4)',
+    fontSize: '12px',
     fontWeight: 600,
-    letterSpacing: '0.06em',
+    letterSpacing: '0.04em',
     textTransform: 'uppercase',
-    color: 'var(--color-text)',
-    borderBottom: 'var(--border-width) solid var(--color-border-strong)',
+    color: 'var(--color-text-muted)',
+    backgroundColor: 'var(--color-surface-sunken)',
+    borderBottom: 'var(--border-width) solid var(--color-line)',
     textAlign: 'start',
+    whiteSpace: 'nowrap',
   } as CSSProperties,
   td: {
-    padding: 'var(--space-2)',
+    padding: '12px var(--space-4)',
     height: 'var(--row-height)',
-    borderBottom: 'var(--border-width) solid var(--color-divider)',
+    borderBottom: 'var(--border-width) solid var(--color-line)',
     verticalAlign: 'middle',
   } as CSSProperties,
   formGrid: {
@@ -121,7 +128,111 @@ export const s = {
     gap: 'var(--space-3)',
     alignItems: 'end',
   } as CSSProperties,
-  muted: { color: 'var(--color-text)', fontSize: 'var(--text-label)' } as CSSProperties,
+  muted: { color: 'var(--color-text-muted)', fontSize: '14px' } as CSSProperties,
+}
+
+/** One title per screen, an optional line of context, and at most one primary action. */
+export function PageHeader({
+  eyebrow,
+  title,
+  description,
+  actions,
+}: {
+  eyebrow?: string
+  title: string
+  description?: ReactNode
+  actions?: ReactNode
+}) {
+  return (
+    <header className="massar-page-header">
+      <div>
+        {eyebrow && <p className="massar-page-eyebrow">{eyebrow}</p>}
+        <h1 className="massar-page-title">{title}</h1>
+        {description && <p className="massar-page-description">{description}</p>}
+      </div>
+      {actions && <div className="massar-page-actions">{actions}</div>}
+    </header>
+  )
+}
+
+export function StatStrip({ items }: { items: { label: string; value: number | string; attention?: boolean }[] }) {
+  return (
+    <dl className="massar-stats">
+      {items.map(item => (
+        <div key={item.label} className="massar-stat" data-tone={item.attention ? 'attention' : undefined}>
+          <dt>
+            {item.attention && <span className="massar-stat-dot" aria-hidden="true" />}
+            {item.label}
+          </dt>
+          <dd>{item.value}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
+/** A titled section of a page: serif heading over a hairline, then the body. */
+export function Panel({
+  title,
+  count,
+  attention,
+  subtitle,
+  actions,
+  flush,
+  children,
+  id,
+}: {
+  title: string
+  count?: number
+  attention?: boolean
+  subtitle?: ReactNode
+  actions?: ReactNode
+  flush?: boolean
+  children: ReactNode
+  id?: string
+}) {
+  return (
+    <section className="massar-panel massar-section" id={id} aria-label={title}>
+      <div className="massar-panel-head">
+        <div>
+          <h2 className="massar-panel-title">
+            {title}
+            {typeof count === 'number' && (
+              <span className="massar-panel-count" data-tone={attention && count > 0 ? 'attention' : undefined}>
+                {count}
+              </span>
+            )}
+          </h2>
+          {subtitle && <p className="massar-panel-sub">{subtitle}</p>}
+        </div>
+        {actions}
+      </div>
+      <div className="massar-panel-body" data-flush={flush ? '' : undefined}>
+        {children}
+      </div>
+    </section>
+  )
+}
+
+/** A create form kept out of the way until asked for (native <details>, no client JS). */
+export function CreatePanel({
+  label,
+  children,
+  secondary,
+}: {
+  label: string
+  children: ReactNode
+  secondary?: boolean
+}) {
+  return (
+    <details className="massar-disclosure massar-create">
+      <summary style={secondary ? s.secondary : s.primary}>
+        <Icon name="plus" style={{ width: 16, height: 16 }} />
+        {label}
+      </summary>
+      <div className="massar-create-body">{children}</div>
+    </details>
+  )
 }
 
 const toneMark: Record<string, string> = { neutral: '○', done: '✓', waiting: '◷', attention: '!' }
@@ -132,17 +243,21 @@ export function StatusBadge({ status, label }: { status: string; label: string }
   const base: CSSProperties = {
     display: 'inline-flex',
     alignItems: 'center',
-    gap: 'var(--space-1)',
-    padding: 'var(--space-1) var(--space-2)',
-    borderRadius: 'var(--radius-small)',
-    fontSize: 'var(--text-label)',
+    gap: '6px',
+    minHeight: '24px',
+    padding: '0 10px',
+    boxSizing: 'border-box',
+    borderRadius: '12px',
+    fontSize: '13px',
     fontWeight: 500,
+    lineHeight: 1,
     whiteSpace: 'nowrap',
+    border: 'var(--border-width) solid transparent',
   }
   const tones: Record<string, CSSProperties> = {
-    neutral: { color: 'var(--color-text)', border: 'var(--border-width) solid var(--color-border-strong)' },
+    neutral: { color: 'var(--color-text)', borderColor: 'var(--color-line-strong)' },
     done: { color: 'var(--color-text-on-dark)', backgroundColor: 'var(--color-action-primary)' },
-    waiting: { color: 'var(--color-text-strong)', border: 'var(--border-width) solid var(--color-text-strong)' },
+    waiting: { color: 'var(--color-text-strong)', backgroundColor: 'var(--color-hover-strong)' },
     attention: { color: 'var(--color-attention-text)', backgroundColor: 'var(--color-attention)' },
   }
   return (
@@ -162,15 +277,15 @@ export function Flash({ error, ok }: { error?: string; ok?: string }) {
     <div
       role={isError ? 'alert' : 'status'}
       style={{
-        backgroundColor: 'var(--color-surface)',
+        backgroundColor: 'var(--color-surface-raised)',
         color: 'var(--color-text)',
-        border: 'var(--border-width) solid var(--color-divider)',
+        border: 'var(--border-width) solid var(--color-line)',
         borderInlineStartWidth: '4px',
         borderInlineStartColor: isError ? 'var(--color-attention)' : 'var(--color-action-primary)',
-        padding: 'var(--space-3)',
+        padding: '12px var(--space-3)',
         borderRadius: 'var(--radius-control)',
         marginBottom: 'var(--space-4)',
-        fontSize: 'var(--text-body)',
+        fontSize: '15px',
       }}
     >
       {MESSAGES[code] || MESSAGES.UNKNOWN}
@@ -179,5 +294,5 @@ export function Flash({ error, ok }: { error?: string; ok?: string }) {
 }
 
 export function Empty({ children }: { children: ReactNode }) {
-  return <p style={{ ...s.muted, padding: 'var(--space-3) 0', margin: 0 }}>{children}</p>
+  return <p style={{ ...s.muted, padding: 'var(--space-5) var(--space-4)', margin: 0, textAlign: 'center' }}>{children}</p>
 }

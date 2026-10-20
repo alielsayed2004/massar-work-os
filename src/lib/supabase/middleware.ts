@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { readDevRole } from '@/lib/dev-session'
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -27,8 +28,7 @@ export async function updateSession(request: NextRequest) {
     }
   )
 
-  const devSession = request.cookies.get('massar_dev_session')?.value
-  if (devSession) {
+  if (readDevRole(request.cookies)) {
     return supabaseResponse
   }
 
@@ -48,7 +48,9 @@ export async function updateSession(request: NextRequest) {
     !user &&
     !request.nextUrl.pathname.startsWith('/login') &&
     !request.nextUrl.pathname.startsWith('/auth') &&
-    !request.nextUrl.pathname.startsWith('/api')
+    !request.nextUrl.pathname.startsWith('/api') &&
+    // Client review links work without signing in; the token is the permission
+    !request.nextUrl.pathname.startsWith('/r/')
   ) {
     // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone()

@@ -22,7 +22,8 @@ export async function requestHandover(formData: FormData) {
   if (error) backWithError('/my-work', error)
 
   revalidatePath('/my-work')
-  revalidatePath('/my-team')
+  revalidatePath('/team')
+  revalidatePath('/today')
   backWithOk('/my-work', 'HANDOVER_REQUESTED')
 }
 
@@ -35,9 +36,9 @@ export async function decideHandover(formData: FormData) {
   const note = String(formData.get('internal_note') || '')
 
   if (!handoverId || !['assigned', 'declined', 'cancelled'].includes(decision)) {
-    backWithError('/my-team', 'MISSING_FIELDS')
+    backWithError('/team', 'MISSING_FIELDS')
   }
-  if (decision === 'assigned' && !newOwner) backWithError('/my-team', 'NEW_OWNER_REQUIRED')
+  if (decision === 'assigned' && !newOwner) backWithError('/team', 'NEW_OWNER_REQUIRED')
 
   const { error } = await supabase.rpc('process_handover_decision', {
     p_handover_id: handoverId,
@@ -45,9 +46,10 @@ export async function decideHandover(formData: FormData) {
     p_new_owner_id: decision === 'assigned' ? newOwner : null,
     p_internal_note: note || null,
   })
-  if (error) backWithError('/my-team', error)
+  if (error) backWithError('/team', error)
 
-  revalidatePath('/my-team')
+  revalidatePath('/team')
+  revalidatePath('/today')
   revalidatePath('/my-work')
-  backWithOk('/my-team', 'HANDOVER_DONE')
+  backWithOk('/team', 'HANDOVER_DONE')
 }

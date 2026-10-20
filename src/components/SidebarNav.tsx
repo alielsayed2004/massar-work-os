@@ -2,42 +2,52 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { Icon, type IconName } from '@/components/icons'
 
-interface NavItem {
+export interface NavItem {
   href: string
   label: string
+  icon?: IconName
+  /** A small dot instead of an icon (client spaces); clay when something waits */
+  dot?: boolean
+  /** Things waiting for a decision here */
+  count?: number
+  /** Highlight only on this exact path, not its children */
+  exact?: boolean
 }
 
-export default function SidebarNav({ items }: { items: NavItem[] }) {
+export interface NavGroup {
+  heading: string
+  items: NavItem[]
+}
+
+export function isActivePath(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
+
+export default function SidebarNav({ groups, onNavigate }: { groups: NavGroup[]; onNavigate?: () => void }) {
   const pathname = usePathname()
 
   return (
-    <nav aria-label="Main Navigation" style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-      {items.map((item) => {
-        const isActive = pathname === item.href || (item.href !== '/my-work' && pathname.startsWith(item.href))
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            style={{
-              color: isActive ? 'var(--bone)' : 'rgba(241, 236, 226, 0.82)',
-              backgroundColor: isActive ? 'rgba(241, 236, 226, 0.14)' : 'transparent',
-              textDecoration: 'none',
-              padding: '10px var(--space-3)',
-              borderRadius: 'var(--radius-control)',
-              fontSize: 'var(--text-body)',
-              fontWeight: isActive ? 600 : 500,
-              fontFamily: 'var(--font-sans)',
-              minHeight: '44px',
-              display: 'flex',
-              alignItems: 'center',
-              transition: 'all var(--motion-fast) var(--motion-ease)',
-            }}
-          >
-            {item.label}
-          </Link>
-        )
-      })}
+    <nav aria-label="Main navigation" className="massar-nav">
+      {groups.map(group => (
+        <div key={group.heading} className="massar-nav-group">
+          <p className="massar-nav-heading">{group.heading}</p>
+          {group.items.map(item => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className="massar-nav-link"
+              aria-current={(item.exact ? pathname === item.href : isActivePath(pathname, item.href)) ? 'page' : undefined}
+              onClick={onNavigate}
+            >
+              {item.dot ? <span className="massar-nav-dot" data-hot={item.count ? 'true' : undefined} aria-hidden="true" /> : item.icon ? <Icon name={item.icon} /> : null}
+              <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</span>
+              {item.count ? <span className="massar-nav-count" aria-label={`${item.count} waiting`}>{item.count}</span> : null}
+            </Link>
+          ))}
+        </div>
+      ))}
     </nav>
   )
 }

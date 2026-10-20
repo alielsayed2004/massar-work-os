@@ -20,7 +20,8 @@ export async function updateTaskStatus(formData: FormData) {
   if (error) backWithError(back, error)
 
   revalidatePath('/my-work')
-  revalidatePath('/my-team')
+  revalidatePath('/today')
+  revalidatePath('/spaces', 'layout')
   backWithOk(back)
 }
 
@@ -28,18 +29,42 @@ export async function updateTaskStatus(formData: FormData) {
  *  notification are handled by DB triggers. */
 export async function createTask(formData: FormData) {
   const supabase = await createClient()
-  const back = String(formData.get('back') || '/my-team')
+  const back = String(formData.get('back') || '/spaces')
 
   const title = String(formData.get('title') || '').trim()
   const owner = String(formData.get('owner_id') || '')
-  const teamId = String(formData.get('team_id') || '')
   const dueLocal = String(formData.get('due_at') || '')
+  let teamId = String(formData.get('team_id') || '')
+  if (!teamId && owner) {
+    // Partners pick a person, not a team: the task lands in that person's team.
+    const { data: person } = await supabase.from('profiles').select('team_id').eq('id', owner).single()
+    teamId = person?.team_id || ''
+    if (!teamId) backWithError(back, 'TASK_TEAM_REQUIRED')
+  }
   if (!title || !owner || !teamId || !dueLocal) backWithError(back, 'MISSING_FIELDS')
+
+  // From a client space: the task joins that client's project, or a "General"
+  // project made the first time so work can still be sent to the client.
+  let projectId = String(formData.get('project_id') || '') || null
+  const clientId = String(formData.get('client_id') || '')
+  if (!projectId && clientId) {
+    const { data: existing } = await supabase
+      .from('projects').select('id').eq('client_id', clientId).neq('status', 'archived')
+      .order('created_at', { ascending: true }).limit(1)
+    projectId = existing?.[0]?.id || null
+    if (!projectId) {
+      const { data: made, error: projErr } = await supabase
+        .from('projects').insert({ client_id: clientId, name: 'General', internal_team_id: teamId, status: 'active' })
+        .select('id').single()
+      if (projErr || !made) backWithError(back, projErr)
+      projectId = made.id
+    }
+  }
 
   const { error } = await supabase.from('tasks').insert({
     title,
     description: String(formData.get('description') || '') || null,
-    project_id: String(formData.get('project_id') || '') || null,
+    project_id: projectId,
     current_owner_user_id: owner,
     original_owner_user_id: owner,
     reviewer_user_id: String(formData.get('reviewer_user_id') || '') || null,
@@ -49,8 +74,9 @@ export async function createTask(formData: FormData) {
   })
   if (error) backWithError(back, error)
 
-  revalidatePath('/my-team')
   revalidatePath('/my-work')
+  revalidatePath('/today')
+  revalidatePath('/spaces', 'layout')
   backWithOk(back, 'TASK_CREATED')
 }
 
