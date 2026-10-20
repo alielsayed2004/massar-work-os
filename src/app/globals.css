@@ -73,7 +73,7 @@
   --text-page: 28px;
 
   /* Layout */
-  --sidebar-width: 248px;
+  --sidebar-width: 232px;
   --content-max-width: 1280px;
   --grid-columns-desktop: 12;
   --grid-gap: 24px;
@@ -195,12 +195,12 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 44px;
+  min-height: 40px;
   padding: 0 var(--space-2);
   border-radius: var(--radius-control);
   color: var(--sidebar-text);
   text-decoration: none;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   position: relative;
   transition: background-color var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease);
@@ -230,7 +230,7 @@ body {
   inset-inline-start: calc(-1 * var(--space-3));
   top: 10px;
   bottom: 10px;
-  width: 3px;
+  width: 2px;
   border-radius: 0 2px 2px 0;
   background: var(--bone);
 }
@@ -329,11 +329,12 @@ body {
   gap: var(--space-3);
   height: 64px;
   padding: 0 var(--space-5);
-  background: var(--color-page);
-  border-bottom: var(--border-width) solid var(--color-line);
+  background: color-mix(in srgb, var(--bone) 88%, transparent);
+  backdrop-filter: blur(8px);
 }
 
 .massar-topbar-title {
+  display: none;
   font-size: 15px;
   font-weight: 600;
   color: var(--color-text-strong);
@@ -462,8 +463,8 @@ body {
 }
 
 @keyframes massarFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
 }
 
 .massar-scrim {
@@ -477,23 +478,24 @@ body {
   justify-content: space-between;
   gap: var(--space-3);
   flex-wrap: wrap;
-  margin-bottom: var(--space-5);
+  margin-bottom: var(--space-6);
 }
 
 .massar-page-eyebrow {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--color-text-muted);
   margin: 0 0 6px;
 }
 
 .massar-page-title {
-  font-size: var(--text-page);
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 3.2vw, 42px);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
   color: var(--color-text-strong);
   margin: 0;
 }
@@ -501,8 +503,8 @@ body {
 .massar-page-description {
   font-size: 15px;
   color: var(--color-text-muted);
-  margin: 8px 0 0;
-  max-width: 64ch;
+  margin: 12px 0 0;
+  max-width: 60ch;
   line-height: 1.5;
 }
 
@@ -517,21 +519,20 @@ body {
 .massar-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  background: var(--color-surface-raised);
-  border: var(--border-width) solid var(--color-line);
-  border-radius: var(--radius-surface);
-  margin: 0 0 var(--space-5);
+  border-block: var(--border-width) solid var(--color-line);
+  margin: 0 0 var(--space-6);
   overflow: hidden;
 }
 
 .massar-stat {
-  padding: var(--space-3) var(--space-4);
+  padding: 20px var(--space-4);
   border-inline-start: var(--border-width) solid var(--color-line);
   margin: 0;
 }
 
 .massar-stat:first-child {
   border-inline-start: none;
+  padding-inline-start: 0;
 }
 
 .massar-stat dt {
@@ -544,9 +545,10 @@ body {
 }
 
 .massar-stat dd {
-  margin: 6px 0 0;
-  font-size: 30px;
-  font-weight: 600;
+  margin: 10px 0 0;
+  font-family: var(--font-serif);
+  font-size: 44px;
+  font-weight: 400;
   letter-spacing: -0.02em;
   line-height: 1;
   color: var(--color-text-strong);
@@ -554,7 +556,7 @@ body {
 }
 
 .massar-stat[data-tone='attention'] dd {
-  color: var(--color-attention);
+  color: var(--color-text);
 }
 
 .massar-stat-dot {
@@ -633,6 +635,69 @@ body {
   border-radius: 0 0 var(--radius-surface) var(--radius-surface);
 }
 
+/* Panel sections (the Panel component): no box, a serif heading over a
+   hairline, rows separated by hairlines. Cards keep .massar-panel alone. */
+.massar-section {
+  background: none;
+  border: none;
+  border-radius: 0;
+  margin-bottom: var(--space-7);
+}
+
+.massar-section > .massar-panel-head {
+  padding: 0 0 12px;
+  border-bottom-color: var(--color-line-strong);
+}
+
+.massar-section .massar-panel-title {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+.massar-section .massar-panel-count {
+  background: none;
+  min-width: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.massar-section .massar-panel-count[data-tone='attention'] {
+  background: none;
+  color: var(--color-text);
+  gap: 6px;
+}
+
+.massar-section .massar-panel-count[data-tone='attention']::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-attention);
+}
+
+.massar-section > .massar-panel-body {
+  padding: var(--space-4) 0;
+}
+
+.massar-section > .massar-panel-body[data-flush] {
+  padding: 0;
+}
+
+.massar-section .massar-row {
+  padding: 20px 0;
+}
+
+.massar-section .massar-table-wrap {
+  background: var(--color-surface-raised);
+  border: var(--border-width) solid var(--color-line);
+  border-top: none;
+}
+
 /* Stacked rows inside a flush panel */
 .massar-row {
   padding: var(--space-4);
@@ -644,12 +709,6 @@ body {
 }
 
 /* Two-column page layout: main work + supporting rail */
-.massar-split {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  gap: var(--space-4);
-  align-items: start;
-}
 
 /* Tables. Overflow stays visible on desktop so row menus aren't clipped;
    narrow screens scroll the table instead of squeezing columns. */
@@ -815,56 +874,8 @@ body {
 }
 
 /* Key–value metadata row */
-.massar-meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: var(--space-3);
-  margin: 0;
-}
-
-.massar-meta dt {
-  font-size: 12px;
-  color: var(--color-text-muted);
-  margin-bottom: 2px;
-}
-
-.massar-meta dd {
-  margin: 0;
-  font-weight: 500;
-}
 
 /* Workload list in the side rail */
-.massar-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.massar-list > li {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px var(--space-4);
-  border-bottom: var(--border-width) solid var(--color-line);
-}
-
-.massar-list > li:last-child {
-  border-bottom: none;
-}
-
-.massar-meter {
-  height: 4px;
-  border-radius: 2px;
-  background: var(--color-hover-strong);
-  overflow: hidden;
-  margin-top: 6px;
-}
-
-.massar-meter > span {
-  display: block;
-  height: 100%;
-  background: var(--color-action-primary);
-}
 
 .massar-btn-row {
   display: flex;
@@ -881,9 +892,8 @@ body {
   padding: 14px var(--space-3);
   margin-bottom: var(--space-4);
   background: var(--color-surface-raised);
-  border: var(--border-width) solid var(--color-attention);
-  border-inline-start-width: 4px;
-  border-radius: var(--radius-control);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
   color: var(--color-text);
 }
 
@@ -959,7 +969,6 @@ body {
 
 .massar-space-card:hover {
   border-color: var(--color-line-strong);
-  box-shadow: var(--shadow-overlay);
 }
 
 .massar-space-card-top {
@@ -970,8 +979,9 @@ body {
 
 .massar-space-card h2 {
   margin: 0;
-  font-size: 17px;
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 400;
 }
 
 .massar-space-card p {
@@ -983,22 +993,22 @@ body {
 .massar-space-mono {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 50%;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
-  font-weight: 700;
-  background: var(--massar-green);
-  color: var(--bone);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  background: var(--color-hover-strong);
+  color: var(--color-text-strong);
 }
 
 .massar-space-mono-lg {
   width: 56px;
   height: 56px;
-  border-radius: 14px;
-  font-size: 18px;
+  font-size: 17px;
 }
 
 .massar-space-stats {
@@ -1009,23 +1019,30 @@ body {
 }
 
 .massar-space-stats div {
-  padding: 10px;
-  border-radius: 8px;
-  background: var(--color-surface-sunken);
+  padding: 10px 0 0;
+  border-top: var(--border-width) solid var(--color-line);
   display: flex;
   flex-direction: column-reverse;
 }
 
 .massar-space-stats dd {
   margin: 0;
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--color-text-strong);
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--color-text);
   font-variant-numeric: tabular-nums;
 }
 
-.massar-space-stats dd[data-hot='true'] {
-  color: var(--color-attention);
+.massar-space-stats dd[data-hot='true']::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-inline-start: 6px;
+  vertical-align: super;
+  border-radius: 50%;
+  background: var(--color-attention);
 }
 
 .massar-space-stats dt {
@@ -1047,7 +1064,7 @@ body {
   background-image: radial-gradient(color-mix(in srgb, var(--ink) 12%, transparent) 1px, transparent 1.3px);
   background-size: 20px 20px;
   border: var(--border-width) solid var(--color-line);
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 4px 18px;
   overflow-x: auto;
 }
@@ -1144,10 +1161,10 @@ body {
 .massar-flow-step:not(:last-child)::after {
   content: '';
   position: absolute;
-  top: 27px;
-  left: calc(50% + 32px);
-  right: calc(-50% + 32px);
-  height: 2px;
+  top: 19px;
+  left: calc(50% + 26px);
+  right: calc(-50% + 26px);
+  height: 1px;
   background: var(--color-line-strong);
 }
 
@@ -1162,20 +1179,20 @@ body {
 .massar-flow-node {
   position: relative;
   z-index: 1;
-  width: 56px;
-  height: 56px;
-  border-radius: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-surface-raised);
-  border: 1.5px solid var(--color-line-strong);
+  border: 1px solid var(--color-line-strong);
   color: color-mix(in srgb, var(--ink) 32%, var(--bone));
 }
 
 .massar-flow-node svg {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
 }
 
 .massar-flow-node::before,
@@ -1183,12 +1200,12 @@ body {
   content: '';
   position: absolute;
   top: 50%;
-  width: 8px;
-  height: 8px;
-  margin-top: -4px;
+  width: 5px;
+  height: 5px;
+  margin-top: -3px;
   border-radius: 50%;
   background: var(--color-surface-raised);
-  border: 1.5px solid var(--color-line-strong);
+  border: 1px solid var(--color-line-strong);
 }
 
 .massar-flow-node::before { left: -5px; }
@@ -1209,16 +1226,21 @@ body {
 }
 
 .massar-flow-step.now .massar-flow-node {
-  border: 2px solid var(--color-action-primary);
+  border: 1px solid var(--color-action-primary);
   background: var(--color-action-primary);
   color: var(--white);
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--massar-green) 14%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--massar-green) 10%, transparent);
 }
 
-.massar-flow-step.now.wait .massar-flow-node {
-  border-color: var(--color-attention);
+.massar-flow-step.now.wait .massar-flow-node::after {
+  display: block;
+  top: -1px;
+  right: -1px;
+  margin: 0;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--color-surface-raised);
   background: var(--color-attention);
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--clay) 18%, transparent);
 }
 
 .massar-flow-step-label {
@@ -1286,9 +1308,15 @@ body {
   gap: 12px;
 }
 
-.massar-person-card[data-late='true'] {
-  border-color: color-mix(in srgb, var(--clay) 55%, transparent);
-  box-shadow: inset 4px 0 0 var(--color-attention);
+.massar-person-card[data-late='true'] h2::after {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-inline-start: 8px;
+  vertical-align: middle;
+  border-radius: 50%;
+  background: var(--color-attention);
 }
 
 .massar-person-card-top {
@@ -1300,8 +1328,9 @@ body {
 
 .massar-person-card h2 {
   margin: 0;
-  font-size: 17px;
-  font-weight: 600;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  font-weight: 400;
 }
 
 .massar-person-card-top p {
@@ -1329,25 +1358,9 @@ body {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--clay) 9%, var(--white));
+  padding: 10px 0 0;
+  border-top: var(--border-width) solid var(--color-line);
   font-size: 14px;
-}
-
-/* Sidebar: client spaces listed under the nav */
-.massar-nav-mono {
-  width: 24px;
-  height: 24px;
-  border-radius: 7px;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 700;
-  background: var(--bone);
-  color: var(--massar-green);
 }
 
 .massar-nav-count {
@@ -1360,292 +1373,13 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 11px;
-  font-weight: 700;
-  background: var(--clay);
-  color: var(--white);
-}
-
-/* ── Overview: team strip + stage board ───────────────────────────────
-   Columns read left→right as the path work travels; connector dots and
-   arrows between columns make the "network" of the reference design. */
-.massar-people {
-  display: flex;
-  gap: var(--space-2);
-  overflow-x: auto;
-  padding: 4px 2px var(--space-3);
-  margin-bottom: var(--space-2);
-  scrollbar-width: thin;
-}
-
-.massar-person {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-  min-height: 48px;
-  padding: 6px 12px 6px 6px;
-  border-radius: 28px;
-  background: var(--color-surface-raised);
-  border: var(--border-width) solid var(--color-line);
-  color: var(--color-text);
-  text-decoration: none;
-  font-size: 14px;
-  font-weight: 500;
-  transition: border-color var(--motion-fast) var(--motion-ease), background-color var(--motion-fast) var(--motion-ease);
-}
-
-.massar-person .massar-avatar {
-  background: var(--massar-green);
-  color: var(--bone);
-}
-
-.massar-person:hover {
-  border-color: var(--color-line-strong);
-}
-
-.massar-person[aria-current='true'] {
-  background: var(--massar-green);
-  border-color: var(--massar-green);
-  color: var(--white);
-}
-
-.massar-person[aria-current='true'] .massar-avatar {
-  background: var(--bone);
-  color: var(--massar-green);
-}
-
-.massar-person-count {
-  min-width: 22px;
-  height: 22px;
-  padding: 0 6px;
-  box-sizing: border-box;
-  border-radius: 11px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  background: var(--color-hover-strong);
-  color: var(--color-text-strong);
-}
-
-.massar-person[aria-current='true'] .massar-person-count {
+  font-weight: 600;
   background: var(--sidebar-active);
-  color: var(--white);
-}
-
-.massar-person-count[data-tone='attention'],
-.massar-person[aria-current='true'] .massar-person-count[data-tone='attention'] {
-  background: var(--color-attention);
-  color: var(--color-attention-text);
-}
-
-.massar-board-summary {
-  margin: 0 0 var(--space-3);
-  font-size: 14px;
-  color: var(--color-text-muted);
-}
-
-.massar-board-summary strong {
-  color: var(--color-text);
-}
-
-.massar-board {
-  --board-gap: 18px;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(196px, 1fr));
-  gap: var(--board-gap);
-  overflow-x: auto;
-  padding-bottom: var(--space-3);
-  align-items: start;
-}
-
-.massar-col {
-  position: relative;
-  min-width: 0;
-  background: var(--color-surface-sunken);
-  border: var(--border-width) solid var(--color-line);
-  border-radius: var(--radius-surface);
-  min-height: 240px;
-}
-
-.massar-col[data-hot='true'] {
-  border-color: var(--color-attention);
-  box-shadow: 0 0 0 1px var(--color-attention);
-}
-
-/* arrow to the next stage */
-.massar-col + .massar-col::before {
-  content: '';
-  position: absolute;
-  top: 30px;
-  inset-inline-start: calc(-1 * var(--board-gap) + 3px);
-  width: calc(var(--board-gap) - 8px);
-  height: 2px;
-  background: var(--color-line-strong);
-}
-
-.massar-col + .massar-col::after {
-  content: '';
-  position: absolute;
-  top: 26px;
-  inset-inline-start: -9px;
-  border: 5px solid transparent;
-  border-inline-start: 6px solid var(--color-line-strong);
-}
-
-.massar-col-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px var(--space-3);
-  border-bottom: var(--border-width) solid var(--color-line);
-}
-
-.massar-col-step {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 700;
-  background: var(--massar-green);
   color: var(--bone);
+  font-variant-numeric: tabular-nums;
 }
 
-.massar-col-title {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text-strong);
-}
-
-.massar-col-hint {
-  margin: 0;
-  font-size: 12px;
-  color: var(--color-text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.massar-col-body {
-  display: grid;
-  gap: 10px;
-  padding: 10px;
-}
-
-.massar-col-empty {
-  margin: 0;
-  padding: var(--space-3) 0;
-  text-align: center;
-  font-size: 13px;
-  color: var(--color-text-muted);
-}
-
-.massar-flow-card {
-  position: relative;
-  background: var(--color-surface-raised);
-  border: var(--border-width) solid var(--color-line);
-  border-radius: var(--radius-surface);
-  padding: 12px;
-  display: grid;
-  gap: 4px;
-}
-
-/* connector dots on both edges, like nodes in a flow */
-.massar-flow-card::before,
-.massar-flow-card::after {
-  content: '';
-  position: absolute;
-  top: 22px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--color-surface-raised);
-  border: 1.5px solid var(--color-line-strong);
-}
-
-.massar-flow-card::before { inset-inline-start: -5px; }
-.massar-flow-card::after { inset-inline-end: -5px; }
-
-.massar-flow-card[data-late='true'] {
-  border-inline-start: 3px solid var(--color-attention);
-}
-
-.massar-flow-card-top {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-
-.massar-flow-owner {
-  font-size: 13px;
-  font-weight: 500;
-  flex: 1;
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.massar-flow-due {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-text-muted);
-  white-space: nowrap;
-}
-
-.massar-flow-due[data-late='true'] {
-  color: var(--color-attention-text);
-  background: var(--color-attention);
-  border-radius: 10px;
-  padding: 2px 8px;
-}
-
-.massar-flow-title {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.35;
-}
-
-.massar-flow-client {
-  margin: 0;
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
-
-.massar-flow-flag {
-  margin: 4px 0 0;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-text);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.massar-flow-flag::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--color-attention);
-}
-
-.massar-flow-actions {
-  display: grid;
-  gap: 8px;
-  margin-top: 8px;
-  padding-top: 10px;
-  border-top: var(--border-width) solid var(--color-line);
-}
-
+/* ── Shared row bits: file lists and the WhatsApp button ───────────── */
 .massar-flow-files {
   list-style: none;
   margin: 0;
@@ -1677,30 +1411,6 @@ body {
   white-space: nowrap;
 }
 
-.massar-flow-note {
-  margin: 0;
-  font-size: 12px;
-  color: var(--color-text-muted);
-}
-
-.massar-flow-brief {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-}
-
-.massar-flow-more {
-  margin-top: 6px;
-}
-
-.massar-flow-more > summary {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-text-strong);
-  padding: 4px 0;
-}
-
 .massar-wa-btn {
   display: inline-flex;
   align-items: center;
@@ -1725,23 +1435,9 @@ body {
 }
 
 @media (max-width: 900px) {
-  .massar-board {
-    grid-template-columns: repeat(5, 82vw);
-    scroll-snap-type: x mandatory;
+  .massar-topbar-title {
+    display: block;
   }
-  .massar-col {
-    scroll-snap-align: start;
-  }
-}
-
-/* ── Responsive ─────────────────────────────────────────────────────── */
-@media (max-width: 1100px) {
-  .massar-split {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-@media (max-width: 900px) {
   /* Task paths: title on its own line, the five nodes scroll sideways under it */
   .massar-flow-row {
     grid-template-columns: repeat(5, minmax(108px, 1fr));
@@ -1779,10 +1475,10 @@ body {
     width: 280px;
     transform: translateX(-100%);
     transition: transform var(--motion-standard) var(--motion-ease);
-    box-shadow: var(--shadow-overlay);
   }
   .massar-shell[data-nav-open='true'] .massar-sidebar {
     transform: none;
+    box-shadow: var(--shadow-overlay);
   }
   .massar-shell[data-nav-open='true'] .massar-scrim {
     display: block;
@@ -1873,51 +1569,8 @@ body {
 }
 
 /* ── Massar Cinematic Splash Screen & Grand Logo Experience ──────────── */
-.massar-splash-container {
-  position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 99999;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at 50% 50%, #15554b 0%, #0D3B34 45%, #051614 100%);
-  overflow: hidden;
-  user-select: none;
-  cursor: pointer;
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
 
 /* Dedicated out-of-focus camera defocus on the logo */
-.massar-splash-container.massar-splash-defocus .massar-splash-logo-wrap,
-.massar-splash-container.massar-splash-defocus .massar-splash-logo {
-  filter: blur(26px) brightness(1.22) drop-shadow(0 0 45px rgba(241, 236, 226, 0.55));
-  transform: scale(1.14);
-  opacity: 0.92;
-  transition: filter 1s cubic-bezier(0.25, 1, 0.3, 1), transform 1s cubic-bezier(0.25, 1, 0.3, 1), opacity 1s cubic-bezier(0.25, 1, 0.3, 1);
-}
-
-.massar-splash-container.massar-splash-defocus .massar-cinematic-caption {
-  opacity: 0;
-  transform: translateY(-8px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
-}
-
-.massar-splash-container.massar-splash-exit {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.massar-splash-container.massar-splash-exit .massar-splash-logo-wrap,
-.massar-splash-container.massar-splash-exit .massar-splash-logo {
-  filter: blur(34px) brightness(1.28) drop-shadow(0 0 50px rgba(241, 236, 226, 0.6));
-  transform: scale(1.18);
-  opacity: 0;
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), filter 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
-}
 
 /* Atmospheric vignette overlay */
 .massar-splash-vignette {
@@ -2328,4 +1981,28 @@ body {
 .massar-content button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+/* Client spaces in the sidebar: a small dot, not a badge */
+.massar-nav-dot {
+  width: 18px;
+  display: inline-flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.massar-nav-dot::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--sidebar-text-muted);
+}
+
+.massar-nav-link[aria-current='page'] .massar-nav-dot::before {
+  background: var(--bone);
+}
+
+.massar-nav-dot[data-hot='true']::before {
+  background: var(--clay);
 }

@@ -20,7 +20,8 @@ export async function updateTaskStatus(formData: FormData) {
   if (error) backWithError(back, error)
 
   revalidatePath('/my-work')
-  revalidatePath('/my-team')
+  revalidatePath('/today')
+  revalidatePath('/spaces', 'layout')
   backWithOk(back)
 }
 
@@ -28,7 +29,7 @@ export async function updateTaskStatus(formData: FormData) {
  *  notification are handled by DB triggers. */
 export async function createTask(formData: FormData) {
   const supabase = await createClient()
-  const back = String(formData.get('back') || '/my-team')
+  const back = String(formData.get('back') || '/spaces')
 
   const title = String(formData.get('title') || '').trim()
   const owner = String(formData.get('owner_id') || '')
@@ -73,10 +74,9 @@ export async function createTask(formData: FormData) {
   })
   if (error) backWithError(back, error)
 
-  revalidatePath('/my-team')
   revalidatePath('/my-work')
-  revalidatePath('/overview')
-  revalidatePath('/spaces')
+  revalidatePath('/today')
+  revalidatePath('/spaces', 'layout')
   backWithOk(back, 'TASK_CREATED')
 }
 

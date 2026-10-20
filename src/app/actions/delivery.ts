@@ -8,7 +8,8 @@ import { backWithError, backWithOk } from '@/lib/flash'
 // caller and the current state; these actions only route the result.
 
 function refresh() {
-  for (const path of ['/today', '/spaces', '/team', '/overview', '/my-work', '/my-team', '/deliverables', '/client-portal']) revalidatePath(path)
+  for (const path of ['/today', '/team', '/my-work', '/client-portal']) revalidatePath(path)
+  revalidatePath('/spaces', 'layout')
 }
 
 /** The task owner opens a draft version on their task (created on first delivery). */
@@ -33,7 +34,7 @@ export async function sendForCheck(formData: FormData) {
 /** A partner's check. Approval goes straight to the client (owners' decision, Oct 2026). */
 export async function checkDelivery(formData: FormData) {
   const supabase = await createClient()
-  const back = String(formData.get('back') || '/overview')
+  const back = String(formData.get('back') || '/today')
   const versionId = String(formData.get('version_id') || '')
   const decision = String(formData.get('decision') || '')
 

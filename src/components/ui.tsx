@@ -171,7 +171,7 @@ export function StatStrip({ items }: { items: { label: string; value: number | s
   )
 }
 
-/** Grouped content on one white surface: a header row, then the body. */
+/** A titled section of a page: serif heading over a hairline, then the body. */
 export function Panel({
   title,
   count,
@@ -192,7 +192,7 @@ export function Panel({
   id?: string
 }) {
   return (
-    <section className="massar-panel" id={id} aria-label={title}>
+    <section className="massar-panel massar-section" id={id} aria-label={title}>
       <div className="massar-panel-head">
         <div>
           <h2 className="massar-panel-title">

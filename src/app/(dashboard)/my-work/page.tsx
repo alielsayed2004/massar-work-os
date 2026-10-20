@@ -109,7 +109,7 @@ export default async function MyWorkPage({
     const late = h < 0 && stage !== 'check' && stage !== 'client'
 
     return (
-      <article key={task.id} className="massar-row" style={late ? { boxShadow: 'inset 3px 0 0 var(--color-attention)' } : undefined}>
+      <article key={task.id} className="massar-row">
         <div style={{ display: 'flex', gap: 'var(--space-3)', justifyContent: 'space-between', flexWrap: 'wrap' }}>
           <div style={{ minWidth: 0, flex: '1 1 320px' }}>
             <h3 style={{ margin: 0, fontSize: 17, fontWeight: 600 }}>{task.title}</h3>

@@ -4,6 +4,7 @@ import { connection } from 'next/server'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { createTask } from '@/app/actions/tasks'
+import { updateClientContact } from '@/app/actions/projects'
 import { checkDelivery, recordClientDecision } from '@/app/actions/delivery'
 import { nowMs, formatCairo } from '@/lib/labels'
 import { whatsappLink, dueLabel, hoursUntil } from '@/lib/workflow'
@@ -102,7 +103,7 @@ export default async function SpacePage({
           <h1 className="massar-page-title">{client.company_name}</h1>
           <p className="massar-page-description" style={{ marginTop: 4 }}>
             {client.contact_name || 'No contact name'} · <bdi>{client.whatsapp_phone || 'no WhatsApp number'}</bdi>
-            {' · '}<Link href="/projects" style={{ color: 'var(--color-text-strong)' }}>Edit</Link>
+
           </p>
         </div>
         <div className="massar-page-actions">
@@ -110,6 +111,24 @@ export default async function SpacePage({
             <a href={chat} target="_blank" rel="noopener" style={{ ...s.secondary, textDecoration: 'none' }}>
               <Icon name="chat" style={{ width: 16, height: 16 }} /> WhatsApp {contact}
             </a>
+          )}
+          {me?.role === 'admin' && (
+            <CreatePanel label="Edit contact" secondary>
+              <form action={updateClientContact} style={s.formGrid}>
+                <input type="hidden" name="client_id" value={client.id} />
+                <div>
+                  <label htmlFor="cc-name" style={s.label}>Contact person</label>
+                  <input id="cc-name" name="contact_name" defaultValue={client.contact_name || ''} style={s.field} />
+                </div>
+                <div>
+                  <label htmlFor="cc-wa" style={s.label}>WhatsApp number</label>
+                  <input id="cc-wa" name="whatsapp_phone" type="tel" inputMode="tel" defaultValue={client.whatsapp_phone || ''} placeholder="01x xxxx xxxx" style={s.field} />
+                </div>
+                <div>
+                  <button type="submit" style={s.primary}>Save</button>
+                </div>
+              </form>
+            </CreatePanel>
           )}
           <CreatePanel label="New task">{newTaskForm}</CreatePanel>
         </div>

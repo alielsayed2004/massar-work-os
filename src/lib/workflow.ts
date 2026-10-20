@@ -1,14 +1,6 @@
 /** Where a piece of work sits on the owners' board. One task = one card. */
 export type Stage = 'received' | 'working' | 'check' | 'client' | 'done'
 
-export const STAGES: { key: Stage; label: string; hint: string }[] = [
-  { key: 'received', label: 'Received', hint: 'Assigned, not started' },
-  { key: 'working', label: 'In progress', hint: 'With the team' },
-  { key: 'check', label: 'Your check', hint: 'Delivered, waiting for a partner' },
-  { key: 'client', label: 'With client', hint: 'Waiting for the client’s reply' },
-  { key: 'done', label: 'Done', hint: 'Approved by the client' },
-]
-
 /** Task status + its delivery's status (if any) → board stage. */
 export function stageOf(taskStatus: string, deliveryStatus: string | null | undefined): Stage {
   if (taskStatus === 'completed' || deliveryStatus === 'client_approved') return 'done'

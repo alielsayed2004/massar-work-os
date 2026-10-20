@@ -111,7 +111,6 @@ export async function setUserActive(formData: FormData) {
 
   revalidatePath('/admin')
   revalidatePath('/team')
-  revalidatePath('/overview')
   backWithOk(back, active ? 'USER_REACTIVATED' : 'USER_DEACTIVATED')
 }
 

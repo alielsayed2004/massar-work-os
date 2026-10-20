@@ -95,7 +95,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     spaceItems = (clientRows || []).map(c => ({
       href: `/spaces/${c.id}`,
       label: c.company_name,
-      mono: c.company_name.split(/\s+/).slice(0, 2).map((w: string) => w[0]?.toUpperCase()).join(''),
+      dot: true,
       count: waiting.get(c.id),
     }))
   }
@@ -116,17 +116,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
           ],
         },
         ...(spaceItems.length ? [{ heading: 'Clients', items: spaceItems }] : []),
-        {
-          heading: 'More',
-          items: [
-            { href: '/overview', label: 'All work board', icon: 'board' as const },
-            { href: '/my-team', label: 'Handovers', icon: 'team' as const },
-            { href: '/deliverables', label: 'Deliverables', icon: 'deliverables' as const },
-            { href: '/projects', label: 'Clients & projects', icon: 'projects' as const },
-            { href: '/crm', label: 'Leads', icon: 'crm' as const },
-            ...(role === 'admin' ? [{ href: '/admin', label: 'Settings', icon: 'settings' as const }] : []),
-          ],
-        },
+        ...(role === 'admin'
+          ? [{ heading: 'System', items: [{ href: '/admin', label: 'Settings', icon: 'settings' as const }] }]
+          : []),
       ]
 
   return (

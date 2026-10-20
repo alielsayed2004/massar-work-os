@@ -8,8 +8,8 @@ export interface NavItem {
   href: string
   label: string
   icon?: IconName
-  /** Letters shown instead of an icon (client spaces) */
-  mono?: string
+  /** A small dot instead of an icon (client spaces); clay when something waits */
+  dot?: boolean
   /** Things waiting for a decision here */
   count?: number
   /** Highlight only on this exact path, not its children */
@@ -41,7 +41,7 @@ export default function SidebarNav({ groups, onNavigate }: { groups: NavGroup[];
               aria-current={(item.exact ? pathname === item.href : isActivePath(pathname, item.href)) ? 'page' : undefined}
               onClick={onNavigate}
             >
-              {item.mono ? <span className="massar-nav-mono" aria-hidden="true">{item.mono}</span> : item.icon ? <Icon name={item.icon} /> : null}
+              {item.dot ? <span className="massar-nav-dot" data-hot={item.count ? 'true' : undefined} aria-hidden="true" /> : item.icon ? <Icon name={item.icon} /> : null}
               <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.label}</span>
               {item.count ? <span className="massar-nav-count" aria-label={`${item.count} waiting`}>{item.count}</span> : null}
             </Link>

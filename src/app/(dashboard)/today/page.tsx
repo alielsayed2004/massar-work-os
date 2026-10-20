@@ -88,14 +88,17 @@ export default async function TodayPage({
   const justSent = send ? deliveries.find(d => d.version?.id === send && d.summary_status === 'shared_with_client') : undefined
   const total = toCheck.length + late.length + slowClients.length + (handovers || 0)
   const clientLine = (p: Delivery['projects'] | Task['projects']) => (p?.clients ? `${p.clients.company_name} · ${p.name}` : 'Internal')
+  const hour = Number(formatInTimeZone(new Date(now), CAIRO, 'H'))
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
+  const firstName = me.full_name?.split(' ')[0]
 
   return (
     <div>
       <PageHeader
-        eyebrow={formatInTimeZone(new Date(), CAIRO, 'EEEE, d MMMM')}
-        title={total ? `${total} ${total === 1 ? 'thing needs' : 'things need'} you` : 'All clear'}
-        description={total ? 'Each item has its next step on the right. Clear the list and nothing is stuck.' : 'Nothing is waiting for your check, nothing is late, and no client has been waiting more than a day.'}
-        actions={<Link href="/overview" style={{ ...s.secondary, textDecoration: 'none' }}>See all work</Link>}
+        eyebrow={formatInTimeZone(new Date(now), CAIRO, 'EEEE, d MMMM')}
+        title={firstName ? `${greeting}, ${firstName}.` : `${greeting}.`}
+        description={total ? `${total} ${total === 1 ? 'thing needs' : 'things need'} you today. Each one has its next step beside it.` : 'All clear. Nothing is waiting for your check, nobody is late, and no client has been waiting more than a day.'}
+        actions={<Link href="/spaces" style={{ ...s.secondary, textDecoration: 'none' }}>Client spaces</Link>}
       />
       <Flash error={error} ok={ok} />
 
@@ -120,7 +123,7 @@ export default async function TodayPage({
             <strong>{handovers} handover {handovers === 1 ? 'request' : 'requests'}</strong>
             <div style={{ fontSize: 14 }}>Someone can’t finish on time and needs you to pick who takes over.</div>
           </div>
-          <Link href="/my-team" style={{ ...s.primary, textDecoration: 'none' }}>Decide</Link>
+          <Link href="/team#handovers" style={{ ...s.primary, textDecoration: 'none' }}>Decide</Link>
         </div>
       )}
 
@@ -188,7 +191,7 @@ export default async function TodayPage({
                       <Icon name="chat" /> Nudge {first}
                     </a>
                   ) : (
-                    <Link href="/admin" style={{ ...s.secondary, textDecoration: 'none' }}>Add {first}’s WhatsApp</Link>
+                    <Link href="/team" style={{ ...s.secondary, textDecoration: 'none' }}>Add {first}’s WhatsApp</Link>
                   )}
                 </div>
               </article>
