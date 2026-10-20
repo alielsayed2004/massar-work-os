@@ -6,7 +6,8 @@ import { revalidatePath } from 'next/cache'
 import { cairoInputToUtcIso } from '@/lib/labels'
 import { backWithError, backWithOk } from '@/lib/flash'
 
-const ROLES = ['admin', 'manager', 'member', 'client'] as const
+// Clients don't sign in: they review from the WhatsApp link
+const ROLES = ['admin', 'manager', 'member'] as const
 
 async function requireAdmin() {
   const supabase = await createClient()
@@ -29,17 +30,14 @@ export async function inviteUser(formData: FormData) {
   const full_name = String(formData.get('full_name') || '').trim()
   const role = String(formData.get('role') || '')
   const team_id = String(formData.get('team_id') || '') || null
-  const client_id = String(formData.get('client_id') || '') || null
 
   if (!email || !full_name || !ROLES.includes(role as (typeof ROLES)[number])) backWithError(back, 'MISSING_FIELDS')
-  if (role === 'client' && !client_id) backWithError(back, 'CLIENT_REQUIRED')
 
   const failure = await inviteAccount({
     email,
     fullName: full_name,
     role: role as (typeof ROLES)[number],
     teamId: team_id,
-    clientId: client_id,
     whatsapp: String(formData.get('whatsapp_phone') || '').trim() || null,
   })
   if (failure) backWithError(back, failure)
@@ -61,7 +59,7 @@ export async function updateUserRole(formData: FormData) {
 
   const { error } = await supabase
     .from('profiles')
-    .update({ role, team_id: role === 'client' ? null : team_id })
+    .update({ role, team_id })
     .eq('id', target_id)
   if (error) backWithError('/admin', error)
 

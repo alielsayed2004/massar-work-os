@@ -1,9 +1,9 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 
-type Role = 'admin' | 'manager' | 'member' | 'client'
+type Role = 'admin' | 'manager' | 'member'
 
 /**
- * Sends a Supabase invite and sets role / team / client link with the service
+ * Sends a Supabase invite and sets role / team with the service
  * key (app_metadata), so nobody can choose their own role at sign-up.
  * Callers must check that the actor is a partner (admin) BEFORE calling this.
  * Returns an error code, or null on success.
@@ -13,7 +13,6 @@ export async function inviteAccount(input: {
   fullName: string
   role: Role
   teamId?: string | null
-  clientId?: string | null
   whatsapp?: string | null
 }): Promise<string | null> {
   let admin
@@ -27,7 +26,7 @@ export async function inviteAccount(input: {
   if (error || !data?.user) return 'INVITE_FAILED'
 
   const { error: metaErr } = await admin.auth.admin.updateUserById(data.user.id, {
-    app_metadata: { role: input.role, client_id: input.clientId || null },
+    app_metadata: { role: input.role, client_id: null },
   })
   if (metaErr) return 'INVITE_FAILED'
 
@@ -37,13 +36,9 @@ export async function inviteAccount(input: {
     full_name: input.fullName,
     role: input.role,
     status: 'active',
-    team_id: input.role === 'client' ? null : input.teamId || null,
+    team_id: input.teamId || null,
     whatsapp_phone: input.whatsapp || null,
   })
   if (profErr) return 'INVITE_FAILED'
-
-  if (input.role === 'client' && input.clientId) {
-    await admin.from('client_memberships').upsert({ client_id: input.clientId, user_id: data.user.id })
-  }
   return null
 }

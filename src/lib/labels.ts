@@ -113,7 +113,6 @@ export const MESSAGES: Record<string, string> = {
   // admin
   INVITE_FAILED: 'Could not send invitation. Verify the email address and ensure it is not already registered.',
   INVITE_SENT: 'Invitation sent successfully.',
-  CLIENT_REQUIRED: 'Select the client organization associated with this client account.',
   USER_DEACTIVATED: 'Access removed. Their history stays in the system.',
   USER_REACTIVATED: 'Access restored.',
   CLIENT_ADDED: 'Client added.',
@@ -123,7 +122,7 @@ export const MESSAGES: Record<string, string> = {
   DELIVERY_IN_PROGRESS: 'This work is already with the reviewer or the client.',
   DELIVERY_OPENED: 'Upload your files, then send them for check.',
   SENT_FOR_CHECK: 'Sent for check. You’ll be notified when it’s reviewed.',
-  SENT_TO_CLIENT: 'Approved and sent to the client. Use the WhatsApp button to let them know.',
+  SENT_TO_CLIENT: 'Approved and sent to the client.',
   CHANGES_SENT: 'Changes sent back to the owner.',
   // review links
   LINK_INVALID: 'This link has expired or doesn’t work. Ask your Massar contact for a new one.',

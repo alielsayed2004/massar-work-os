@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
       { source: '/projects', destination: '/spaces', permanent: false },
       { source: '/deliverables', destination: '/today', permanent: false },
       { source: '/crm', destination: '/today', permanent: false },
+      { source: '/client-portal', destination: '/', permanent: false },
     ]
   },
 };

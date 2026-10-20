@@ -3,12 +3,14 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { backWithError, backWithOk } from '@/lib/flash'
+import { reviewWhatsAppUrl } from '@/lib/review-whatsapp'
+import { toCode } from '@/lib/labels'
 
 // Task → partner check → client. Every step is a DB function that checks the
 // caller and the current state; these actions only route the result.
 
 function refresh() {
-  for (const path of ['/today', '/team', '/my-work', '/client-portal']) revalidatePath(path)
+  for (const path of ['/today', '/team', '/my-work']) revalidatePath(path)
   revalidatePath('/spaces', 'layout')
 }
 
@@ -58,6 +60,30 @@ export async function checkDelivery(formData: FormData) {
 
   refresh()
   backWithOk(back, 'CHANGES_SENT')
+}
+
+/**
+ * "Approve & send": the partner's approval, the share with the client and a
+ * fresh review link in one step. Returns the WhatsApp URL (message and link
+ * typed in) for the button to open; codes report where it stopped.
+ */
+export async function approveAndSend(versionId: string): Promise<{ url?: string; code?: string; approved?: boolean }> {
+  const supabase = await createClient()
+  const { error } = await supabase.rpc('process_review_decision', {
+    p_version_id: versionId,
+    p_stage: 'internal',
+    p_decision: 'approved',
+    p_comment: '',
+  })
+  if (error) return { code: toCode(error) }
+
+  const { error: shareErr } = await supabase.rpc('share_version_with_client', { p_version_id: versionId })
+  refresh()
+  if (shareErr) return { code: toCode(shareErr), approved: true }
+
+  const { url, error: linkErr } = await reviewWhatsAppUrl(supabase, versionId)
+  if (!url) return { code: toCode(linkErr), approved: true }
+  return { url, approved: true }
 }
 
 /** Brief / reference material attached to the task itself (not client-visible). */

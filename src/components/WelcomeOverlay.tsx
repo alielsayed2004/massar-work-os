@@ -10,7 +10,6 @@ const ROLE_EYEBROW: Record<string, string> = {
   admin: 'Operations',
   manager: 'Team lead',
   member: 'Workspace',
-  client: 'Client portal',
 }
 
 function greeting(hour: number) {

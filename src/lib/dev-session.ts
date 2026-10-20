@@ -4,7 +4,7 @@ export const DEV_AUTH_ENABLED = process.env.NODE_ENV !== 'production'
 
 export const DEV_SESSION_COOKIE = 'massar_dev_session'
 
-const DEV_ROLES = ['admin', 'manager', 'member', 'client'] as const
+const DEV_ROLES = ['admin', 'manager', 'member'] as const
 export type DevRole = (typeof DEV_ROLES)[number]
 
 type CookieReader = { get(name: string): { value: string } | undefined }
@@ -27,6 +27,5 @@ export const DEV_COOKIE_OPTIONS = {
 }
 
 export function homeFor(role: string): string {
-  if (role === 'client') return '/client-portal'
   return role === 'admin' || role === 'manager' ? '/today' : '/my-work'
 }

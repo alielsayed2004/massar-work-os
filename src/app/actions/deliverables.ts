@@ -2,26 +2,6 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import { backWithError, backWithOk } from '@/lib/flash'
-
-// Status changes are DB functions that check the caller and the current state
-// (ملحق 1.1 + 1.5). Partner checks and sharing live in ./delivery.ts.
-
-export async function processReview(formData: FormData) {
-  const supabase = await createClient()
-  const { error } = await supabase.rpc('process_review_decision', {
-    p_version_id: String(formData.get('version_id') || ''),
-    p_stage: 'client',
-    p_decision: String(formData.get('decision') || ''),
-    p_comment: String(formData.get('comment') || ''),
-  })
-  if (error) backWithError('/client-portal', error)
-
-  revalidatePath('/client-portal')
-  revalidatePath('/today')
-  revalidatePath('/spaces', 'layout')
-  backWithOk('/client-portal')
-}
 
 /** Called by the upload component after the file is in Storage.
  *  RLS only accepts it while the version is still a draft. */

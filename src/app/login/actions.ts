@@ -38,9 +38,7 @@ export async function login(formData: FormData) {
   // Offline fallback for local development only; production must never
   // turn a failed sign-in into a session.
   if (!targetUrl && DEV_AUTH_ENABLED) {
-    const role: DevRole = email.includes('client')
-      ? 'client'
-      : email.includes('manager')
+    const role: DevRole = email.includes('manager')
       ? 'manager'
       : email.includes('member')
       ? 'member'

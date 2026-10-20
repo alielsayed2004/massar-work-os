@@ -8,6 +8,7 @@ import { CAIRO, nowMs } from '@/lib/labels'
 import { whatsappLink, dueLabel, hoursUntil } from '@/lib/workflow'
 import { s, Flash, Empty, PageHeader, Panel } from '@/components/ui'
 import { Icon } from '@/components/icons'
+import ApproveSendButton from '@/components/ApproveSendButton'
 
 type Client = { company_name: string; contact_name: string | null } | null
 type Version = { id: string; version_number: number; status: string; shared_at: string | null; created_at: string; files: { id: string; original_name: string }[] }
@@ -107,11 +108,11 @@ export default async function TodayPage({
         <div className="massar-due-alert" style={{ borderColor: 'var(--color-action-primary)', alignItems: 'center' }}>
           <Icon name="chat" style={{ color: 'var(--color-action-primary)' }} />
           <div style={{ flex: 1 }}>
-            <strong>Let {justSent.projects?.clients?.contact_name || justSent.projects?.clients?.company_name} know</strong>
-            <div style={{ fontSize: 14 }}>The message has a private link. They can approve or ask for changes without signing in.</div>
+            <strong>WhatsApp is open with the message for {justSent.projects?.clients?.contact_name || justSent.projects?.clients?.company_name}</strong>
+            <div style={{ fontSize: 14 }}>Just press send. The link lets them approve or ask for changes without signing in.</div>
           </div>
           <a href={`/api/review-link/whatsapp?version=${justSent.version!.id}`} target="_blank" rel="noopener" className="massar-wa-btn" style={{ padding: '0 16px' }}>
-            <Icon name="chat" /> Send on WhatsApp
+            <Icon name="chat" /> Didn’t open? Send again
           </a>
         </div>
       )}
@@ -146,11 +147,7 @@ export default async function TodayPage({
                 </ul>
               </div>
               <div className="massar-today-actions">
-                <form action={checkDelivery}>
-                  <input type="hidden" name="back" value="/today" />
-                  <input type="hidden" name="version_id" value={d.version!.id} />
-                  <button type="submit" name="decision" value="approved" style={{ ...s.primary, width: '100%' }}>Approve &amp; send</button>
-                </form>
+                <ApproveSendButton versionId={d.version!.id} back="/today" style={{ ...s.primary, width: '100%' }} />
                 <details className="massar-disclosure">
                   <summary style={{ ...s.secondary, width: '100%', boxSizing: 'border-box' }}>Needs changes</summary>
                   <form action={checkDelivery} style={{ display: 'grid', gap: 8, marginTop: 8 }}>

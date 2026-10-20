@@ -30,12 +30,11 @@ export default async function AdminPage({
   const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).single()
   if (profile?.role !== 'admin') redirect('/my-work')
 
-  const [{ data: userRows }, { data: teamRows }, { data: departments }, { data: projects }, { data: clients }] = await Promise.all([
+  const [{ data: userRows }, { data: teamRows }, { data: departments }, { data: projects }] = await Promise.all([
     supabase.from('profiles').select('id, full_name, role, status, team_id, whatsapp_phone').order('full_name'),
     supabase.from('teams').select('id, name, manager_user_id, departments ( name )').order('name'),
     supabase.from('departments').select('id, name').order('name'),
     supabase.from('projects').select('id, name').eq('status', 'active').order('name'),
-    supabase.from('clients').select('id, company_name').eq('status', 'active').order('company_name'),
   ])
   const users = (userRows || []) as UserRow[]
   const teams = (teamRows || []) as unknown as TeamRow[]
@@ -63,7 +62,6 @@ export default async function AdminPage({
         <select id="i-role" name="role" required defaultValue="member" style={s.field}>
           <option value="member">{ROLE.member}</option>
           <option value="manager">{ROLE.manager}</option>
-          <option value="client">{ROLE.client}</option>
           <option value="admin">{ROLE.admin}</option>
         </select>
       </div>
@@ -72,13 +70,6 @@ export default async function AdminPage({
         <select id="i-team" name="team_id" defaultValue="" style={s.field}>
           <option value="">No team</option>
           {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-        </select>
-      </div>
-      <div>
-        <label htmlFor="i-client" style={s.label}>Client company (client role only)</label>
-        <select id="i-client" name="client_id" defaultValue="" style={s.field}>
-          <option value="">—</option>
-          {clients?.map(c => <option key={c.id} value={c.id}>{c.company_name}</option>)}
         </select>
       </div>
       <div>
@@ -179,7 +170,7 @@ export default async function AdminPage({
                       <form action={updateUserRole} className="massar-btn-row">
                         <input type="hidden" name="user_id" value={u.id} />
                         <select name="role" aria-label={`Role of ${u.full_name}`} defaultValue={u.role} style={{ ...s.field, width: 'auto' }}>
-                          {Object.entries(ROLE).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                          {Object.entries(ROLE).filter(([v]) => v !== 'client' || u.role === 'client').map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                         </select>
                         <select name="team_id" aria-label={`Team of ${u.full_name}`} defaultValue={u.team_id || ''} style={{ ...s.field, width: 'auto' }}>
                           <option value="">No team</option>

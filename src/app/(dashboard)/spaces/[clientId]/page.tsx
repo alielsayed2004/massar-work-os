@@ -12,6 +12,7 @@ import { loadSpaceItems, spaceCounts, initials, type SpaceItem } from '@/lib/spa
 import { s, Flash, Empty, CreatePanel } from '@/components/ui'
 import { Icon, type IconName } from '@/components/icons'
 import VersionUpload from '@/components/VersionUpload'
+import ApproveSendButton from '@/components/ApproveSendButton'
 
 type Client = { id: string; company_name: string; contact_name: string | null; whatsapp_phone: string | null }
 type Person = { id: string; full_name: string; team_id: string | null }
@@ -139,11 +140,11 @@ export default async function SpacePage({
         <div className="massar-due-alert" style={{ borderColor: 'var(--color-action-primary)', alignItems: 'center' }}>
           <Icon name="chat" style={{ color: 'var(--color-action-primary)' }} />
           <div style={{ flex: 1 }}>
-            <strong>Let {contact} know</strong>
-            <div style={{ fontSize: 14 }}>The message has a private link to approve or ask for changes without signing in.</div>
+            <strong>WhatsApp is open with the message for {contact}</strong>
+            <div style={{ fontSize: 14 }}>Just press send. The link lets them approve or ask for changes without signing in.</div>
           </div>
           <a href={`/api/review-link/whatsapp?version=${justSent.version.id}`} target="_blank" rel="noopener" className="massar-wa-btn" style={{ padding: '0 16px' }}>
-            <Icon name="chat" /> Send on WhatsApp
+            <Icon name="chat" /> Didn’t open? Send again
           </a>
         </div>
       )}
@@ -205,11 +206,7 @@ function FlowRow({ item, contact, back, now }: { item: SpaceItem; contact: strin
     if (key === 'check' && version) {
       return (
         <>
-          <form action={checkDelivery}>
-            <input type="hidden" name="back" value={back} />
-            <input type="hidden" name="version_id" value={version.id} />
-            <button type="submit" name="decision" value="approved" style={{ ...s.primary, width: '100%', minHeight: 38, fontSize: 13 }}>Approve &amp; send</button>
-          </form>
+          <ApproveSendButton versionId={version.id} back={back} style={{ ...s.primary, width: '100%', minHeight: 38, fontSize: 13 }} />
           <details className="massar-disclosure">
             <summary style={{ ...s.secondary, width: '100%', minHeight: 38, fontSize: 13, boxSizing: 'border-box' }}>Needs changes</summary>
             <form action={checkDelivery} style={{ display: 'grid', gap: 6, marginTop: 6 }}>

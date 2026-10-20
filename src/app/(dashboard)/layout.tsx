@@ -74,6 +74,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const role = profile.role
   const isInternal = role === 'admin' || role === 'manager' || role === 'member'
   const isLead = role === 'admin' || role === 'manager'
+  // Clients have no account any more: they review from the WhatsApp link
+  if (!isInternal) redirect('/login?message=inactive')
   const fullName = profile.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Massar'
 
   // Team members see their own work only; partners and leads see the business.
@@ -101,9 +103,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   }
 
   // Team members see their own work only; partners and leads run the business.
-  const groups: NavGroup[] = !isInternal
-    ? [{ heading: 'Client portal', items: [{ href: '/client-portal', label: 'My Deliverables', icon: 'portal' as const }] }]
-    : !isLead
+  const groups: NavGroup[] = !isLead
     ? [{ heading: 'Workspace', items: [{ href: '/my-work', label: 'My Work', icon: 'work' as const }] }]
     : [
         {
