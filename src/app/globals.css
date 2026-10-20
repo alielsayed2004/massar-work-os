@@ -1742,6 +1742,18 @@ body {
 }
 
 @media (max-width: 900px) {
+  /* Task paths: title on its own line, the five nodes scroll sideways under it */
+  .massar-flow-row {
+    grid-template-columns: repeat(5, minmax(108px, 1fr));
+    min-width: 600px;
+  }
+  .massar-flow-info {
+    grid-column: 1 / -1;
+    padding: 0 0 14px;
+    position: sticky;
+    left: 0;
+    max-width: calc(100vw - 64px);
+  }
   .massar-table-wrap {
     overflow-x: auto;
   }
