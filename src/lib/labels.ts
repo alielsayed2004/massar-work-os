@@ -112,7 +112,8 @@ export const MESSAGES: Record<string, string> = {
   SAVED: 'Saved successfully.',
   // admin
   INVITE_FAILED: 'Could not send invitation. Verify the email address and ensure it is not already registered.',
-  INVITE_SENT: 'Invitation sent successfully.',
+  INVITE_SENT: 'Invite emailed. They open the link and choose their own password.',
+  SIGN_IN_LINK_SENT: 'Sign-in link emailed. They open it and choose a new password.',
   USER_DEACTIVATED: 'Access removed. Their history stays in the system.',
   USER_REACTIVATED: 'Access restored.',
   CLIENT_ADDED: 'Client added.',

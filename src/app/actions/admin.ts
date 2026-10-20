@@ -2,6 +2,8 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { inviteAccount } from '@/lib/invite'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { siteOrigin } from '@/lib/site'
 import { revalidatePath } from 'next/cache'
 import { cairoInputToUtcIso } from '@/lib/labels'
 import { backWithError, backWithOk } from '@/lib/flash'
@@ -110,6 +112,30 @@ export async function setUserActive(formData: FormData) {
   revalidatePath('/admin')
   revalidatePath('/team')
   backWithOk(back, active ? 'USER_REACTIVATED' : 'USER_DEACTIVATED')
+}
+
+// ── Sign-in link ───────────────────────────────────────────────────────────
+// Invite links expire after a day. This emails a fresh one-time link to the
+// set-password page; partners never see or choose anyone's password.
+export async function sendSetPasswordLink(formData: FormData) {
+  const back = String(formData.get('back') || '') === '/team' ? '/team' : '/admin'
+  await requireAdmin()
+  const target_id = String(formData.get('user_id') || '')
+  if (!target_id) backWithError(back, 'MISSING_FIELDS')
+
+  let admin
+  try {
+    admin = createAdminClient()
+  } catch {
+    backWithError(back, 'MISSING_SERVICE_ROLE_KEY')
+  }
+  const { data, error } = await admin.auth.admin.getUserById(target_id)
+  if (error || !data.user?.email) backWithError(back, 'NOT_ALLOWED')
+  const { error: sendErr } = await admin.auth.resetPasswordForEmail(data.user.email, {
+    redirectTo: `${await siteOrigin()}/auth/set-password`,
+  })
+  if (sendErr) backWithError(back, 'INVITE_FAILED')
+  backWithOk(back, 'SIGN_IN_LINK_SENT')
 }
 
 // ── Departments & teams ─────────────────────────────────────────────────────
