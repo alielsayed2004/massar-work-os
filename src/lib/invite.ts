@@ -14,6 +14,7 @@ export async function inviteAccount(input: {
   role: Role
   teamId?: string | null
   clientId?: string | null
+  whatsapp?: string | null
 }): Promise<string | null> {
   let admin
   try {
@@ -37,6 +38,7 @@ export async function inviteAccount(input: {
     role: input.role,
     status: 'active',
     team_id: input.role === 'client' ? null : input.teamId || null,
+    whatsapp_phone: input.whatsapp || null,
   })
   if (profErr) return 'INVITE_FAILED'
 

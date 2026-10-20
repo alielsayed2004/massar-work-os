@@ -8,7 +8,7 @@ import { backWithError, backWithOk } from '@/lib/flash'
 // caller and the current state; these actions only route the result.
 
 function refresh() {
-  for (const path of ['/overview', '/my-work', '/my-team', '/deliverables', '/client-portal']) revalidatePath(path)
+  for (const path of ['/today', '/overview', '/my-work', '/my-team', '/deliverables', '/client-portal']) revalidatePath(path)
 }
 
 /** The task owner opens a draft version on their task (created on first delivery). */
@@ -51,7 +51,8 @@ export async function checkDelivery(formData: FormData) {
     const { error: shareErr } = await supabase.rpc('share_version_with_client', { p_version_id: versionId })
     refresh()
     if (shareErr) backWithError(back, shareErr)
-    backWithOk(back, 'SENT_TO_CLIENT')
+    // The page offers the WhatsApp send for this version right away
+    backWithOk(back, 'SENT_TO_CLIENT', `&send=${encodeURIComponent(versionId)}`)
   }
 
   refresh()

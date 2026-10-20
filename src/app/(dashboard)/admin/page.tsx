@@ -9,11 +9,12 @@ import {
   assignTask,
   setTeamManager,
   setUserActive,
+  setUserWhatsApp,
 } from '@/app/actions/admin'
 import { ROLE } from '@/lib/labels'
 import { s, Flash, PageHeader, Panel, CreatePanel, StatusBadge, Empty } from '@/components/ui'
 
-type UserRow = { id: string; full_name: string; role: string; status: string; team_id: string | null }
+type UserRow = { id: string; full_name: string; role: string; status: string; team_id: string | null; whatsapp_phone: string | null }
 type TeamRow = { id: string; name: string; manager_user_id: string | null; departments: { name: string } | null }
 
 export default async function AdminPage({
@@ -30,7 +31,7 @@ export default async function AdminPage({
   if (profile?.role !== 'admin') redirect('/my-work')
 
   const [{ data: userRows }, { data: teamRows }, { data: departments }, { data: projects }, { data: clients }] = await Promise.all([
-    supabase.from('profiles').select('id, full_name, role, status, team_id').order('full_name'),
+    supabase.from('profiles').select('id, full_name, role, status, team_id, whatsapp_phone').order('full_name'),
     supabase.from('teams').select('id, name, manager_user_id, departments ( name )').order('name'),
     supabase.from('departments').select('id, name').order('name'),
     supabase.from('projects').select('id, name').eq('status', 'active').order('name'),
@@ -52,6 +53,10 @@ export default async function AdminPage({
       <div>
         <label htmlFor="i-email" style={s.label}>Email</label>
         <input id="i-email" name="email" type="email" required style={s.field} />
+      </div>
+      <div>
+        <label htmlFor="i-wa" style={s.label}>WhatsApp (for nudges)</label>
+        <input id="i-wa" name="whatsapp_phone" type="tel" inputMode="tel" placeholder="01x xxxx xxxx" style={s.field} />
       </div>
       <div>
         <label htmlFor="i-role" style={s.label}>Role</label>
@@ -159,6 +164,7 @@ export default async function AdminPage({
               <tr>
                 <th>Name</th>
                 <th>Role & team</th>
+                <th>WhatsApp</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -179,6 +185,15 @@ export default async function AdminPage({
                           <option value="">No team</option>
                           {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                         </select>
+                        <button type="submit" style={s.secondary}>Save</button>
+                      </form>
+                    )}
+                  </td>
+                  <td>
+                    {u.role !== 'client' && (
+                      <form action={setUserWhatsApp} className="massar-btn-row" style={{ flexWrap: 'nowrap' }}>
+                        <input type="hidden" name="user_id" value={u.id} />
+                        <input name="whatsapp_phone" type="tel" inputMode="tel" aria-label={`WhatsApp of ${u.full_name}`} placeholder="01x xxxx xxxx" defaultValue={u.whatsapp_phone || ''} style={{ ...s.field, width: 150 }} />
                         <button type="submit" style={s.secondary}>Save</button>
                       </form>
                     )}

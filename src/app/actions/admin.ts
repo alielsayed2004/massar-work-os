@@ -38,6 +38,7 @@ export async function inviteUser(formData: FormData) {
     role: role as (typeof ROLES)[number],
     teamId: team_id,
     clientId: client_id,
+    whatsapp: String(formData.get('whatsapp_phone') || '').trim() || null,
   })
   if (failure) backWithError('/admin', failure)
 
@@ -63,6 +64,21 @@ export async function updateUserRole(formData: FormData) {
 
   revalidatePath('/admin')
   backWithOk('/admin')
+}
+
+// ── WhatsApp for nudges ────────────────────────────────────────────────────
+export async function setUserWhatsApp(formData: FormData) {
+  const { supabase } = await requireAdmin()
+  const target_id = String(formData.get('user_id') || '')
+  const whatsapp_phone = String(formData.get('whatsapp_phone') || '').trim() || null
+  if (!target_id) backWithError('/admin', 'MISSING_FIELDS')
+
+  const { error } = await supabase.from('profiles').update({ whatsapp_phone }).eq('id', target_id)
+  if (error) backWithError('/admin', error)
+
+  revalidatePath('/admin')
+  revalidatePath('/today')
+  backWithOk('/admin', 'WHATSAPP_SAVED')
 }
 
 // ── Remove / restore access ────────────────────────────────────────────────

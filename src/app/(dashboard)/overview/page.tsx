@@ -6,8 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createTask } from '@/app/actions/tasks'
 import { checkDelivery } from '@/app/actions/delivery'
 import { CAIRO, formatCairo, nowMs } from '@/lib/labels'
-import { STAGES, stageOf, changesRequested, whatsappLink, dueLabel, hoursUntil, type Stage } from '@/lib/workflow'
-import { siteOrigin } from '@/lib/site'
+import { STAGES, stageOf, changesRequested, dueLabel, hoursUntil, type Stage } from '@/lib/workflow'
 import { s, Flash, Empty, PageHeader, CreatePanel } from '@/components/ui'
 import { Icon } from '@/components/icons'
 import VersionUpload from '@/components/VersionUpload'
@@ -85,7 +84,6 @@ export default async function OverviewPage({
   const deliveryOf = new Map(((deliveryRows || []) as unknown as Delivery[]).map(d => [d.source_task_id, d]))
 
   const people = ((peopleRows || []) as Person[]).filter(p => tasks.some(t => t.current_owner_user_id === p.id) || p.role !== 'admin')
-  const origin = await siteOrigin()
 
   const cards = tasks.map(t => {
     const delivery = deliveryOf.get(t.id)
@@ -215,8 +213,6 @@ export default async function OverviewPage({
                 {shown.length === 0 && <p className="massar-col-empty">Nothing here</p>}
                 {shown.map(({ task, delivery, version, late }) => {
                   const client = task.projects?.clients
-                  const portalText = `Hi${client?.contact_name ? ` ${client.contact_name}` : ''}, “${task.title}”${version ? ` (V${version.version_number})` : ''} is ready for your review on the Massar portal: ${origin}/client-portal`
-                  const wa = st.key === 'client' ? whatsappLink(client?.whatsapp_phone, portalText) : null
                   return (
                     <article key={task.id} className="massar-flow-card" data-late={late ? 'true' : undefined}>
                       <div className="massar-flow-card-top">
@@ -280,13 +276,12 @@ export default async function OverviewPage({
                       {st.key === 'client' && (
                         <div className="massar-flow-actions">
                           {version?.shared_at && <p className="massar-flow-note">Sent {dueLabel(version.shared_at, now).replace(' late', ' ago')}</p>}
-                          {wa ? (
-                            <a href={wa} target="_blank" rel="noopener" className="massar-wa-btn">
+                          {version && (
+                            <a href={`/api/review-link/whatsapp?version=${version.id}`} target="_blank" rel="noopener" className="massar-wa-btn">
                               <Icon name="chat" /> Send on WhatsApp
                             </a>
-                          ) : (
-                            <p className="massar-flow-note">No WhatsApp number for this client. Add it in Clients.</p>
                           )}
+                          {!client?.whatsapp_phone && <p className="massar-flow-note">No WhatsApp number saved for this client; you’ll pick the chat.</p>}
                         </div>
                       )}
 

@@ -85,7 +85,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
         {
           heading: 'Workspace',
           items: [
-            { href: '/overview', label: 'Overview', icon: 'board' as const },
+            { href: '/today', label: 'Today', icon: 'bell' as const },
+            { href: '/overview', label: 'All work', icon: 'board' as const },
             { href: '/my-work', label: 'My Work', icon: 'work' as const },
             { href: '/my-team', label: 'My Team', icon: 'team' as const },
             { href: '/deliverables', label: 'Deliverables', icon: 'deliverables' as const },

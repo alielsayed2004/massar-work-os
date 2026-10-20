@@ -145,6 +145,12 @@ export const MESSAGES: Record<string, string> = {
   SENT_FOR_CHECK: 'Sent for check. You’ll be notified when it’s reviewed.',
   SENT_TO_CLIENT: 'Approved and sent to the client. Use the WhatsApp button to let them know.',
   CHANGES_SENT: 'Changes sent back to the owner.',
+  // review links
+  LINK_INVALID: 'This link has expired or doesn’t work. Ask your Massar contact for a new one.',
+  LINK_ALREADY_DECIDED: 'This version was already answered or replaced by a newer one.',
+  CLIENT_APPROVED: 'Thank you. Your approval was sent to the Massar team.',
+  CLIENT_CHANGES_SENT: 'Thank you. The team got your notes and will send a new version.',
+  WHATSAPP_SAVED: 'WhatsApp number saved.',
 }
 
 /** Pull a known code out of a Supabase / thrown error message. */

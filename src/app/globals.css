@@ -891,6 +891,46 @@ body {
   margin-top: 1px;
 }
 
+/* Today: one row per thing that needs a partner, action on the right */
+.massar-today-row {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.massar-today-main {
+  flex: 1 1 320px;
+  min-width: 0;
+}
+
+.massar-today-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.massar-today-title span {
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.massar-today-actions {
+  flex: 0 0 220px;
+  display: grid;
+  gap: 8px;
+}
+
+.massar-today-actions .massar-wa-btn {
+  padding: 0 14px;
+}
+
+@media (max-width: 640px) {
+  .massar-today-actions {
+    flex-basis: 100%;
+  }
+}
+
 /* ── Overview: team strip + stage board ───────────────────────────────
    Columns read left→right as the path work travels; connector dots and
    arrows between columns make the "network" of the reference design. */
