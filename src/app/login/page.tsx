@@ -15,11 +15,12 @@ export default async function LoginPage({
   const params = await searchParams
   const hasError = params?.message === 'auth-error'
   const inactive = params?.message === 'inactive'
+  const resetSent = params?.message === 'reset-sent'
 
   return (
     <>
       <script dangerouslySetInnerHTML={{ __html: INTRO_GATE }} />
-      <LoginForm hasError={hasError} inactive={inactive} devAuth={DEV_AUTH_ENABLED} />
+      <LoginForm hasError={hasError} inactive={inactive} resetSent={resetSent} devAuth={DEV_AUTH_ENABLED} />
     </>
   )
 }

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { connection } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { getSessionUser, getMyProfile } from '@/lib/session'
-import { inviteUser, setUserWhatsApp } from '@/app/actions/admin'
+import { inviteUser, setUserWhatsApp, sendSetPasswordLink } from '@/app/actions/admin'
 import { decideHandover } from '@/app/actions/handover'
 import { ROLE, HANDOVER_REASON_LABEL, formatCairo, nowMs } from '@/lib/labels'
 import { whatsappLink, dueLabel, hoursUntil } from '@/lib/workflow'
@@ -101,8 +101,9 @@ export default async function TeamPage({
           <option value="manager">{ROLE.manager}</option>
         </select>
       </div>
-      <div>
+      <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 'var(--space-3)', alignItems: 'center', flexWrap: 'wrap' }}>
         <button type="submit" style={s.primary}>Send invite</button>
+        <span style={s.muted}>They get an email, open the link and choose their own password.</span>
       </div>
     </form>
   )
@@ -198,6 +199,15 @@ export default async function TeamPage({
                   </form>
                 ) : (
                   <span style={{ ...s.muted, flex: 1 }}>WhatsApp: <bdi>{p.whatsapp_phone || '—'}</bdi></span>
+                )}
+                {isPartner && (
+                  <form action={sendSetPasswordLink}>
+                    <input type="hidden" name="back" value="/team" />
+                    <input type="hidden" name="user_id" value={p.id} />
+                    <button type="submit" style={{ ...s.textBtn, fontWeight: 500, color: 'var(--color-text-muted)' }} title="Emails them a fresh link to choose a password">
+                      Send sign-in link
+                    </button>
+                  </form>
                 )}
                 {chat && !p.late.length && (
                   <a href={chat} target="_blank" rel="noopener" style={{ ...s.secondary, minHeight: 38, textDecoration: 'none' }}>

@@ -4,6 +4,8 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { siteOrigin } from '@/lib/site'
 import { DEV_AUTH_ENABLED, DEV_COOKIE_OPTIONS, DEV_SESSION_COOKIE, homeFor, type DevRole } from '@/lib/dev-session'
 
 export async function login(formData: FormData) {
@@ -15,11 +17,7 @@ export async function login(formData: FormData) {
   if (password) {
     try {
       const supabase = await createClient()
-      const authPromise = supabase.auth.signInWithPassword({ email, password })
-      const timeoutPromise = new Promise<{ data: null; error: { message: string } }>((resolve) =>
-        setTimeout(() => resolve({ data: null, error: { message: 'timeout' } }), 1500)
-      )
-      const { data: authData, error } = await Promise.race([authPromise, timeoutPromise])
+      const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password })
 
       if (!error && authData?.user) {
         const { data: profile } = await supabase
@@ -31,7 +29,7 @@ export async function login(formData: FormData) {
         targetUrl = homeFor(profile?.role || '')
       }
     } catch {
-      // Supabase is offline or connection timed out
+      // Supabase unreachable: treated as a failed sign-in below
     }
   }
 
@@ -62,4 +60,22 @@ export async function loginDirectly(role: DevRole = 'admin') {
   cookieStore.set(DEV_SESSION_COOKIE, role, DEV_COOKIE_OPTIONS)
   revalidatePath('/', 'layout')
   redirect(homeFor(role))
+}
+
+/**
+ * "Forgot password?": emails a one-time link to the set-password page. The
+ * answer is the same whether or not the email has an account, so the form
+ * can't be used to find out who works at Massar.
+ */
+export async function requestPasswordReset(formData: FormData) {
+  const email = String(formData.get('email') || '').trim().toLowerCase()
+  if (email.includes('@')) {
+    try {
+      // Service client: its link carries the session itself, so it opens on any device
+      await createAdminClient().auth.resetPasswordForEmail(email, { redirectTo: `${await siteOrigin()}/auth/set-password` })
+    } catch {
+      // Same answer either way (see above)
+    }
+  }
+  redirect('/login?message=reset-sent')
 }
