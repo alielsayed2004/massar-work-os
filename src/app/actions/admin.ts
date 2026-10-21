@@ -49,24 +49,33 @@ export async function inviteUser(formData: FormData) {
   backWithOk(back, 'INVITE_SENT')
 }
 
-// ── Update role / team ──────────────────────────────────────────────────────
-export async function updateUserRole(formData: FormData) {
+// ── One row in Settings → People: name, role, team and WhatsApp together ──
+export async function saveUser(formData: FormData) {
   const { supabase, user } = await requireAdmin()
-
   const target_id = String(formData.get('user_id') || '')
+  const full_name = String(formData.get('full_name') || '').trim()
   const role = String(formData.get('role') || '')
-  const team_id = String(formData.get('team_id') || '') || null
-  if (!target_id || !ROLES.includes(role as (typeof ROLES)[number])) backWithError('/admin', 'MISSING_FIELDS')
-  if (target_id === user.id) backWithError('/admin', 'NOT_ALLOWED') // don't lock yourself out
+  if (!target_id || !full_name) backWithError('/admin', 'MISSING_FIELDS')
 
-  const { error } = await supabase
-    .from('profiles')
-    .update({ role, team_id })
-    .eq('id', target_id)
+  const changes: Record<string, string | null> = {
+    full_name,
+    whatsapp_phone: String(formData.get('whatsapp_phone') || '').trim() || null,
+  }
+  // Your own role and team stay as they are, so a partner can't lock themselves out
+  if (target_id !== user.id) {
+    if (!ROLES.includes(role as (typeof ROLES)[number]) && role !== 'client') backWithError('/admin', 'MISSING_FIELDS')
+    if (role !== 'client') changes.role = role
+    changes.team_id = String(formData.get('team_id') || '') || null
+  }
+
+  const { error } = await supabase.from('profiles').update(changes).eq('id', target_id)
   if (error) backWithError('/admin', error)
 
   revalidatePath('/admin')
-  backWithOk('/admin')
+  revalidatePath('/team')
+  revalidatePath('/today')
+  revalidatePath('/', 'layout')
+  backWithOk('/admin', 'PERSON_SAVED')
 }
 
 // ── WhatsApp for nudges ────────────────────────────────────────────────────

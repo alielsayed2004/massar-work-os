@@ -8,7 +8,7 @@ import { decideHandover } from '@/app/actions/handover'
 import { ROLE, HANDOVER_REASON_LABEL, formatCairo, nowMs } from '@/lib/labels'
 import { whatsappLink, dueLabel, hoursUntil } from '@/lib/workflow'
 import { initials } from '@/lib/spaces'
-import { s, Flash, Empty, PageHeader, CreatePanel, Panel } from '@/components/ui'
+import { s, Flash, Empty, PageHeader, CreatePanel, Panel, StatStrip } from '@/components/ui'
 import { Icon } from '@/components/icons'
 
 type Person = { id: string; full_name: string; role: string; team_id: string | null; whatsapp_phone: string | null }
@@ -118,39 +118,8 @@ export default async function TeamPage({
       />
       <Flash error={error} ok={ok} />
 
-      {handovers.length > 0 && (
-        <div id="handovers" style={{ maxWidth: 900 }}>
-          <Panel title="Handover requests" count={handovers.length} attention subtitle="Someone can’t finish in time. Pick who takes over; ownership changes only when you assign." flush>
-            {handovers.map(req => {
-              const candidates = people.filter(p => p.team_id === req.tasks?.team_id && p.id !== req.tasks?.current_owner_user_id)
-              return (
-                <div key={req.id} className="massar-row" style={{ display: 'grid', gap: 12 }}>
-                  <div>
-                    <strong style={{ fontSize: 16 }}>{req.tasks?.title}</strong>
-                    <p className="massar-cell-sub" style={{ margin: '2px 0 0' }}>
-                      {req.requester?.full_name} · {HANDOVER_REASON_LABEL[req.reason] || req.reason} · due <bdi>{formatCairo(req.tasks?.due_at)}</bdi>
-                    </p>
-                    {req.internal_note && <p style={{ margin: '8px 0 0', fontSize: 14 }}>{req.internal_note}</p>}
-                  </div>
-                  <form action={decideHandover} className="massar-btn-row" style={{ alignItems: 'end' }}>
-                    <input type="hidden" name="handover_id" value={req.id} />
-                    <div style={{ flex: '1 1 220px' }}>
-                      <label htmlFor={`o-${req.id}`} style={s.label}>Give it to</label>
-                      <select id={`o-${req.id}`} name="new_owner_id" defaultValue="" style={s.field}>
-                        <option value="">Select person</option>
-                        {candidates.map(p => <option key={p.id} value={p.id}>{p.full_name} — {p.open.length} on their plate</option>)}
-                      </select>
-                    </div>
-                    <button type="submit" name="decision" value="assigned" style={s.primary}>Assign</button>
-                    <button type="submit" name="decision" value="declined" style={s.secondary}>Keep with {req.requester?.full_name?.split(' ')[0]}</button>
-                  </form>
-                </div>
-              )
-            })}
-          </Panel>
-        </div>
-      )}
-
+      <div className="massar-grid">
+        <div className="massar-col-8">
       <div className="massar-people-list">
         {people.length === 0 && <section className="massar-panel"><Empty>No one on the team yet.</Empty></section>}
         {people.map(p => {
@@ -224,6 +193,50 @@ export default async function TeamPage({
           Roles, teams and removing access are in <Link href="/admin" style={{ color: 'var(--color-text-strong)' }}>Settings</Link>.
         </p>
       )}
+        </div>
+
+        <aside className="massar-col-4 massar-aside">
+          <StatStrip
+            items={[
+              { label: 'People', value: people.length },
+              { label: 'Open tasks', value: tasks.length },
+              { label: 'Late', value: lateTotal, attention: lateTotal > 0 },
+            ]}
+          />
+          {handovers.length > 0 && (
+            <div id="handovers">
+              <Panel title="Handover requests" count={handovers.length} attention subtitle="Someone can’t finish in time. Pick who takes over; ownership changes only when you assign." flush>
+                {handovers.map(req => {
+                  const candidates = people.filter(p => p.team_id === req.tasks?.team_id && p.id !== req.tasks?.current_owner_user_id)
+                  return (
+                    <div key={req.id} className="massar-row" style={{ display: 'grid', gap: 12 }}>
+                      <div>
+                        <strong style={{ fontSize: 16 }}>{req.tasks?.title}</strong>
+                        <p className="massar-cell-sub" style={{ margin: '2px 0 0' }}>
+                          {req.requester?.full_name} · {HANDOVER_REASON_LABEL[req.reason] || req.reason} · due <bdi>{formatCairo(req.tasks?.due_at)}</bdi>
+                        </p>
+                        {req.internal_note && <p style={{ margin: '8px 0 0', fontSize: 14 }}>{req.internal_note}</p>}
+                      </div>
+                      <form action={decideHandover} className="massar-btn-row" style={{ alignItems: 'end' }}>
+                        <input type="hidden" name="handover_id" value={req.id} />
+                        <div style={{ flex: '1 1 220px' }}>
+                          <label htmlFor={`o-${req.id}`} style={s.label}>Give it to</label>
+                          <select id={`o-${req.id}`} name="new_owner_id" defaultValue="" style={s.field}>
+                            <option value="">Select person</option>
+                            {candidates.map(p => <option key={p.id} value={p.id}>{p.full_name} — {p.open.length} on their plate</option>)}
+                          </select>
+                        </div>
+                        <button type="submit" name="decision" value="assigned" style={s.primary}>Assign</button>
+                        <button type="submit" name="decision" value="declined" style={s.secondary}>Keep with {req.requester?.full_name?.split(' ')[0]}</button>
+                      </form>
+                    </div>
+                  )
+                })}
+              </Panel>
+            </div>
+          )}
+        </aside>
+      </div>
     </div>
   )
 }
