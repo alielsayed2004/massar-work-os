@@ -132,6 +132,7 @@ export const MESSAGES: Record<string, string> = {
   CLIENT_APPROVED: 'Thank you. Your approval was sent to the Massar team.',
   CLIENT_CHANGES_SENT: 'Thank you. The team got your notes and will send a new version.',
   WHATSAPP_SAVED: 'WhatsApp number saved.',
+  PERSON_SAVED: 'Saved.',
   CLIENT_DECISION_RECORDED: 'Recorded: the client approved. The task is closed.',
 }
 

@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode } from 'react'
 import { MESSAGES, statusTone } from '@/lib/labels'
-import { Icon } from '@/components/icons'
+import CreatePanelDialog from '@/components/CreatePanel'
 
 /* Shared, token-only styles (Design System §6). No HEX values here. */
 
@@ -124,9 +124,9 @@ export const s = {
   } as CSSProperties,
   formGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-    gap: 'var(--space-3)',
-    alignItems: 'end',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gap: 'var(--space-3) var(--grid-gap)',
+    alignItems: 'start',
   } as CSSProperties,
   muted: { color: 'var(--color-text-muted)', fontSize: '14px' } as CSSProperties,
 }
@@ -214,25 +214,19 @@ export function Panel({
   )
 }
 
-/** A create form kept out of the way until asked for (native <details>, no client JS). */
+/** A "New …" button whose form opens in a dialog. */
 export function CreatePanel({
   label,
+  title,
   children,
   secondary,
 }: {
   label: string
+  title?: string
   children: ReactNode
   secondary?: boolean
 }) {
-  return (
-    <details className="massar-disclosure massar-create">
-      <summary style={secondary ? s.secondary : s.primary}>
-        <Icon name="plus" style={{ width: 16, height: 16 }} />
-        {label}
-      </summary>
-      <div className="massar-create-body">{children}</div>
-    </details>
-  )
+  return <CreatePanelDialog label={label} title={title} buttonStyle={secondary ? s.secondary : s.primary}>{children}</CreatePanelDialog>
 }
 
 const toneMark: Record<string, string> = { neutral: '○', done: '✓', waiting: '◷', attention: '!' }
