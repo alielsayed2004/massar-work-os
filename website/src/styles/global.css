@@ -256,6 +256,10 @@ button {
     animation: line-in 700ms var(--ease) both;
     animation-delay: calc(var(--i, 0) * 80ms);
   }
+  /* Let the headline arrive as the intro curtain lifts. */
+  html.intro h1 .line {
+    animation-delay: calc(2050ms + var(--i, 0) * 80ms);
+  }
 
   /* Case images scale 0.92→1 while entering the viewport. */
   @supports (animation-timeline: view()) {

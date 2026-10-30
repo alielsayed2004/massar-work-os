@@ -50,15 +50,22 @@ Bone is the one panel fill. Clay is emphasis only: link underline, the last path
 - No eyebrow labels above headings, no 01/02 section numbers, no tracked caps, no pills.
 
 ## Art direction (imagery)
-One shoot, one look. Every picture on the site follows this recipe until real photography replaces it.
 
-- **Where:** Cairo and its new cities: streets, shops, offices, roads. Real places, unstaged moments.
-- **Light:** soft late-afternoon daylight, calm and warm.
-- **Colour:** muted matte grade dominated by Massar Green, Bone and near-black, with one small Clay accent per frame (a clay pot, a cup, a stamp).
-- **Camera:** eye-level 35mm, clean composition, generous negative space, shallow depth of field, fine film grain.
+One shoot, one look: **cinematic Cairo**. Every picture follows this recipe until real photography replaces it.
+
+- **Where:** Cairo and its new cities: streets, shops, studios, offices, roads.
+- **Camera:** film-still feel, 35mm, anamorphic widescreen (16:9). Angles with attitude: road-level low angles, rooftop high angles, Dutch tilts, over-the-shoulder, straight top-down, shooting through shop glass.
+- **Motion:** slow shutter. Motorbikes, cars, passers-by and hands carry motion blur; the subject stays sharp.
+- **Light:** golden hour or blue hour, hard window light and long shadows, warm haze, soft halation.
+- **Colour:** dramatic contrast; Massar Green, Bone and near-black dominate, with one small Clay accent per frame (a clay pot, a cup, a saucer).
 - **Never:** text, letters, logos, readable signage, watermarks.
 
-Current demo images are generated with Freepik (Nano Banana 2.1) using the café storefront as the style reference, and are tagged "Generated image · demo" on the page. The brand book asks for real photography at launch: reshoot the same list (café front, counter, identity flat lay, desert billboard, hoardings, billboard at dusk, clinic, campaign review, retail, shop counter, business review, workshop) with this recipe.
+Current demo images are generated with Freepik (Nano Banana 2.1), all with the café-corner shot as the style reference, and are tagged "Generated image · demo" on the page. The brand book asks for real photography at launch: reshoot the same list with this recipe.
 
-Prompt suffix used for every image:
-> Editorial documentary photograph in Cairo, Egypt. Soft late-afternoon natural daylight, calm and warm. Muted matte colour grade dominated by deep forest green (#0D3B34), warm bone cream (#F1ECE2) and near-black, with one small terracotta clay (#B85333) accent. Eye-level 35mm lens, clean composition with generous negative space, shallow depth of field, fine film grain, real unstaged feel. No text, no letters, no logos, no readable signage, no watermark.
+Prompt used for every image (subject first, then):
+
+> Cinematic film still … Shot on 35mm film with a slow shutter, anamorphic widescreen feel, dramatic contrast with deep shadows, warm haze and soft halation, rich grade of deep forest green (#0D3B34), warm bone cream (#F1ECE2) and near-black, one small terracotta clay (#B85333) accent, visible film grain. No text, no letters, no logos, no readable signage, no watermark.
+
+## Opening logo motion
+
+On the first page of a visit the monogram's four arms (the real artwork, each clipped to its quarter) travel in from the edges and lock into the mark, the wordmark rises, a Clay line runs along the bottom and the Ink curtain lifts (about 2.4s). Once per session, skipped by click or key, never under reduced motion, and the hero headline waits for it.
