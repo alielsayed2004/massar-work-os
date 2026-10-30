@@ -10,7 +10,7 @@ import { aboutPage, professionalService } from "../lib/seo";
 
 const facts = [
   { k: "Name", v: 'Massar (Arabic for "path")' },
-  { k: "What it is", v: "A creative and business partner for startups and SMEs" },
+  { k: "What it is", v: "A marketing and business partner for startups and SMEs" },
   { k: "Based in", v: "Cairo, Egypt" },
   { k: "Works in", v: "Egypt, then the GCC" },
   { k: "Services", v: services.map((s) => s.name).join(", ") },
@@ -24,7 +24,7 @@ const values = [1, 2, 3];
 ---
 
 <Base
-  title="About Massar: creative & business partner, Cairo"
+  title="About Massar: marketing & business partner, Cairo"
   description={org.description.slice(0, 155)}
   breadcrumbs={[{ name: "About", path: "/about" }]}
   jsonLd={[aboutPage(Astro.site), professionalService(Astro.site)]}

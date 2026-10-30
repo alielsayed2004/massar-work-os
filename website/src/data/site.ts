@@ -3,7 +3,7 @@
 export const org = {
   name: "Massar",
   description:
-    "Massar is an integrated creative and business partner in Egypt for startups and SMEs. One team handles strategy, branding, marketing and execution against one business objective.",
+    "Massar is a marketing and business partner in Egypt for startups and SMEs. We find the real problem behind the brand, the ads or the launch, and one team handles strategy, branding, marketing and execution against one business objective.",
   email: "brand@massar.agency",
   tagline: "One partner. One path.",
   areaServed: ["Egypt", "GCC"],

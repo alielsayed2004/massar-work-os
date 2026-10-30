@@ -1,0 +1,215 @@
+---
+/**
+ * The four buyer problems as giant rows. Each opens (native <details>) to
+ * what usually causes it, what we do, and the case that proves it.
+ */
+import Media from "./Media.astro";
+import { casesFor, type Problem, type Work } from "../lib/content";
+
+interface Props {
+  problems: Problem[];
+  work: Work[];
+}
+const { problems, work } = Astro.props;
+---
+
+<div class="prs">
+  {problems.map((p, i) => {
+    const proof = casesFor(p.id, work)[0];
+    return (
+      <details class="pr" open={i === 0} name="problems">
+        <summary class="pr__q">
+          <span class="pr__text">"{p.data.title}"</span>
+          <span class="pr__icon" aria-hidden="true" />
+        </summary>
+        <div class="pr__body">
+          <div class="pr__col">
+            <p class="pr__k">Usually behind it</p>
+            <p class="pr__v">{p.data.cause}</p>
+          </div>
+          <div class="pr__col">
+            <p class="pr__k">What we do</p>
+            <p class="pr__v pr__v--do">{p.data.short}</p>
+            <a href={`/problems/${p.id}`} class="link pr__more">
+              How we solve it
+            </a>
+          </div>
+          {proof && (
+            <a href={`/work/${proof.id}`} class="pr__proof">
+              <Media
+                image={proof.data.hero}
+                alt={proof.data.heroAlt}
+                shot={proof.data.heroShot}
+                tone={proof.data.heroTone}
+                tag={proof.data.demoImages ? "Stock photo · demo" : undefined}
+                height="180px"
+                sizes="(min-width: 1200px) 320px, 100vw"
+              />
+              <span class="pr__prooftext">
+                <span class="pr__k">Solved for</span>
+                <span class="pr__case">
+                  {proof.data.client}: {proof.data.summary}
+                </span>
+                {proof.data.results[0] && (
+                  <span class="pr__result">
+                    <b>{proof.data.results[0].value}</b> {proof.data.results[0].metric}
+                  </span>
+                )}
+              </span>
+            </a>
+          )}
+        </div>
+      </details>
+    );
+  })}
+</div>
+
+<style>
+  .prs {
+    border-top: 1px solid var(--ink);
+  }
+  .pr {
+    border-bottom: 1px solid var(--ink);
+  }
+  .pr__q {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding-block: 28px;
+    cursor: pointer;
+    list-style: none;
+  }
+  .pr__q::-webkit-details-marker {
+    display: none;
+  }
+  .pr__text {
+    font-size: var(--fs-mega);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    transition:
+      color 200ms ease,
+      transform 400ms var(--ease-out);
+  }
+  .pr__q:hover .pr__text {
+    color: var(--green);
+    transform: translateX(12px);
+  }
+  .pr[open] .pr__text {
+    color: var(--green);
+  }
+  .pr__icon {
+    position: relative;
+    flex: none;
+    width: 40px;
+    height: 40px;
+  }
+  .pr__icon::before,
+  .pr__icon::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 28px;
+    height: 3px;
+    background: var(--clay);
+    translate: -50% -50%;
+    transition: rotate 300ms var(--ease-out);
+  }
+  .pr__icon::after {
+    rotate: 90deg;
+  }
+  .pr[open] .pr__icon::after {
+    rotate: 0deg;
+  }
+  .pr__body {
+    display: grid;
+    grid-template-columns: minmax(0, 4fr) minmax(0, 4fr) minmax(0, 4fr);
+    gap: 32px var(--gutter);
+    padding-bottom: 40px;
+  }
+  .pr[open] .pr__body {
+    animation: pr-in 400ms var(--ease-out);
+  }
+  .pr__col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .pr__k {
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--green);
+  }
+  .pr__v {
+    font-size: var(--fs-h3);
+    line-height: 1.35;
+  }
+  .pr__v--do {
+    color: var(--green);
+    font-weight: 500;
+  }
+  .pr__more {
+    margin-top: 8px;
+    align-self: flex-start;
+    color: var(--green);
+  }
+  .pr__proof {
+    display: flex;
+    flex-direction: column;
+    background: var(--bone);
+    align-self: start;
+  }
+  .pr__prooftext {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 18px 20px;
+  }
+  .pr__case {
+    font-size: var(--fs-body);
+    font-weight: 500;
+    line-height: 1.35;
+  }
+  .pr__result {
+    font-size: var(--fs-xs);
+  }
+  @keyframes pr-in {
+    from {
+      opacity: 0;
+      translate: 0 -8px;
+    }
+  }
+  @media (max-width: 1023px) {
+    .pr__body {
+      grid-template-columns: 1fr 1fr;
+    }
+    .pr__proof {
+      grid-column: 1 / -1;
+      flex-direction: row;
+    }
+    .pr__proof :global(.media) {
+      max-width: 40%;
+    }
+  }
+  @media (max-width: 767px) {
+    .pr__body {
+      grid-template-columns: 1fr;
+    }
+    .pr__proof {
+      flex-direction: column;
+    }
+    .pr__proof :global(.media) {
+      max-width: none;
+    }
+    .pr__v {
+      font-size: var(--fs-lead);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pr[open] .pr__body {
+      animation: none;
+    }
+  }
+</style>

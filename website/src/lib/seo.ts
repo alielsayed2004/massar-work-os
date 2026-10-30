@@ -18,7 +18,7 @@ export function siteEntities(site?: URL): Json[] {
       "@type": "Organization",
       "@id": orgId(site),
       name: org.name,
-      alternateName: "Massar Agency",
+      alternateName: ["Massar Agency", "Massar marketing agency"],
       url: abs("/", site),
       logo: abs("/brand/massar_lockup_green.png", site),
       email: org.email,

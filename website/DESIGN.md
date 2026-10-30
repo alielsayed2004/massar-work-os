@@ -9,7 +9,7 @@ component styles use the tokens, never raw sizes.
 - Splits use column spans only: 5/7, 6/6, 4/4/4, 3/3/3/3. No `1.2fr`-style ratios.
 - Titles max ~8 columns, paragraphs max ~6 columns (about 65 characters).
 - Content is anchored to the top of its section; spare space goes to the bottom.
-- Full-bleed is reserved for photographs and video: the hero, the case stack, the Cairo band.
+- Full-bleed is reserved for photographs: the case stack.
 
 ## Type (Switzer)
 
@@ -36,8 +36,9 @@ Bone is the one panel fill. Clay is emphasis only: link underline, the last path
 
 ## Home signature moves
 
-- Hero: muted interchange loop (many roads, one junction) under the headline; pausable, poster-only under reduced motion.
-- Statement that fills word by word on scroll.
+- Hero: the marketing pieces a business juggles (billboard, social post, logo_v7_FINAL, paused ad set, unsigned brief, fifth supplier's invoice) scattered on Ink; on scroll they fold onto one Green line under "One clear direction." Phones fold them into two columns. Reduced motion shows the finished state.
+- Statement: "Most marketing problems aren't marketing problems. They're direction problems." turns Green word by word.
+- "Sound familiar?": the four buyer problems as giant rows that open to cause, fix and proof.
 - Case stack: full-screen sticky panels that slide over each other.
 - Service index: giant rows, picture follows the cursor.
 

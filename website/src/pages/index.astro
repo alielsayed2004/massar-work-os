@@ -1,21 +1,19 @@
 ---
-import { Image } from "astro:assets";
 import Base from "../layouts/Base.astro";
 import Section from "../components/Section.astro";
 import SectionHead from "../components/SectionHead.astro";
 import Button from "../components/Button.astro";
 import FAQ from "../components/FAQ.astro";
-import HeroVideo from "../components/HeroVideo.astro";
+import HeroParts from "../components/HeroParts.astro";
+import ProblemRows from "../components/ProblemRows.astro";
 import StatementReveal from "../components/StatementReveal.astro";
 import CaseStack from "../components/CaseStack.astro";
-import ProblemSolver from "../components/ProblemSolver.astro";
 import MovingParts from "../components/MovingParts.astro";
 import ServiceRows from "../components/ServiceRows.astro";
 import Path from "../components/Path.astro";
 import CtaBand from "../components/CtaBand.astro";
 import { getProblems, getWork } from "../lib/content";
 import { homeFaqs, processSteps } from "../data/site";
-import cairo from "../assets/demo/cairo-rooftops.jpg";
 import imgMarketing from "../assets/demo/s04-billboard-road.jpg";
 import imgBizdev from "../assets/demo/s10-store-service.jpg";
 import imgBrand from "../assets/demo/s01-cafe-shopfront.jpg";
@@ -26,36 +24,40 @@ const problems = await getProblems();
 ---
 
 <Base
-  title="Massar | Creative & business partner in Cairo, Egypt"
-  description="Massar finds the real business problem, sets one direction and delivers it: strategy, brand, marketing and execution under one accountable owner."
+  title="Massar | Marketing & business partner in Cairo, Egypt"
+  description="Marketing agency and business partner in Cairo. Massar finds the real problem behind your brand, ads or launch, sets one direction and owns the result."
   faqs={homeFaqs}
   headerVariant="overlay"
   isHome
 >
-  <HeroVideo />
+  <HeroParts />
 
   <StatementReveal
     id="statement"
-    text="We don't sell services. We find the real problem, set one direction, and own the result."
+    text="Most marketing problems aren't marketing problems. They're direction problems."
   />
 
-  {work.length > 0 && <CaseStack work={work} />}
-
   <Section id="problems" labelledby="problems-title">
-    <SectionHead title="Start with the problem. We'll show you the case." id="problems-title">
+    <SectionHead title="Sound familiar?" id="problems-title">
       <Button slot="aside" href="/problems" variant="link">
         All problems
       </Button>
     </SectionHead>
-    <ProblemSolver problems={problems} work={work} />
+    <ProblemRows problems={problems} work={work} />
   </Section>
 
-  <Section tone="green" labelledby="mp-title">
-    <MovingParts />
-  </Section>
+  <section class="container proof-head" aria-labelledby="proof-title">
+    <h2 id="proof-title" class="h2">
+      Problems we've already solved.
+    </h2>
+    <a href="/work" class="link">
+      All case studies
+    </a>
+  </section>
+  {work.length > 0 && <CaseStack work={work} />}
 
   <Section labelledby="services-title">
-    <SectionHead title="What we do" id="services-title">
+    <SectionHead title="What we use to fix it" id="services-title">
       <Button slot="aside" href="/services" variant="link">
         All services
       </Button>
@@ -70,25 +72,9 @@ const problems = await getProblems();
     />
   </Section>
 
-  <figure class="cairo">
-    <Image
-      src={cairo}
-      alt="Cairo rooftops and apartment blocks under a clear sky"
-      widths={[960, 1600, 2400]}
-      sizes="100vw"
-      format="webp"
-      quality={72}
-      class="cairo__img"
-    />
-    <figcaption class="container cairo__cap">
-      <span class="cairo__line">
-        Built in Cairo.
-        <br />
-        For businesses with too many moving parts.
-      </span>
-      <span class="cairo__tag">Stock photo · demo</span>
-    </figcaption>
-  </figure>
+  <Section tone="green" labelledby="mp-title">
+    <MovingParts />
+  </Section>
 
   <Section id="process" labelledby="process-title">
     <SectionHead title="One path. Five stations." id="process-title">
@@ -112,47 +98,13 @@ const problems = await getProblems();
 </Base>
 
 <style>
-  .cairo {
-    position: relative;
-    margin: 0;
-    height: clamp(420px, 70vw, 860px);
-    overflow: hidden;
-    color: var(--white);
-  }
-  .cairo :global(.cairo__img) {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-  .cairo::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(to top, rgb(16 24 21 / 0.85) 0%, rgb(16 24 21 / 0.2) 60%);
-  }
-  .cairo__cap {
-    position: absolute;
-    inset: auto 0 0;
-    z-index: 1;
+  .proof-head {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    gap: 24px;
-    padding-bottom: 56px;
-  }
-  .cairo__line {
-    font-size: var(--fs-mega);
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: -0.035em;
-    max-width: 16ch;
-  }
-  .cairo__tag {
-    flex: none;
-    font-size: var(--fs-xs);
-    opacity: 0.8;
+    flex-wrap: wrap;
+    gap: 16px 48px;
+    padding-bottom: 48px;
   }
   .faq {
     display: grid;
@@ -165,13 +117,6 @@ const problems = await getProblems();
   @media (max-width: 1023px) {
     .faq {
       grid-template-columns: 1fr;
-    }
-  }
-  @media (max-width: 767px) {
-    .cairo__cap {
-      flex-direction: column;
-      align-items: flex-start;
-      padding-bottom: 32px;
     }
   }
 </style>
