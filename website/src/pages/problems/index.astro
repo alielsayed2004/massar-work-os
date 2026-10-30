@@ -1,11 +1,13 @@
 ---
 import Base from "../../layouts/Base.astro";
 import Section from "../../components/Section.astro";
-import PageHead from "../../components/PageHead.astro";
-import Media from "../../components/Media.astro";
+import PageHero from "../../components/PageHero.astro";
+import SplitRow from "../../components/SplitRow.astro";
 import CtaBand from "../../components/CtaBand.astro";
 import { casesFor, getProblems, getWork } from "../../lib/content";
 import { faqPage, itemList } from "../../lib/seo";
+import hero from "../../assets/demo/hoarding.jpg";
+import fallback from "../../assets/demo/workshop.jpg";
 
 const problems = await getProblems();
 const work = await getWork();
@@ -15,6 +17,7 @@ const work = await getWork();
   title="Marketing & growth problems we solve | Massar"
   description="Most businesses bring Massar one of four problems: a scattered brand, ads that don't sell, a launch with too many parts, or suppliers nobody owns."
   breadcrumbs={[{ name: "Problems we solve", path: "/problems" }]}
+  headerVariant="overlay"
   jsonLd={[
     itemList(
       "Problems Massar solves",
@@ -29,59 +32,53 @@ const work = await getWork();
     ),
   ]}
 >
-  <Section labelledby="problems-title">
-    <PageHead
-      title="What's in the way?"
-      intro="Most businesses that call us bring one of four problems. Each one usually has the same cause underneath, and a case where we've already fixed it."
-    />
+  <PageHero
+    title="What's in the way?"
+    intro="Most businesses that call us bring one of four problems. Each one usually has the same cause underneath, and a case where we've already fixed it."
+    image={hero}
+    alt="People hurrying past green and bone hoardings on a New Cairo sidewalk"
+  />
 
-    <div class="list">
-      {problems.map((p) => {
+  <Section labelledby="list-title">
+    <h2 id="list-title" class="visually-hidden">
+      The four problems
+    </h2>
+    <div class="rows">
+      {problems.map((p, i) => {
         const proof = casesFor(p.id, work)[0];
         return (
-          <article class="row" aria-labelledby={`p-${p.id}`}>
-            <div class="row__main">
-              <h2 id={`p-${p.id}`} class="row__title">
-                <a href={`/problems/${p.id}`}>"{p.data.title}"</a>
-              </h2>
-              <dl class="row__pairs">
-                <div>
-                  <dt>Usually behind it</dt>
-                  <dd>{p.data.cause}</dd>
-                </div>
-                <div>
-                  <dt>What we do</dt>
-                  <dd class="row__do">{p.data.short}</dd>
-                </div>
-              </dl>
-              <a href={`/problems/${p.id}`} class="link row__more">
+          <SplitRow
+            image={proof?.data.hero ?? fallback}
+            alt={proof?.data.heroAlt ?? "A strategist at a wall of notes"}
+            flip={i % 2 === 1}
+          >
+            <h2 class="row__title">
+              <a href={`/problems/${p.id}`}>"{p.data.title}"</a>
+            </h2>
+            <dl class="row__pairs">
+              <div>
+                <dt>Usually behind it</dt>
+                <dd>{p.data.cause}</dd>
+              </div>
+              <div>
+                <dt>What we do</dt>
+                <dd class="row__do">{p.data.short}</dd>
+              </div>
+            </dl>
+            <div class="row__links">
+              <a href={`/problems/${p.id}`} class="link">
                 How we solve it
               </a>
+              {proof && (
+                <a href={`/work/${proof.id}`} class="row__case">
+                  Solved for {proof.data.client}: {proof.data.summary}
+                </a>
+              )}
             </div>
-            {proof && (
-              <a href={`/work/${proof.id}`} class="row__proof">
-                <Media
-                  image={proof.data.hero}
-                  alt={proof.data.heroAlt}
-                  shot={proof.data.heroShot}
-                  tone={proof.data.heroTone}
-                  tag={proof.data.demoImages ? "Generated image · demo" : undefined}
-                  height="clamp(220px, 22vw, 300px)"
-                  sizes="(min-width: 1200px) 520px, 100vw"
-                />
-                <span class="row__prooftext">
-                  <span class="row__k">Solved for</span>
-                  <span class="row__case">
-                    {proof.data.client}: {proof.data.summary}
-                  </span>
-                </span>
-              </a>
-            )}
-          </article>
+          </SplitRow>
         );
       })}
     </div>
-
     <p class="other">
       Not on the list?{" "}
       <a href="/start" class="link">
@@ -94,44 +91,34 @@ const work = await getWork();
 </Base>
 
 <style>
-  .list {
+  .rows {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-  }
-  .row {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    gap: 32px 64px;
-    padding: 48px;
-    background: var(--bone);
-  }
-  .row__main {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
+    gap: var(--s-6);
   }
   .row__title {
     font-size: var(--fs-title);
+    font-weight: 500;
+    line-height: 1.08;
     letter-spacing: -0.015em;
-    line-height: 1.1;
   }
   .row__title a:hover {
     color: var(--green);
   }
   .row__pairs {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px 40px;
+    gap: 16px;
     margin: 0;
+    padding: 20px 0;
+    border-block: 1px solid var(--ink);
   }
   .row__pairs dt {
-    font-size: var(--fs-body);
+    font-size: var(--fs-xs);
     font-weight: 500;
     color: var(--green);
   }
   .row__pairs dd {
-    margin: 6px 0 0;
+    margin: 4px 0 0;
     font-size: var(--fs-lead);
     line-height: 1.5;
   }
@@ -139,51 +126,22 @@ const work = await getWork();
     font-weight: 500;
     color: var(--green);
   }
-  .row__more {
-    color: var(--green);
-  }
-  .row__proof {
+  .row__links {
     display: flex;
     flex-direction: column;
-    background: var(--white);
-    align-self: start;
+    gap: 10px;
   }
-  .row__prooftext {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    padding: 18px 20px 22px;
-  }
-  .row__k {
-    font-size: var(--fs-xs);
+  .row__links .link {
+    align-self: flex-start;
     color: var(--green);
-    font-weight: 500;
   }
   .row__case {
-    font-size: var(--fs-lead);
-    font-weight: 500;
-    line-height: 1.35;
+    font-size: var(--fs-xs);
   }
-  .row__proof:hover .row__case {
+  .row__case:hover {
     color: var(--green);
   }
   .other {
     font-size: var(--fs-lead);
-  }
-  @media (max-width: 1023px) {
-    .row {
-      grid-template-columns: 1fr;
-    }
-  }
-  @media (max-width: 767px) {
-    .row {
-      padding: 28px 20px;
-    }
-    .row__pairs {
-      grid-template-columns: 1fr;
-    }
-    .row__pairs dd {
-      font-size: var(--fs-body);
-    }
   }
 </style>

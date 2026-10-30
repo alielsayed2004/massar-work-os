@@ -1,5 +1,7 @@
 ---
+import { Image } from "astro:assets";
 import Base from "../layouts/Base.astro";
+import briefImg from "../assets/demo/start-brief.jpg";
 import { getProblems } from "../lib/content";
 import { org } from "../data/site";
 
@@ -159,31 +161,44 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
         </a>
       </div>
     </section>
-    <aside class="next" aria-labelledby="next-title">
-      <h2 id="next-title" class="next__title">
-        What happens next
-      </h2>
-      <ol>
-        <li>
-          <strong>We read your brief.</strong>
-          <span>A real person replies within [0] working days.</span>
-        </li>
-        <li>
-          <strong>One call about the problem.</strong>
-          <span>About the business, not about deliverables.</span>
-        </li>
-        <li>
-          <strong>A written diagnosis.</strong>
-          <span>The real problem, the one objective, and what it would take.</span>
-        </li>
-      </ol>
-      <p class="next__mail">
-        Prefer email?{" "}
-        <a class="link" href={`mailto:${org.email}`}>
-          {org.email}
-        </a>
-      </p>
-    </aside>
+    <div class="side">
+      <figure class="side__pic">
+        <Image
+          src={briefImg}
+          alt="A hand writing a brief in a notebook beside a glass of tea"
+          widths={[480, 800]}
+          sizes="(min-width: 1200px) 340px, 100vw"
+          format="webp"
+          quality={72}
+        />
+        <figcaption>Generated image · demo</figcaption>
+      </figure>
+      <aside class="next" aria-labelledby="next-title">
+        <h2 id="next-title" class="next__title">
+          What happens next
+        </h2>
+        <ol>
+          <li>
+            <strong>We read your brief.</strong>
+            <span>A real person replies within [0] working days.</span>
+          </li>
+          <li>
+            <strong>One call about the problem.</strong>
+            <span>About the business, not about deliverables.</span>
+          </li>
+          <li>
+            <strong>A written diagnosis.</strong>
+            <span>The real problem, the one objective, and what it would take.</span>
+          </li>
+        </ol>
+        <p class="next__mail">
+          Prefer email?{" "}
+          <a class="link" href={`mailto:${org.email}`}>
+            {org.email}
+          </a>
+        </p>
+      </aside>
+    </div>
   </div>
 </Base>
 
@@ -323,9 +338,33 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
     gap: 40px;
     min-width: 0;
   }
-  .next {
+  .side {
     position: sticky;
     top: 32px;
+    display: flex;
+    flex-direction: column;
+  }
+  .side__pic {
+    position: relative;
+    margin: 0;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+  .side__pic :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .side__pic figcaption {
+    position: absolute;
+    left: 12px;
+    bottom: 10px;
+    padding: 3px 7px;
+    background: var(--ink);
+    color: var(--white);
+    font-size: 12px;
+  }
+  .next {
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -368,7 +407,7 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
     .start-wrap {
       grid-template-columns: 1fr;
     }
-    .next {
+    .side {
       position: static;
     }
   }

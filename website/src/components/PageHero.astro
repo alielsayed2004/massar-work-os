@@ -1,0 +1,126 @@
+---
+/**
+ * Inner-page hero: a full-bleed cinematic picture with the title set on it,
+ * bottom-left, over an Ink gradient. Use with headerVariant="overlay".
+ */
+import type { ImageMetadata } from "astro";
+import { Image } from "astro:assets";
+
+interface Props {
+  title: string;
+  intro?: string;
+  image: ImageMetadata;
+  alt: string;
+  back?: { href: string; text: string };
+  demo?: boolean;
+  /** Short hero for pages where the content should start sooner. */
+  compact?: boolean;
+}
+const { title, intro, image, alt, back, demo = true, compact = false } = Astro.props;
+---
+
+<section
+  class:list={["phero", "tone-ink", { "phero--compact": compact }]}
+  aria-labelledby="page-title"
+>
+  <Image
+    src={image}
+    alt={alt}
+    widths={[800, 1280, 1920, 2400]}
+    sizes="100vw"
+    format="webp"
+    quality={72}
+    loading="eager"
+    fetchpriority="high"
+    class="phero__img"
+  />
+  <div class="phero__shade" aria-hidden="true"></div>
+  <div class="container phero__body">
+    {back && (
+      <a href={back.href} class="phero__back">
+        <span aria-hidden="true">←</span> {back.text}
+      </a>
+    )}
+    <h1 id="page-title" class="phero__title">
+      <span class="line" style="--i:0" set:html={title} />
+    </h1>
+    <div class="phero__row">
+      {intro && <p class="phero__intro">{intro}</p>}
+      <slot />
+      {demo && <span class="phero__tag">Generated image · demo</span>}
+    </div>
+  </div>
+</section>
+
+<style>
+  .phero {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: max(78svh, 560px);
+    background: var(--ink);
+    color: var(--white);
+    overflow: hidden;
+  }
+  .phero--compact {
+    min-height: max(60svh, 460px);
+  }
+  .phero :global(.phero__img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .phero__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgb(16 24 21 / 0.92) 0%,
+      rgb(16 24 21 / 0.55) 40%,
+      rgb(16 24 21 / 0.25) 75%,
+      rgb(16 24 21 / 0.45) 100%
+    );
+  }
+  .phero__body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 140px;
+    padding-bottom: 48px;
+  }
+  .phero__back {
+    align-self: flex-start;
+    font-size: var(--fs-body);
+    font-weight: 500;
+  }
+  .phero__title {
+    max-width: 16ch;
+    font-size: var(--fs-display);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+  }
+  .phero__title .line {
+    display: block;
+  }
+  .phero__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px 48px;
+  }
+  .phero__intro {
+    max-width: 48ch;
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+  }
+  .phero__tag {
+    margin-left: auto;
+    font-size: var(--fs-xs);
+    opacity: 0.8;
+  }
+</style>

@@ -1,16 +1,30 @@
 ---
 import Base from "../layouts/Base.astro";
-import PageHead from "../components/PageHead.astro";
-import CaseCard from "../components/CaseCard.astro";
+import Section from "../components/Section.astro";
+import PageHero from "../components/PageHero.astro";
+import SplitRow from "../components/SplitRow.astro";
 import CtaBand from "../components/CtaBand.astro";
 import { services } from "../data/site";
 import { getProblems, getWork } from "../lib/content";
 import { serviceList } from "../lib/seo";
+import hero from "../assets/demo/campaign-review.jpg";
+import imgMarketing from "../assets/demo/billboard-dusk.jpg";
+import imgBizdev from "../assets/demo/bizdev-table.jpg";
+import imgBrand from "../assets/demo/identity-flatlay.jpg";
+import imgConsulting from "../assets/demo/workshop.jpg";
 
 const work = await getWork();
 const problems = await getProblems();
 const byId = new Map(problems.map((p) => [p.id, p]));
-const tones = ["ink", "white", "ink", "white"] as const;
+const pictures = {
+  marketing: { src: imgMarketing, alt: "A lit billboard over a Cairo overpass at blue hour" },
+  "business-development": {
+    src: imgBizdev,
+    alt: "Hands moving printed charts across a meeting table",
+  },
+  brand: { src: imgBrand, alt: "A brand identity flat lay in green and bone under window light" },
+  consulting: { src: imgConsulting, alt: "A strategist at a wall of notes drawn into one path" },
+} as const;
 ---
 
 <Base
@@ -18,205 +32,135 @@ const tones = ["ink", "white", "ink", "white"] as const;
   description="Digital and outdoor marketing, business development, brand and consulting: four disciplines run by one team against one business objective."
   breadcrumbs={[{ name: "Services", path: "/services" }]}
   jsonLd={[serviceList(services, Astro.site)]}
+  headerVariant="overlay"
 >
-  <section class="container hero" aria-labelledby="services-title">
-    <PageHead
-      title="Four disciplines.<br />One objective."
-      intro="You don't buy a service from us. You bring a problem, we agree one objective, and we use only the disciplines that move it, run by one team."
-    />
+  <PageHero
+    title="Four disciplines.<br />One objective."
+    intro="You don't buy a service from us. You bring a problem, we agree one objective, and we use only the disciplines that move it, run by one team."
+    image={hero}
+    alt="A campaign review in a Cairo studio, posters pinned on the wall"
+  >
     <nav aria-label="Services on this page" class="jump">
       {services.map((s) => (
-        <a href={`#${s.id}`}>
-          {s.name} <span aria-hidden="true">↓</span>
-        </a>
+        <a href={`#${s.id}`}>{s.name}</a>
       ))}
     </nav>
-  </section>
+  </PageHero>
 
-  {services.map((s, i) => {
-    const cases = work
-      .filter((w) => w.data.tags.some((t) => (s.tags as readonly string[]).includes(t)))
-      .slice(0, 2);
-    const solves = s.problems.map((id) => byId.get(id)).filter(Boolean);
-    return (
-      <section id={s.id} class:list={["svc", `tone-${tones[i]}`]} aria-labelledby={`${s.id}-title`}>
-        <div class="container svc__inner">
-          <div class="svc__intro">
-            <h2 id={`${s.id}-title`} class="svc__name">
-              {s.name}
-            </h2>
+  <Section labelledby="svc-list" class="svc-section">
+    <h2 id="svc-list" class="visually-hidden">
+      Our services
+    </h2>
+    <div class="rows">
+      {services.map((s, i) => {
+        const pic = pictures[s.id];
+        const solves = s.problems.map((id) => byId.get(id)).filter(Boolean);
+        const cases = work
+          .filter((w) => w.data.tags.some((t) => (s.tags as readonly string[]).includes(t)))
+          .slice(0, 2);
+        return (
+          <SplitRow id={s.id} image={pic.src} alt={pic.alt} flip={i % 2 === 1}>
+            <h2 class="svc__name">{s.name}</h2>
             <p class="svc__line">{s.line}</p>
-            {solves.length > 0 && (
-              <div class="svc__solves">
-                <p class="svc__k">Solves</p>
-                <ul>
-                  {solves.map((p) => (
-                    <li>
-                      <a href={`/problems/${p!.id}`}>"{p!.data.title}"</a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-          <div class="svc__body">
-            <p class="svc__k">What's included</p>
             <ul class="svc__includes">
               {s.includes.map((x) => (
                 <li>{x}</li>
               ))}
             </ul>
-            {cases.length > 0 && (
-              <div class="svc__cases">
-                {cases.map((w) => (
-                  <CaseCard
-                    href={`/work/${w.id}`}
-                    slug={`${s.id}-${w.id}`}
-                    client={w.data.client}
-                    summary={w.data.summary}
-                    tags={w.data.tags}
-                    sector={w.data.sector}
-                    result={w.data.results[0]}
-                    shot={w.data.heroShot}
-                    tone={w.data.heroTone}
-                    image={w.data.hero}
-                    alt={w.data.heroAlt}
-                    demo={w.data.demoImages}
-                    height="clamp(200px, 18vw, 260px)"
-                  />
+            {solves.length > 0 && (
+              <div class="svc__links">
+                <p class="svc__k">Solves</p>
+                {solves.map((p) => (
+                  <a href={`/problems/${p!.id}`}>"{p!.data.title}"</a>
                 ))}
               </div>
             )}
-          </div>
-        </div>
-      </section>
-    );
-  })}
+            {cases.length > 0 && (
+              <div class="svc__links">
+                <p class="svc__k">See it in</p>
+                {cases.map((w) => (
+                  <a href={`/work/${w.id}`}>
+                    {w.data.client}: {w.data.summary}
+                  </a>
+                ))}
+              </div>
+            )}
+          </SplitRow>
+        );
+      })}
+    </div>
+  </Section>
 
   <CtaBand />
 </Base>
 
 <style>
-  .hero {
-    display: flex;
-    flex-direction: column;
-    gap: 48px;
-    padding-block: 96px 104px;
-  }
   .jump {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 8px;
   }
   .jump a {
-    padding: 12px 18px;
-    border-radius: 0;
-    background: var(--bone);
-    color: var(--green);
-    font-size: var(--fs-body);
+    padding: 10px 16px;
+    border: 1px solid var(--white);
+    font-size: var(--fs-xs);
     font-weight: 500;
-    transition: background-color 200ms ease;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease;
   }
   .jump a:hover {
-    background: var(--green);
-    color: var(--white);
+    background: var(--white);
+    color: var(--ink);
   }
-  .jump span {
-    color: var(--clay);
-  }
-  .jump a:hover span {
-    color: inherit;
-  }
-  .svc {
-    scroll-margin-top: 24px;
-  }
-  .svc__inner {
-    display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 48px 96px;
-    padding-block: min(120px, var(--section-y));
-  }
-  .svc__intro {
+  .rows {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: var(--s-6);
   }
   .svc__name {
     font-size: var(--fs-title);
-    letter-spacing: -0.015em;
+    font-weight: 500;
     line-height: 1.08;
+    letter-spacing: -0.015em;
   }
   .svc__line {
     font-size: var(--fs-lead);
-    line-height: 1.5;
+    line-height: 1.55;
   }
-  .svc__k {
-    font-size: var(--fs-body);
-    font-weight: 500;
-    color: var(--stone);
-  }
-  .tone-white .svc__k {
-    color: var(--green);
-  }
-  .svc__solves {
+  .svc__includes {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 12px;
+    margin: 4px 0 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
   }
-  .svc__solves ul {
+  .svc__includes li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--ink);
+    font-size: var(--fs-body);
+    font-weight: 500;
+  }
+  .svc__links {
     display: flex;
     flex-direction: column;
     gap: 6px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    font-size: var(--fs-lead);
-    font-weight: 500;
   }
-  .svc__solves a {
+  .svc__k {
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--green);
+  }
+  .svc__links a {
+    align-self: flex-start;
+    font-size: var(--fs-body);
     text-decoration: underline;
     text-decoration-color: var(--clay);
     text-decoration-thickness: 2px;
     text-underline-offset: 5px;
   }
-  .svc__body {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  .svc__includes {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin: 0 0 32px;
-    padding: 0;
-    list-style: none;
-  }
-  .svc__includes li {
-    font-size: var(--fs-h3);
-    font-weight: 500;
-    line-height: 1.25;
-  }
-  .svc__cases {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--gutter);
-  }
-  .svc__cases :global(.ccard__title) {
-    font-size: var(--fs-lead);
-  }
-  @media (max-width: 1023px) {
-    .svc__inner {
-      grid-template-columns: 1fr;
-    }
-  }
-  @media (max-width: 767px) {
-    .hero {
-      padding-block: 56px 72px;
-    }
-    .svc__cases {
-      grid-template-columns: 1fr;
-    }
+  .svc__links a:hover {
+    color: var(--green);
   }
 </style>

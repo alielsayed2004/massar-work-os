@@ -2,7 +2,8 @@
 import Base from "../../layouts/Base.astro";
 import Section from "../../components/Section.astro";
 import SectionHead from "../../components/SectionHead.astro";
-import PageHead from "../../components/PageHead.astro";
+import PageHero from "../../components/PageHero.astro";
+import fallbackHero from "../../assets/demo/hoarding.jpg";
 import Path from "../../components/Path.astro";
 import CaseCard from "../../components/CaseCard.astro";
 import FAQ from "../../components/FAQ.astro";
@@ -52,15 +53,25 @@ const used = services.filter((s) => (s.problems as readonly string[]).includes(e
   description={d.answer.slice(0, 155)}
   noindex={d.draft && showDrafts}
   faqs={faqs}
+  headerVariant="overlay"
   breadcrumbs={[
     { name: "Problems we solve", path: "/problems" },
     { name: d.title, path: `/problems/${entry.id}` },
   ]}
 >
-  <section class="container hero" aria-labelledby="problem-title">
-    <PageHead title={`"${d.title}"`} back={{ href: "/problems", text: "All problems" }}>
-      <p class="answer">{d.answer}</p>
-    </PageHead>
+  <PageHero
+    title={`"${d.title}"`}
+    image={cases[0]?.data.hero ?? fallbackHero}
+    alt={cases[0]?.data.heroAlt ?? "People hurrying past hoardings on a Cairo sidewalk"}
+    back={{ href: "/problems", text: "All problems" }}
+    compact
+  />
+
+  <section class="container hero" aria-labelledby="answer-title">
+    <h2 id="answer-title" class="visually-hidden">
+      The short answer
+    </h2>
+    <p class="answer">{d.answer}</p>
     <div class="diag">
       <div class="diag__col">
         <h2 class="diag__k">Usually behind it</h2>

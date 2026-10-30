@@ -2,7 +2,8 @@
 import Base from "../layouts/Base.astro";
 import Section from "../components/Section.astro";
 import SectionHead from "../components/SectionHead.astro";
-import PageHead from "../components/PageHead.astro";
+import PageHero from "../components/PageHero.astro";
+import hero from "../assets/demo/process-path.jpg";
 import Path from "../components/Path.astro";
 import FAQ from "../components/FAQ.astro";
 import CtaBand from "../components/CtaBand.astro";
@@ -38,6 +39,7 @@ const faqs = [
   description="Diagnose, Direct, Build, Prove, Next step. One path with five stations on every Massar project, from the first audit to the measured result."
   breadcrumbs={[{ name: "Process", path: "/process" }]}
   faqs={faqs}
+  headerVariant="overlay"
   jsonLd={[
     howTo(
       "How Massar runs a project",
@@ -47,11 +49,17 @@ const faqs = [
     ),
   ]}
 >
-  <Section labelledby="process-title">
-    <PageHead
-      title="One path.<br />Five stations."
-      intro="Massar is Arabic for path. Every project runs the same route, in the same order, so you always know where you are and what comes next."
-    />
+  <PageHero
+    title="One path.<br />Five stations."
+    intro="Massar is Arabic for path. Every project runs the same route, in the same order, so you always know where you are and what comes next."
+    image={hero}
+    alt="One straight road of light trails cutting through Cairo at blue hour"
+  />
+
+  <Section labelledby="stations-title">
+    <h2 id="stations-title" class="visually-hidden">
+      The five stations
+    </h2>
     <Path stops={processSteps} variant="detailed" />
   </Section>
 

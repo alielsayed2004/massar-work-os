@@ -2,7 +2,10 @@
 import Base from "../layouts/Base.astro";
 import Section from "../components/Section.astro";
 import SectionHead from "../components/SectionHead.astro";
-import PageHead from "../components/PageHead.astro";
+import PageHero from "../components/PageHero.astro";
+import SplitRow from "../components/SplitRow.astro";
+import hero from "../assets/demo/about-studio.jpg";
+import storyImg from "../assets/demo/workshop.jpg";
 import ImagePlaceholder from "../components/ImagePlaceholder.astro";
 import CtaBand from "../components/CtaBand.astro";
 import { org, services } from "../data/site";
@@ -28,15 +31,14 @@ const values = [1, 2, 3];
   description={org.description.slice(0, 155)}
   breadcrumbs={[{ name: "About", path: "/about" }]}
   jsonLd={[aboutPage(Astro.site), professionalService(Astro.site)]}
+  headerVariant="overlay"
 >
-  <section class="container hero" aria-labelledby="about-title">
-    <div class="hero__text">
-      <PageHead title="Massar means path." intro={org.description} />
-    </div>
-    <div class="hero__mark" aria-hidden="true">
-      <img src="/brand/massar_mono_green.png" width="599" height="596" alt="" />
-    </div>
-  </section>
+  <PageHero
+    title="Massar means path."
+    intro={org.description}
+    image={hero}
+    alt="A creative studio in an old downtown Cairo building at golden hour"
+  />
 
   <section class="container facts-wrap" aria-labelledby="facts-title">
     <h2 id="facts-title" class="facts__title">
@@ -52,8 +54,8 @@ const values = [1, 2, 3];
     </dl>
   </section>
 
-  <Section tone="ink" labelledby="name-title">
-    <div class="story">
+  <Section labelledby="name-title">
+    <SplitRow image={storyImg} alt="A strategist at a wall of notes drawn into one path">
       <h2 id="name-title" class="story__title">
         Four arms.
         <br />
@@ -66,7 +68,7 @@ const values = [1, 2, 3];
         </p>
         <p>[Why Ali started Massar, in two or three sentences: the problem he kept seeing.]</p>
       </div>
-    </div>
+    </SplitRow>
   </Section>
 
   <Section labelledby="do-title">
@@ -146,6 +148,7 @@ const values = [1, 2, 3];
     height: auto;
   }
   .facts-wrap {
+    padding-top: var(--section-y);
     display: flex;
     flex-direction: column;
     gap: 24px;
@@ -170,6 +173,7 @@ const values = [1, 2, 3];
   }
   .facts dd {
     margin: 4px 0 0;
+    overflow-wrap: anywhere;
     font-size: var(--fs-body);
     line-height: 1.5;
   }

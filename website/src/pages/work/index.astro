@@ -2,7 +2,8 @@
 import Base from "../../layouts/Base.astro";
 import Section from "../../components/Section.astro";
 import SectionHead from "../../components/SectionHead.astro";
-import PageHead from "../../components/PageHead.astro";
+import PageHero from "../../components/PageHero.astro";
+import hero from "../../assets/demo/billboard-desert.jpg";
 import CaseCard from "../../components/CaseCard.astro";
 import CaseFilter from "../../components/CaseFilter.astro";
 import CtaBand from "../../components/CtaBand.astro";
@@ -17,6 +18,7 @@ const problems = await getProblems();
   title="Case studies: branding, campaigns & growth | Massar"
   description="Branding, campaigns, outdoor and growth work by Massar. Each case starts with the business problem and ends with a measured result."
   breadcrumbs={[{ name: "Work", path: "/work" }]}
+  headerVariant="overlay"
   jsonLd={[
     itemList(
       "Massar case studies",
@@ -25,14 +27,15 @@ const problems = await getProblems();
     ),
   ]}
 >
-  <section class="container hero" aria-labelledby="work-title">
-    <PageHead
-      title="Work that solved something."
-      intro="Every case here starts with a business problem and ends with a number: what it was, where it came from, and over how long."
-    >
-      <CaseFilter target="all-cases" />
-    </PageHead>
-  </section>
+  <PageHero
+    title="Work that solved something."
+    intro="Every case here starts with a business problem and ends with a number: what it was, where it came from, and over how long."
+    image={hero}
+    alt="A green billboard beside a desert highway, a car speeding past"
+    compact
+  >
+    <CaseFilter target="all-cases" />
+  </PageHero>
 
   <Section tone="green" labelledby="cases-title" class="cases-section">
     <h2 id="cases-title" class="visually-hidden">
@@ -54,7 +57,7 @@ const problems = await getProblems();
             image={w.data.hero}
             alt={w.data.heroAlt}
             demo={w.data.demoImages}
-            height={i === 0 ? "clamp(300px, 40vw, 580px)" : "clamp(240px, 26vw, 380px)"}
+            height={i === 0 ? "clamp(300px, 40vw, 580px)" : "clamp(200px, 18vw, 280px)"}
           />
         ))}
       </div>
@@ -91,7 +94,7 @@ const problems = await getProblems();
   }
   .cases {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 72px var(--gutter);
   }
   .cases > :global(:first-child) {
@@ -137,6 +140,11 @@ const problems = await getProblems();
   }
   .byproblem a:hover .bp__n span {
     color: var(--white);
+  }
+  @media (max-width: 1023px) {
+    .cases {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
   @media (max-width: 767px) {
     .hero {
