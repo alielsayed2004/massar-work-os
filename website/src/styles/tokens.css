@@ -15,7 +15,7 @@
   --t-h3: clamp(24px, 2.1vw, 30px); /* 600, 1.25 */
   --t-body: 18px;
   --t-body-sm: 16px; /* 400, 1.7 */
-  --t-label: 13px; /* 600, caps, tracking 0.22em */
+  --t-label: 15px; /* 600, sentence case */
   --t-stat: clamp(64px, 6.7vw, 96px); /* 900, -0.04em */
 
   /* space (8 scale) */
@@ -34,6 +34,9 @@
 
   --rule: 1px solid currentColor;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* Strong curves for UI feedback and on-screen movement. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 /* Tablet: 8 cols, gutter 20 */

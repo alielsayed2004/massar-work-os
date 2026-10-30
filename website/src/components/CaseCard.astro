@@ -14,6 +14,8 @@ interface Props {
   image?: ImageMetadata;
   alt?: string;
   demo?: boolean;
+  /** CSS height of the image. */
+  height?: string;
   tone?: "stone" | "ink" | "bone" | "white";
   /** Tag list used by the /work filter. */
   filterTags?: string[];
@@ -32,21 +34,22 @@ const {
   image,
   alt,
   demo,
+  height = "clamp(260px, 30vw, 440px)",
 } = Astro.props;
-const kicker = [...tags, sector].join(" · ").toUpperCase();
+const kicker = [...tags, sector].join(" · ");
 ---
 
-<article class="ccard" data-tilt data-tags={(filterTags ?? tags).join(",")} data-reveal>
+<article class="ccard" data-tilt data-tags={(filterTags ?? tags).join(",")}>
   <a href={href} class="ccard__link">
     <div class="ccard__media">
       <Media
         image={image}
         alt={alt}
-        tag={demo ? "STOCK · DEMO" : undefined}
+        tag={demo ? "Stock photo · demo" : undefined}
         sizes="(min-width: 1200px) 640px, 100vw"
         shot={shot}
         tone={tone}
-        height="clamp(260px, 30vw, 440px)"
+        height={height}
         class="ccard__img"
         transitionName={`case-${slug}`}
       />
@@ -84,10 +87,9 @@ const kicker = [...tags, sector].join(" · ").toUpperCase();
     transform: scale(1.02);
   }
   .ccard__kicker {
-    font-size: var(--t-label);
-    font-weight: 600;
-    letter-spacing: 0.2em;
+    font-size: 15px;
     line-height: 1.4;
+    opacity: 0.8;
   }
   .ccard__title {
     font-size: var(--t-h3);

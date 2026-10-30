@@ -2,7 +2,6 @@
 import Base from "../layouts/Base.astro";
 import Section from "../components/Section.astro";
 import SectionHead from "../components/SectionHead.astro";
-import Label from "../components/Label.astro";
 import Button from "../components/Button.astro";
 import Media from "../components/Media.astro";
 import StatBlock from "../components/StatBlock.astro";
@@ -10,15 +9,15 @@ import CaseCard from "../components/CaseCard.astro";
 import CaseFilter from "../components/CaseFilter.astro";
 import FAQ from "../components/FAQ.astro";
 import HeroMonogram from "../components/HeroMonogram.astro";
-import Marquee from "../components/Marquee.astro";
 import ProblemSolver from "../components/ProblemSolver.astro";
-import { getProblems, getWork, pad2 } from "../lib/content";
-import { beforeAfter, disciplines, homeFaqs, org, processSteps, services } from "../data/site";
+import MovingParts from "../components/MovingParts.astro";
+import { getProblems, getWork } from "../lib/content";
+import { homeFaqs, org, processSteps, services } from "../data/site";
 
 const work = await getWork();
 const problems = await getProblems();
 const featured = work.find((w) => w.data.featured) ?? work[0];
-const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
+const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
 ---
 
 <Base
@@ -27,134 +26,124 @@ const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
   faqs={homeFaqs}
   isHome
 >
-  <!-- HERO -->
+  <!-- HERO: the title owns the full width; the mark sits under it -->
   <section class="container hero" aria-labelledby="hero-title">
-    <div class="hero__text">
-      <Label>Creative + business partner · Cairo</Label>
-      <h1 id="hero-title" class="hero__title">
-        <span class="line" style="--i:0">
-          Too many moving parts?
-        </span>
-        <span class="line hero__green" style="--i:1">
-          One clear direction.
-        </span>
-      </h1>
-      <p class="hero__sub">
-        We find the real business problem, set one direction, and deliver it: strategy, brand,
-        marketing and execution under one accountable owner.
-      </p>
-      <div class="hero__ctas">
-        <Button href="/start">Start a project</Button>
-        <Button href="#problems" variant="secondary">
-          Find your problem
-        </Button>
-      </div>
-      {problems.length > 0 && (
-        <div class="ticker" aria-hidden="true" data-ticker>
-          {problems.map((p, i) => (
-            <div class="ticker__row" data-active={i === 0 ? "" : undefined}>
-              <span class="ticker__q">"{p.data.title}"</span>
-              <span class="ticker__arrow">→</span>
-              <span class="ticker__a">{p.data.short}</span>
-            </div>
-          ))}
+    <h1 id="hero-title" class="hero__title">
+      <span class="line" style="--i:0">
+        Too many moving parts?
+      </span>
+      <span class="line hero__green" style="--i:1">
+        One clear direction.
+      </span>
+    </h1>
+    <div class="hero__row">
+      <div class="hero__copy">
+        <p class="hero__sub">
+          Massar is a creative and business partner in Cairo. We find the real business problem, set
+          one direction, and deliver it: strategy, brand, marketing and execution under one
+          accountable owner.
+        </p>
+        <div class="hero__ctas">
+          <Button href="/start">Start a project</Button>
+          <Button href="#problems" variant="secondary">
+            Find your problem
+          </Button>
         </div>
-      )}
-    </div>
-    <div class="hero__visual">
-      <HeroMonogram />
+        <p class="hero__trusted">Trusted by {clients.join(", ")}.</p>
+      </div>
+      <div class="hero__visual">
+        <HeroMonogram />
+      </div>
     </div>
   </section>
 
-  <Marquee items={disciplines} />
-
-  <!-- TRUSTED BY -->
-  <div class="container trusted">
-    <span class="label">Trusted by</span>
-    <ul>
-      {clients.map((c) => (
-        <li>{c}</li>
-      ))}
-    </ul>
-  </div>
-
-  <!-- FEATURED CASE -->
+  <!-- FEATURED CASE: full-bleed picture, problem → result -->
   {featured && (
-    <Section tone="ink" pad="tight" id="work" labelledby="featured-title">
-      <SectionHead
-        label="01 — Featured case"
-        title={`${featured.data.client}: ${featured.data.summary}`}
-        id="featured-title"
-      >
-        <Button slot="aside" href={`/work/${featured.id}`} variant="link" on="dark">
+    <section class="tone-ink featured" id="work" aria-labelledby="featured-title">
+      <div class="container featured__head">
+        <h2 id="featured-title" class="h2">
+          {featured.data.client}: {featured.data.summary}
+        </h2>
+        <Button href={`/work/${featured.id}`} variant="link" on="dark">
           Read the case study
         </Button>
-      </SectionHead>
-      <div class="featured">
-        <a href={`/work/${featured.id}`} class="featured__media" tabindex="-1" aria-hidden="true">
-          <Media
-            image={featured.data.hero}
-            alt={featured.data.heroAlt}
-            tag={featured.data.demoImages ? "STOCK · DEMO" : undefined}
-            shot={featured.data.heroShot}
-            tone={featured.data.heroTone}
-            height="clamp(280px, 42vw, 620px)"
-            class="scale-in"
-            transitionName={`case-${featured.id}`}
-          />
-        </a>
-        <ol class="flow">
-          <li class="flow__step" data-reveal>
-            <span class="flow__k">
-              <span>01</span> The problem
-            </span>
-            <p>{featured.data.problem}</p>
-          </li>
-          <li class="flow__step" data-reveal>
-            <span class="flow__k">
-              <span>02</span> What we did
-            </span>
-            <p>{featured.data.solution}</p>
-          </li>
-          {featured.data.results[0] && (
-            <li class="flow__step" data-reveal>
-              <span class="flow__k">
-                <span>03</span> The result
-              </span>
-              <StatBlock
-                value={featured.data.results[0].value}
-                caption={featured.data.results[0].metric}
-                size="result"
-              />
-            </li>
-          )}
-        </ol>
       </div>
-    </Section>
+      <a href={`/work/${featured.id}`} class="featured__media" tabindex="-1" aria-hidden="true">
+        <Media
+          image={featured.data.hero}
+          alt={featured.data.heroAlt}
+          tag={featured.data.demoImages ? "Stock photo · demo" : undefined}
+          shot={featured.data.heroShot}
+          tone={featured.data.heroTone}
+          height="clamp(320px, 52vw, 760px)"
+          sizes="100vw"
+          class="scale-in"
+          transitionName={`case-${featured.id}`}
+        />
+      </a>
+      <div class="container featured__flow">
+        <div class="flow__step">
+          <h3 class="flow__k">The problem</h3>
+          <p>{featured.data.problem}</p>
+        </div>
+        <div class="flow__step">
+          <h3 class="flow__k">What we did</h3>
+          <p>{featured.data.solution}</p>
+        </div>
+        {featured.data.results[0] && (
+          <div class="flow__step">
+            <h3 class="flow__k">The result</h3>
+            <StatBlock
+              value={featured.data.results[0].value}
+              caption={featured.data.results[0].metric}
+            />
+          </div>
+        )}
+      </div>
+    </section>
   )}
 
-  <!-- PROBLEM SOLVER -->
+  <!-- PROBLEMS: the visitor picks theirs -->
   <Section id="problems" labelledby="problems-title">
-    <SectionHead
-      label="02 — Problems we solve"
-      title="Start with the problem.<br />We'll show you the case."
-      id="problems-title"
-    >
+    <SectionHead title="Start with the problem. We'll show you the case." id="problems-title">
       <p slot="aside" class="aside-text">
-        Pick the one that sounds like you. We'll show you what usually causes it, what we do about
-        it, and where we've done it before.
+        Pick the one that sounds like you: what usually causes it, what we do about it, and where
+        we've done it before.
       </p>
     </SectionHead>
     <ProblemSolver problems={problems} work={work} />
   </Section>
 
+  <!-- THE LIVE THING: many parts become one path -->
+  <Section tone="green" labelledby="mp-title">
+    <MovingParts />
+  </Section>
+
+  <!-- PROCESS: one path, five stations -->
+  <Section id="process" labelledby="process-title">
+    <SectionHead title="One path. Same five stations, every project." id="process-title">
+      <Button slot="aside" href="/process" variant="link">
+        How each step works
+      </Button>
+    </SectionHead>
+    <ol class="path">
+      {processSteps.map((s, i) => (
+        <li class:list={["path__stop", { "path__stop--end": i === processSteps.length - 1 }]}>
+          <span class="path__dot" aria-hidden="true" />
+          <h3 class="path__name">{s.name}</h3>
+          <p class="path__line">{s.line}</p>
+        </li>
+      ))}
+    </ol>
+  </Section>
+
   <!-- CASE STUDIES -->
   <Section tone="green" labelledby="cases-title">
-    <SectionHead label="03 — Case studies" title="Problem. Direction. Result." id="cases-title">
+    <SectionHead title="Problem. Direction. Result." id="cases-title">
       <CaseFilter slot="aside" target="home-cases" />
     </SectionHead>
     <div class="cases" id="home-cases">
-      {work.map((w) => (
+      {work.map((w, i) => (
         <CaseCard
           href={`/work/${w.id}`}
           slug={w.id}
@@ -168,6 +157,7 @@ const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
           image={w.data.hero}
           alt={w.data.heroAlt}
           demo={w.data.demoImages}
+          height={i === 0 ? "clamp(300px, 40vw, 580px)" : "clamp(220px, 22vw, 320px)"}
         />
       ))}
     </div>
@@ -176,75 +166,16 @@ const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
     </Button>
   </Section>
 
-  <!-- BEFORE / AFTER -->
-  <Section labelledby="ba-title">
-    <SectionHead
-      label="04 — Why one partner"
-      title="Most growth problems are<br />coordination problems."
-      id="ba-title"
-    />
-    <div class="ba">
-      <div class="ba__col ba__col--before" data-reveal>
-        <h3 class="ba__title">Without one partner</h3>
-        <ul>
-          {beforeAfter.before.map((t) => (
-            <li>
-              <span class="ba__mark" aria-hidden="true">
-                ×
-              </span>
-              {t}
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div class="ba__col ba__col--after tone-green" data-reveal>
-        <h3 class="ba__title">With Massar</h3>
-        <ul>
-          {beforeAfter.after.map((t) => (
-            <li>
-              <span class="ba__mark" aria-hidden="true">
-                ✓
-              </span>
-              {t}
-            </li>
-          ))}
-        </ul>
-        <p class="ba__tagline">{org.tagline}</p>
-      </div>
-    </div>
-  </Section>
-
-  <!-- PROCESS -->
-  <Section id="process" labelledby="process-title" class="process-section">
-    <SectionHead
-      label="05 — How we solve it"
-      title="Five steps. Same order, every project."
-      id="process-title"
-    >
-      <Button slot="aside" href="/process" variant="link">
-        How each step works
-      </Button>
-    </SectionHead>
-    <ol class="steps">
-      {processSteps.map((s, i) => (
-        <li class="step" data-reveal style={`--d:${i}`}>
-          <span class:list={["step__num", { "step__num--clay": i === 4 }]}>{pad2(i + 1)}</span>
-          <h3 class="step__name">{s.name}</h3>
-          <p class="step__line">{s.line}</p>
-        </li>
-      ))}
-    </ol>
-  </Section>
-
   <!-- SERVICES + FAQ -->
-  <Section tone="ink" pad="tight" id="faq">
+  <Section id="faq" labelledby="do-title">
     <div class="split">
       <div class="split__a">
-        <Label>06 — What we do</Label>
+        <h2 id="do-title" class="h2">
+          What we do
+        </h2>
         <ul class="services">
-          {services.map((s, i) => (
+          {services.map((s) => (
             <li>
-              <span class="services__num">{pad2(i + 1)}</span>
               <span class="services__name">{s.name}</span>
               <span class="services__line">{s.line}</span>
             </li>
@@ -252,8 +183,7 @@ const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
         </ul>
       </div>
       <div class="split__b">
-        <Label>07 — FAQ</Label>
-        <h2 class="visually-hidden">Frequently asked questions</h2>
+        <h2 class="h2">Questions</h2>
         <FAQ items={homeFaqs} />
       </div>
     </div>
@@ -262,7 +192,7 @@ const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
   <!-- CTA -->
   <section class="cta tone-green" aria-labelledby="cta-title">
     <div class="container cta__inner">
-      <div class="cta__main" data-reveal>
+      <div class="cta__main">
         <div class="cta__rule" aria-hidden="true"></div>
         <h2 id="cta-title" class="cta__title">
           Bring us the problem.
@@ -272,7 +202,7 @@ const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
         <p class="cta__tagline">{org.tagline}</p>
       </div>
       <div class="cta__pick">
-        <span class="label">Which one is yours?</span>
+        <p class="cta__ask">Which one is yours?</p>
         <ul>
           {problems.map((p) => (
             <li>
@@ -290,44 +220,17 @@ const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
   </section>
 </Base>
 
-<script>
-  function initTicker() {
-    const root = document.querySelector<HTMLElement>("[data-ticker]");
-    if (!root || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const rows = [...root.querySelectorAll<HTMLElement>(".ticker__row")];
-    let i = 0;
-    const id = window.setInterval(() => {
-      if (!document.body.contains(root)) return window.clearInterval(id);
-      rows[i].removeAttribute("data-active");
-      i = (i + 1) % rows.length;
-      rows[i].setAttribute("data-active", "");
-    }, 3200);
-  }
-  document.addEventListener("astro:page-load", initTicker);
-</script>
-
 <style>
   .hero {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 48px;
-    padding-block: 88px 96px;
-  }
-  .hero__text {
-    flex: 1 1 min(660px, 100%);
-    display: flex;
     flex-direction: column;
-    gap: 32px;
-  }
-  .hero__visual {
-    flex: 1 1 min(460px, 100%);
+    gap: 56px;
+    padding-block: 80px 104px;
   }
   .hero__title {
-    max-width: 7em;
-    font-size: var(--t-display);
-    line-height: 1.02;
-    letter-spacing: -0.03em;
+    font-size: clamp(48px, 7.4vw, 112px);
+    line-height: 0.98;
+    letter-spacing: -0.04em;
   }
   .hero__title .line {
     display: block;
@@ -335,279 +238,167 @@ const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
   .hero__green {
     color: var(--green);
   }
+  .hero__row {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 48px var(--gutter);
+    align-items: end;
+  }
+  .hero__copy {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
   .hero__sub {
-    max-width: 560px;
-    font-size: 20px;
-    line-height: 1.65;
+    max-width: 34ch;
+    font-size: 22px;
+    line-height: 1.55;
   }
   .hero__ctas {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
   }
-
-  .ticker {
-    position: relative;
-    height: 64px;
-    max-width: 640px;
-    border-left: 4px solid var(--clay);
-    padding-left: 20px;
-    overflow: hidden;
-  }
-  .ticker__row {
-    position: absolute;
-    inset: 0 0 0 20px;
-    display: flex;
-    flex-wrap: wrap;
-    align-content: center;
-    gap: 2px 12px;
-    font-size: 16px;
-    line-height: 1.4;
-    opacity: 0;
-    transform: translateY(16px);
-    transition:
-      opacity 500ms var(--ease),
-      transform 500ms var(--ease);
-  }
-  .ticker__row[data-active] {
-    opacity: 1;
-    transform: none;
-  }
-  .ticker__q {
-    font-weight: 600;
-  }
-  .ticker__arrow {
-    color: var(--clay);
-  }
-  .ticker__a {
-    color: var(--green);
-  }
-
-  .trusted {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px 24px;
-    padding-block: 32px 72px;
-  }
-  .trusted .label {
+  .hero__trusted {
+    font-size: 15px;
     color: var(--ink);
-  }
-  .trusted ul {
-    display: contents;
-    list-style: none;
-  }
-  .trusted li {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--stone);
   }
 
   .featured {
+    padding-block: min(120px, var(--section-y));
+  }
+  .featured__head {
     display: flex;
-    flex-direction: column;
-    gap: 48px;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 24px 48px;
+    margin-bottom: 56px;
+  }
+  .featured__head .h2 {
+    max-width: 16em;
   }
   .featured__media {
     display: block;
   }
-  .flow {
+  .featured__flow {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 48px var(--gutter);
+    margin-top: 64px;
+  }
+  .flow__step {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .flow__k {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--stone);
+  }
+  .flow__step p {
+    font-size: 24px;
+    line-height: 1.4;
+  }
+
+  .aside-text {
+    max-width: 420px;
+    font-size: var(--t-body);
+    line-height: 1.6;
+  }
+
+  .path {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: var(--gutter);
     margin: 0;
     padding: 0;
     list-style: none;
-    counter-reset: flow;
   }
-  .flow__step {
+  .path::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 11px;
+    height: 6px;
+    background: var(--green);
+  }
+  .path__stop {
     position: relative;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding-top: 20px;
-    border-top: 1px solid var(--white);
   }
-  .flow__step:not(:last-child)::after {
-    content: "→";
-    position: absolute;
-    top: -14px;
-    right: 0;
-    padding-left: 8px;
-    background: var(--ink);
-    color: var(--clay);
-    font-size: 20px;
-    line-height: 1;
+  .path__dot {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 20px;
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: inset 0 0 0 6px var(--green);
   }
-  .flow__k {
-    font-size: var(--t-label);
-    font-weight: 600;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--stone);
+  .path__stop--end .path__dot {
+    background: var(--clay);
+    box-shadow: none;
   }
-  .flow__k span {
-    color: var(--white);
-    margin-right: 8px;
+  .path__name {
+    font-size: var(--t-h3);
+    line-height: 1.2;
   }
-  .flow__step p {
-    font-size: 20px;
-    line-height: 1.5;
-  }
-
-  .aside-text {
-    max-width: 460px;
-    font-size: var(--t-body);
-    line-height: 1.65;
+  .path__line {
+    font-size: 17px;
+    line-height: 1.55;
   }
 
   .cases {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 72px var(--gutter);
+  }
+  .cases > :global(:first-child) {
+    grid-column: 1 / -1;
   }
   :global(.self-start) {
     align-self: flex-start;
   }
 
-  .ba {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));
-    gap: var(--gutter);
-  }
-  .ba__col {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-    padding: 40px;
-  }
-  .ba__col--before {
-    border: 1px solid var(--ink);
-  }
-  .ba__title {
-    font-size: var(--t-h3);
-    line-height: 1.25;
-  }
-  .ba ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .ba li {
-    display: flex;
-    gap: 16px;
-    padding: 16px 0;
-    border-top: 1px solid var(--line, currentColor);
-    font-size: 19px;
-    line-height: 1.45;
-  }
-  .ba__col--before li {
-    color: var(--ink);
-  }
-  .ba__col--before .ba__mark {
-    color: var(--clay);
-    font-weight: 600;
-  }
-  .ba__col--after .ba__mark {
-    font-weight: 600;
-  }
-  .ba__mark {
-    flex: 0 0 20px;
-  }
-  .ba__tagline {
-    margin-top: auto;
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-weight: 500;
-    font-size: 30px;
-    line-height: 1.2;
-  }
-  :global(.process-section) :global(.section__inner) {
-    padding-top: 0;
-  }
-
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
-    gap: var(--gutter);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .step {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding-top: 20px;
-    border-top: 2px solid var(--ink);
-    transition-delay: calc(var(--d, 0) * 80ms);
-  }
-  .step__num {
-    font-size: 56px;
-    font-weight: 300;
-    line-height: 1;
-    color: var(--green);
-  }
-  .step__num--clay {
-    color: var(--clay);
-  }
-  .step__name {
-    font-size: 22px;
-    line-height: 1.3;
-  }
-  .step__line {
-    font-size: 16px;
-    line-height: 1.6;
-  }
-
   .split {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 80px;
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 64px 96px;
   }
-  .split__a {
-    flex: 1 1 min(420px, 100%);
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
+  .split__a,
   .split__b {
-    flex: 1.4 1 min(520px, 100%);
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 32px;
   }
   .services {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
   .services li {
-    display: grid;
-    grid-template-columns: 44px 1fr;
-    gap: 6px 12px;
-    padding: 20px 0;
-    border-top: 1px solid var(--white);
-  }
-  .services li:last-child {
-    border-bottom: 1px solid var(--white);
-  }
-  .services__num {
-    grid-row: span 2;
-    padding-top: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--stone);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
   .services__name {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 600;
-    line-height: 1.3;
+    line-height: 1.25;
+    color: var(--green);
   }
   .services__line {
-    font-size: 16px;
-    line-height: 1.6;
+    max-width: 40ch;
+    font-size: 17px;
+    line-height: 1.55;
   }
 
   .cta__inner {
@@ -629,7 +420,7 @@ const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
   }
   .cta__title {
     font-size: clamp(40px, 5.4vw, 80px);
-    line-height: 1.05;
+    line-height: 1.02;
     letter-spacing: -0.03em;
   }
   .cta__tagline {
@@ -642,10 +433,17 @@ const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
   .cta__pick {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
+  }
+  .cta__ask {
+    font-size: 18px;
+    font-weight: 600;
   }
   .cta__pick ul {
-    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 0 12px;
     padding: 0;
     list-style: none;
   }
@@ -653,18 +451,16 @@ const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
     display: flex;
     justify-content: space-between;
     gap: 16px;
-    padding: 14px 0;
-    border-top: 1px solid var(--white);
-    font-size: 19px;
+    padding: 14px 18px;
+    background: var(--white);
+    color: var(--green);
+    font-size: 18px;
     font-weight: 600;
     line-height: 1.35;
-    transition: padding 240ms var(--ease);
-  }
-  .cta__pick li:last-child a {
-    border-bottom: 1px solid var(--white);
+    transition: transform 200ms var(--ease-out);
   }
   .cta__pick li a:hover {
-    padding-left: 10px;
+    transform: translateX(6px);
   }
   .cta__pick li a span {
     color: var(--clay);
@@ -674,35 +470,51 @@ const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
   }
 
   @media (max-width: 1023px) {
+    .hero__row,
+    .split,
     .cta__inner {
       grid-template-columns: 1fr;
+    }
+    .featured__flow {
+      grid-template-columns: 1fr;
+    }
+    .cases {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
   @media (max-width: 767px) {
     .hero {
-      padding-block: 48px 64px;
-      gap: 40px;
+      padding-block: 48px 72px;
+      gap: 36px;
     }
     .hero__sub {
       font-size: var(--t-body);
     }
-    .ticker {
-      height: 84px;
+    .flow__step p {
+      font-size: 20px;
     }
     .cases {
+      grid-template-columns: 1fr;
       gap: 56px;
     }
-    .ba__col {
-      padding: 28px 20px;
+    .path {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      padding-left: 48px;
     }
-    .ba li {
-      font-size: 17px;
+    .path::before {
+      left: 11px;
+      right: auto;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      height: auto;
     }
-    .split {
-      gap: 56px;
-    }
-    .services__name {
-      font-size: 20px;
+    .path__dot {
+      position: absolute;
+      left: -48px;
+      top: 0;
+      margin: 0;
     }
   }
 </style>

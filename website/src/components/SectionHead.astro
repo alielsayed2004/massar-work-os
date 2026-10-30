@@ -1,24 +1,18 @@
 ---
-import Label from "./Label.astro";
-
 interface Props {
-  label: string;
-  title?: string;
+  title: string;
   /** Use h1 for page heroes. */
   level?: 1 | 2;
   id?: string;
 }
-const { label, title, level = 2, id } = Astro.props;
+const { title, level = 2, id } = Astro.props;
 const Heading = level === 1 ? "h1" : "h2";
 ---
 
 <div class="head">
-  <div class="head__main" data-reveal>
-    <Label>{label}</Label>
-    {title && <Heading id={id} class="h2" set:html={title} />}
-  </div>
+  <Heading id={id} class="h2 head__title" set:html={title} />
   {Astro.slots.has("aside") && (
-    <div class="head__aside" data-reveal>
+    <div class="head__aside">
       <slot name="aside" />
     </div>
   )}
@@ -30,12 +24,10 @@ const Heading = level === 1 ? "h1" : "h2";
     justify-content: space-between;
     align-items: flex-end;
     flex-wrap: wrap;
-    gap: 24px 32px;
+    gap: 24px 48px;
   }
-  .head__main {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+  .head__title {
+    max-width: 18em;
   }
   .head__aside {
     max-width: 100%;

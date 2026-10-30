@@ -29,8 +29,7 @@ const {
   transitionName,
 } = Astro.props;
 const text =
-  label ??
-  [kind === "video" ? "VIDEO" : "REAL PHOTO", shot, note].filter(Boolean).join(" · ").toUpperCase();
+  label ?? [kind === "video" ? "Video" : "Real photo", shot, note].filter(Boolean).join(" · ");
 ---
 
 <div
@@ -80,9 +79,8 @@ const text =
     left: 20px;
     right: 20px;
     bottom: 16px;
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 600;
-    letter-spacing: 0.2em;
     line-height: 1.4;
   }
 </style>

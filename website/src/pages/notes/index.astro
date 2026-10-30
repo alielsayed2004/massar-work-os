@@ -15,14 +15,13 @@ const notes = await getNotes();
 >
   <Section labelledby="notes-title">
     <PageHead
-      label="Field notes"
       title="Notes from real work."
       intro="Short posts from projects in progress. No theory."
     />
     {notes.length ? (
       <ul class="notes">
         {notes.map((n) => (
-          <li data-reveal>
+          <li>
             <a href={`/notes/${n.id}`}>
               <time datetime={n.data.date.toISOString()}>{formatDate(n.data.date)}</time>
               <span class="notes__title">{n.data.title}</span>

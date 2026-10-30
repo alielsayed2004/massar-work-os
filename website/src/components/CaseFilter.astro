@@ -45,16 +45,22 @@ const { target } = Astro.props;
     flex-wrap: wrap;
     gap: 8px;
   }
+  button:active {
+    transform: scale(0.97);
+  }
   button {
-    padding: 7px 12px;
+    padding: 8px 16px;
     border: 1px solid currentColor;
     background: none;
     color: inherit;
-    font-size: var(--t-label);
+    font-size: 15px;
     font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
     line-height: 1.4;
+    border-radius: 999px;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease,
+      transform 140ms var(--ease-out);
     cursor: pointer;
   }
   .tone-green button[aria-pressed="true"],

@@ -1,7 +1,6 @@
 ---
 import { render } from "astro:content";
 import Base from "../../layouts/Base.astro";
-import Label from "../../components/Label.astro";
 import Media from "../../components/Media.astro";
 import StatBlock from "../../components/StatBlock.astro";
 import Button from "../../components/Button.astro";
@@ -24,7 +23,7 @@ const { entry, next } = Astro.props;
 const d = entry.data;
 const { Content } = await render(entry);
 
-const kicker = ["Work / Case study " + pad2(d.order), ...d.tags, d.sector].join(" · ");
+const kicker = [...d.tags, d.sector].join(" · ");
 const timeline = [d.durationWeeks ? `${d.durationWeeks} weeks` : null, d.year]
   .filter(Boolean)
   .join(" · ");
@@ -74,8 +73,11 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
   <!-- HERO -->
   <section class="tone-ink hero" aria-labelledby="case-title">
     <div class="container hero__inner">
-      <nav aria-label="Breadcrumb">
-        <Label muted>{kicker}</Label>
+      <nav aria-label="Breadcrumb" class="crumb">
+        <a href="/work">
+          <span aria-hidden="true">←</span> All case studies
+        </a>
+        <span class="crumb__tags">{kicker}</span>
       </nav>
       <h1 id="case-title" class="hero__title">
         <span class="line" style="--i:0">
@@ -95,7 +97,7 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
           image={d.hero}
           alt={d.heroAlt}
           priority
-          tag={d.demoImages ? "STOCK · DEMO" : undefined}
+          tag={d.demoImages ? "Stock photo · demo" : undefined}
           shot={d.heroShot}
           tone={d.heroTone}
           height="clamp(280px, 44vw, 640px)"
@@ -108,7 +110,7 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
 
   <!-- TL;DR -->
   <section class="container tldr" aria-labelledby="tldr-title">
-    <h2 id="tldr-title" class="label tldr__label">
+    <h2 id="tldr-title" class="tldr__title">
       The case in 20 seconds
     </h2>
     <div class="tldr__grid">
@@ -134,15 +136,14 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
 
   <!-- CHALLENGE / APPROACH -->
   <section class="container ca">
-    <div class="ca__col" data-reveal>
-      <span class="label">01 — The challenge</span>
+    <div class="ca__col">
       <h2 class="ca__title">{d.challengeTitle}</h2>
       <div class="prose">
         <Content />
       </div>
     </div>
-    <div class="ca__col" data-reveal>
-      <h2 class="label">02 — The approach</h2>
+    <div class="ca__col">
+      <h2 class="ca__title">How we approached it</h2>
       <ol class="approach">
         {approach.map((a, i) => (
           <li>
@@ -160,17 +161,16 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
   {d.gallery.length > 0 && (
     <section class="tone-green work" aria-labelledby="work-title">
       <div class="container work__inner">
-        <span class="label">03 — The work</span>
         <h2 id="work-title" class="ca__title work__title">
           [The solution, shown]
         </h2>
         <div class="gallery">
           {d.gallery.map((g) => (
-            <figure class:list={["gallery__item", { "gallery__item--wide": g.wide }]} data-reveal>
+            <figure class:list={["gallery__item", { "gallery__item--wide": g.wide }]}>
               <Media
                 image={g.src}
                 alt={g.alt}
-                tag={g.src && d.demoImages ? "STOCK · DEMO" : undefined}
+                tag={g.src && d.demoImages ? "Stock photo · demo" : undefined}
                 sizes={
                   g.wide ? "(min-width: 1200px) 1280px, 100vw" : "(min-width: 1200px) 640px, 100vw"
                 }
@@ -194,8 +194,8 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
 
   <!-- RESULTS -->
   <section class="container results" aria-labelledby="results-title">
-    <h2 id="results-title" class="label">
-      04 — The results
+    <h2 id="results-title" class="ca__title">
+      The results
     </h2>
     <div class="results__grid">
       {d.results.map((r) => (
@@ -203,7 +203,7 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
       ))}
     </div>
     {d.quote && (
-      <blockquote class="quote" data-reveal>
+      <blockquote class="quote">
         <p>"{d.quote.text}"</p>
         <footer>
           {d.quote.name} · {d.quote.role}
@@ -216,7 +216,7 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
   <div slot="footer" class="next">
     {next && (
       <div class="next__main">
-        <Label muted>Next case</Label>
+        <span class="next__k">Next case</span>
         <a href={`/work/${next.id}`} class="next__link">
           {next.data.client}: {next.data.summary}
         </a>
@@ -234,6 +234,27 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
     flex-direction: column;
     gap: 32px;
     padding-top: 96px;
+  }
+  .crumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    font-size: 16px;
+  }
+  .crumb a {
+    font-weight: 600;
+  }
+  .crumb__tags {
+    color: var(--stone);
+  }
+  .tldr__title {
+    font-size: var(--t-h3);
+    line-height: 1.25;
+    color: var(--green);
+  }
+  .next__k {
+    font-size: 16px;
+    color: var(--stone);
   }
   .hero__title {
     max-width: 1100px;
@@ -260,10 +281,7 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
     gap: 4px;
   }
   .meta dt {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
+    font-size: 15px;
     color: var(--stone);
   }
   .meta dd {
@@ -293,9 +311,7 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
     gap: 12px;
     padding: 28px 28px 28px 0;
   }
-  .tldr__col h3 {
-    letter-spacing: 0.2em;
-  }
+
   .tldr__col p {
     font-size: 22px;
     font-weight: 500;
@@ -398,11 +414,11 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
     gap: 16px;
     max-width: 980px;
     margin: 32px 0 0;
-    padding-left: 32px;
-    border-left: 4px solid var(--clay);
+    padding-top: 28px;
+    border-top: 6px solid var(--clay);
   }
   .quote p {
-    font-size: clamp(26px, 2.5vw, 36px);
+    font-size: clamp(28px, 3vw, 44px);
     font-weight: 500;
     line-height: 1.45;
   }

@@ -6,7 +6,7 @@
  */
 import Media from "./Media.astro";
 import type { Problem, Work } from "../lib/content";
-import { casesFor, pad2 } from "../lib/content";
+import { casesFor } from "../lib/content";
 
 interface Props {
   problems: Problem[];
@@ -28,7 +28,6 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
         tabindex={i === 0 ? 0 : -1}
         class="solver__tab"
       >
-        <span class="solver__num">P/{pad2(p.data.order)}</span>
         <span class="solver__q">"{p.data.title}"</span>
         <span class="solver__arrow" aria-hidden="true">
           →
@@ -67,7 +66,7 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
               alt={proof.data.heroAlt}
               shot={proof.data.heroShot}
               tone={proof.data.heroTone}
-              tag={proof.data.demoImages ? "STOCK · DEMO" : undefined}
+              tag={proof.data.demoImages ? "Stock photo · demo" : undefined}
               height="220px"
               sizes="(min-width: 1200px) 360px, 100vw"
             />
@@ -110,9 +109,6 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
       };
       tabs.forEach((tab, i) => {
         tab.addEventListener("click", () => select(tab));
-        tab.addEventListener("mouseenter", () => {
-          if (window.matchMedia("(hover: hover)").matches) select(tab);
-        });
         tab.addEventListener("keydown", (e) => {
           const d =
             e.key === "ArrowDown" || e.key === "ArrowRight"
@@ -140,17 +136,16 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
   .solver__tabs {
     display: flex;
     flex-direction: column;
-    border-top: 1px solid var(--ink);
+    gap: 4px;
   }
   .solver__tab {
     display: grid;
-    grid-template-columns: 56px 1fr 24px;
+    grid-template-columns: 1fr 24px;
     align-items: baseline;
     gap: 12px;
     width: 100%;
-    padding: 24px 0;
+    padding: 20px 24px;
     border: 0;
-    border-bottom: 1px solid var(--ink);
     background: none;
     text-align: left;
     cursor: pointer;
@@ -159,12 +154,6 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
       padding 240ms var(--ease),
       background-color 240ms var(--ease),
       color 240ms var(--ease);
-  }
-  .solver__num {
-    font-size: var(--t-label);
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    color: var(--green);
   }
   .solver__q {
     font-size: clamp(22px, 2.1vw, 30px);
@@ -180,12 +169,8 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
       transform 240ms var(--ease);
   }
   .is-js .solver__tab[aria-selected="true"] {
-    padding-inline: 20px;
     background: var(--ink);
     color: var(--white);
-  }
-  .is-js .solver__tab[aria-selected="true"] .solver__num {
-    color: var(--stone);
   }
   .is-js .solver__tab[aria-selected="true"] .solver__arrow {
     opacity: 1;
@@ -193,7 +178,7 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
     color: var(--clay);
   }
   .solver__other {
-    padding-top: 24px;
+    padding: 20px 24px 0;
     font-size: 16px;
   }
   .solver__other .link {
@@ -228,15 +213,11 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
   .solver__step {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding-top: 16px;
-    border-top: 2px solid var(--ink);
+    gap: 10px;
   }
   .solver__label {
-    font-size: 12px;
+    font-size: 15px;
     font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
     color: var(--green);
   }
   .solver__big {

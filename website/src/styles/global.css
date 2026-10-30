@@ -98,6 +98,33 @@ textarea {
   color: inherit;
 }
 
+::selection {
+  background: var(--green);
+  color: var(--white);
+}
+.tone-green ::selection,
+.tone-ink ::selection {
+  background: var(--white);
+  color: var(--green);
+}
+html {
+  accent-color: var(--green);
+  caret-color: var(--green);
+  scrollbar-color: var(--green) var(--white);
+}
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
 :focus-visible {
   outline: 2px solid var(--clay);
   outline-offset: 2px;
@@ -114,8 +141,6 @@ textarea {
 .label {
   font-size: var(--t-label);
   font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
   line-height: 1.4;
 }
 
@@ -230,17 +255,6 @@ textarea {
   h1 .line {
     animation: line-in 700ms var(--ease) both;
     animation-delay: calc(var(--i, 0) * 80ms);
-  }
-
-  /* Scroll reveal: fade + 24px rise, once. */
-  .js [data-reveal] {
-    transition:
-      opacity 700ms var(--ease),
-      transform 700ms var(--ease);
-  }
-  .js [data-reveal]:not(.is-in) {
-    opacity: 0;
-    transform: translateY(24px);
   }
 
   /* Case images scale 0.92→1 while entering the viewport. */

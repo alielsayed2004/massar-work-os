@@ -20,7 +20,7 @@ interface Props {
   transitionName?: string;
   /** Above the fold: load eagerly with high priority. */
   priority?: boolean;
-  /** Small corner tag, e.g. "STOCK · DEMO" for preview-only imagery. */
+  /** Small corner tag, e.g. "Stock photo · demo" for preview-only imagery. */
   tag?: string;
   sizes?: string;
 }
@@ -87,9 +87,8 @@ const {
     padding: 4px 8px;
     background: var(--ink);
     color: var(--white);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.2em;
+    font-size: 12px;
+    font-weight: 500;
     line-height: 1.4;
   }
 </style>

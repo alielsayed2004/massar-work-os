@@ -18,18 +18,14 @@ const values = [1, 2, 3];
   breadcrumbs={[{ name: "About", path: "/about" }]}
 >
   <Section labelledby="about-title">
-    <PageHead
-      label="About · Cairo"
-      title="One team.<br />One accountable owner."
-      intro={org.description}
-    />
+    <PageHead title="One team.<br />One accountable owner." intro={org.description} />
   </Section>
 
   <Section tone="ink" pad="tight" labelledby="do-title">
-    <SectionHead label="What we do" title="Four disciplines, one objective." id="do-title" />
+    <SectionHead title="Four disciplines, one objective." id="do-title" />
     <ul class="services">
       {services.map((s) => (
-        <li data-reveal>
+        <li>
           <span class="services__name">{s.name}</span>
           <span>{s.line}</span>
         </li>
@@ -38,10 +34,10 @@ const values = [1, 2, 3];
   </Section>
 
   <Section labelledby="values-title">
-    <SectionHead label="How we behave" title="[Values headline]" id="values-title" />
+    <SectionHead title="[Values headline]" id="values-title" />
     <div class="values">
       {values.map((n) => (
-        <div class="value" data-reveal>
+        <div class="value">
           <Label>V/0{n}</Label>
           <h3 class="h3">[Value {n}]</h3>
           <p>[What it means on a real project, in one sentence.]</p>
@@ -51,10 +47,10 @@ const values = [1, 2, 3];
   </Section>
 
   <Section tone="green" labelledby="team-title">
-    <SectionHead label="Team" title="The people you'll call." id="team-title" />
+    <SectionHead title="The people you'll call." id="team-title" />
     <div class="team">
       {team.map(() => (
-        <figure class="person" data-reveal>
+        <figure class="person">
           <ImagePlaceholder shot="S12" note="portrait, Ink mono" tone="ink" height="360px" />
           <figcaption>
             <span class="person__name">[Name]</span>
@@ -66,8 +62,7 @@ const values = [1, 2, 3];
   </Section>
 
   <Section labelledby="where-title" pad="tight">
-    <div class="where" data-reveal>
-      <Label>Where we work</Label>
+    <div class="where">
       <h2 id="where-title" class="h2">
         Egypt first. Then the GCC.
       </h2>

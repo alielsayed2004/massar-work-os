@@ -1,0 +1,415 @@
+---
+/**
+ * The page's one live thing. Massar means "path": the visitor ticks the
+ * suppliers working on their growth today, sees the cost of coordinating
+ * them, then folds them into one path. Without JS it reads as a plain
+ * before/after list.
+ */
+import { org } from "../data/site";
+
+const parts = [
+  { name: "Branding agency", x: 8, y: 14, on: true },
+  { name: "Social media agency", x: 52, y: 6, on: true },
+  { name: "Media buyer", x: 70, y: 30, on: true },
+  { name: "Web developer", x: 6, y: 46, on: false },
+  { name: "Printer & signage", x: 46, y: 54, on: true },
+  { name: "Freelance designer", x: 64, y: 78, on: false },
+  { name: "Events team", x: 10, y: 80, on: false },
+  { name: "Business consultant", x: 30, y: 30, on: false },
+];
+---
+
+<div class="mp" data-moving-parts>
+  <div class="mp__controls">
+    <h2 id="mp-title" class="mp__title">
+      Count your moving parts.
+    </h2>
+    <p class="mp__intro">Tick everyone working on your growth today.</p>
+    <div class="mp__chips" role="group" aria-labelledby="mp-title">
+      {parts.map((p, i) => (
+        <button type="button" class="mp__chip" aria-pressed={p.on ? "true" : "false"} data-i={i}>
+          <span class="mp__tick" aria-hidden="true" />
+          {p.name}
+        </button>
+      ))}
+    </div>
+  </div>
+
+  <div class="mp__board">
+    <div class="mp__field" data-field aria-hidden="true">
+      {parts.map((p, i) => (
+        <span
+          class="mp__part"
+          data-part={i}
+          data-on={p.on ? "" : undefined}
+          style={`left:${p.x}%;top:${p.y}%`}
+        >
+          {p.name}
+        </span>
+      ))}
+      <div class="mp__path">
+        <span class="mp__node">
+          <img src="/brand/massar_mono_white.png" width="263" height="262" alt="" />
+        </span>
+        <span class="mp__line"></span>
+        <span class="mp__goal">Your objective</span>
+      </div>
+    </div>
+
+    <dl class="mp__tally" aria-live="polite">
+      <div>
+        <dt>Partners</dt>
+        <dd data-k="partners">4</dd>
+      </div>
+      <div>
+        <dt>Briefs to write</dt>
+        <dd data-k="briefs">4</dd>
+      </div>
+      <div>
+        <dt>Invoices to chase</dt>
+        <dd data-k="invoices">4</dd>
+      </div>
+      <div>
+        <dt>People who own the result</dt>
+        <dd data-k="owners">0</dd>
+      </div>
+    </dl>
+
+    <div class="mp__actions">
+      <button type="button" class="mp__go" data-go>
+        Make it one path
+      </button>
+      <p class="mp__note" data-note>
+        {org.tagline}
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  function initMovingParts() {
+    document.querySelectorAll<HTMLElement>("[data-moving-parts]").forEach((root) => {
+      root.classList.add("is-js");
+      const chips = [...root.querySelectorAll<HTMLButtonElement>(".mp__chip")];
+      const parts = [...root.querySelectorAll<HTMLElement>("[data-part]")];
+      const field = root.querySelector<HTMLElement>("[data-field]")!;
+      const go = root.querySelector<HTMLButtonElement>("[data-go]")!;
+      const out = (k: string) => root.querySelector<HTMLElement>(`[data-k="${k}"]`)!;
+      let one = false;
+
+      const render = () => {
+        const n = chips.filter((c) => c.getAttribute("aria-pressed") === "true").length;
+        root.toggleAttribute("data-one", one);
+        out("partners").textContent = one ? "1" : String(n);
+        out("briefs").textContent = one ? "1" : String(n);
+        out("invoices").textContent = one ? "1" : String(n);
+        out("owners").textContent = one ? "1" : "0";
+        go.textContent = one ? "Show me the mess again" : "Make it one path";
+        go.disabled = !one && n === 0;
+
+        // Fold every active part into the node at the start of the path.
+        const f = field.getBoundingClientRect();
+        const node = field.querySelector<HTMLElement>(".mp__node")!.getBoundingClientRect();
+        parts.forEach((el) => {
+          if (!one) {
+            el.style.transform = "";
+            return;
+          }
+          const r = el.getBoundingClientRect();
+          const dx =
+            node.left + node.width / 2 - (r.left + r.width / 2) - (r.left - f.left - el.offsetLeft);
+          const dy =
+            node.top + node.height / 2 - (r.top + r.height / 2) - (r.top - f.top - el.offsetTop);
+          el.style.transform = `translate(${dx}px, ${dy}px) scale(0.4)`;
+        });
+      };
+
+      chips.forEach((chip, i) =>
+        chip.addEventListener("click", () => {
+          const on = chip.getAttribute("aria-pressed") !== "true";
+          chip.setAttribute("aria-pressed", String(on));
+          parts[i].toggleAttribute("data-on", on);
+          if (one) one = false;
+          render();
+        }),
+      );
+      go.addEventListener("click", () => {
+        one = !one;
+        render();
+      });
+      render();
+    });
+  }
+  document.addEventListener("astro:page-load", initMovingParts);
+</script>
+
+<style>
+  .mp {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 48px 64px;
+    align-items: start;
+  }
+  .mp__controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .mp__title {
+    font-size: var(--t-h2);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .mp__intro {
+    font-size: 20px;
+  }
+  .mp__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .mp__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--white);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease,
+      transform 140ms var(--ease-out);
+  }
+  .mp__chip:active {
+    transform: scale(0.97);
+  }
+  .mp__chip[aria-pressed="true"] {
+    background: var(--white);
+    color: var(--green);
+  }
+  .mp__tick {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 2px currentColor;
+    flex: none;
+  }
+  .mp__chip[aria-pressed="true"] .mp__tick {
+    background: var(--green);
+    box-shadow: none;
+  }
+
+  .mp__board {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .mp__field {
+    display: none;
+    position: relative;
+    height: 380px;
+    background: var(--bone);
+    overflow: hidden;
+  }
+  .is-js .mp__field {
+    display: block;
+  }
+  .mp__part {
+    position: absolute;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: var(--white);
+    color: var(--ink);
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    scale: 0.9;
+    transition:
+      transform 700ms var(--ease-in-out),
+      opacity 300ms ease,
+      scale 300ms var(--ease-out);
+  }
+  .mp__part[data-on] {
+    opacity: 1;
+    scale: 1;
+  }
+  [data-one] .mp__part[data-on] {
+    opacity: 0;
+    transition:
+      transform 700ms var(--ease-in-out),
+      opacity 300ms ease 450ms;
+  }
+
+  .mp__path {
+    position: absolute;
+    left: 32px;
+    top: 50%;
+    right: 32px;
+    display: flex;
+    align-items: center;
+    translate: 0 -50%;
+    pointer-events: none;
+  }
+  .mp__node {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--green);
+    scale: 0;
+    transition: scale 400ms var(--ease-out) 500ms;
+  }
+  .mp__node img {
+    width: 40px;
+    height: auto;
+  }
+  .mp__line {
+    flex: 1;
+    height: 6px;
+    background: var(--green);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 600ms var(--ease-out) 750ms;
+  }
+  .mp__goal {
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: var(--clay);
+    color: var(--white);
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 300ms ease 1200ms;
+  }
+  [data-one] .mp__node {
+    scale: 1;
+  }
+  [data-one] .mp__line {
+    transform: none;
+  }
+  [data-one] .mp__goal {
+    opacity: 1;
+  }
+  :not([data-one]) > .mp__board .mp__node,
+  :not([data-one]) > .mp__board .mp__line,
+  :not([data-one]) > .mp__board .mp__goal {
+    transition-delay: 0ms;
+  }
+
+  .mp__tally {
+    align-items: end;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin: 0;
+  }
+  .mp__tally div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 4px;
+  }
+  .mp__tally dt {
+    font-size: 15px;
+    line-height: 1.35;
+  }
+  .mp__tally dd {
+    margin: 0;
+    font-size: clamp(48px, 5vw, 72px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+  [data-one] .mp__tally dd {
+    color: var(--white);
+  }
+  .mp:not(.is-js) .mp__tally,
+  .mp:not(.is-js) .mp__actions {
+    display: none;
+  }
+  .mp__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 28px;
+  }
+  .mp__go {
+    padding: 18px 30px;
+    border: 0;
+    background: var(--white);
+    color: var(--green);
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color 200ms ease,
+      transform 140ms var(--ease-out);
+  }
+  .mp__go:hover {
+    background: var(--bone);
+  }
+  .mp__go:active {
+    transform: scale(0.97);
+  }
+  .mp__go:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .mp__note {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 28px;
+    opacity: 0;
+    transition: opacity 300ms ease;
+  }
+  [data-one] .mp__note {
+    opacity: 1;
+    transition-delay: 1300ms;
+  }
+
+  @media (max-width: 1023px) {
+    .mp {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 767px) {
+    .mp__field {
+      height: 320px;
+    }
+    .mp__part {
+      font-size: 13px;
+      padding: 8px 12px;
+    }
+    .mp__tally {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .mp__path {
+      left: 16px;
+      right: 16px;
+    }
+    .mp__node {
+      width: 56px;
+      height: 56px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mp__part,
+    .mp__node,
+    .mp__line,
+    .mp__goal,
+    .mp__note {
+      transition: none !important;
+    }
+  }
+</style>

@@ -14,13 +14,12 @@ import { pad2 } from "../lib/content";
 >
   <Section labelledby="process-title">
     <PageHead
-      label="Process"
       title="Five steps.<br />Same order, every project."
       intro="Every project starts with the business problem, not the deliverable. One objective is agreed in writing, and only the disciplines that serve it get built."
     />
     <ol class="steps">
       {processSteps.map((s, i) => (
-        <li class="step" data-reveal>
+        <li class="step">
           <span class:list={["step__num", { "step__num--clay": i === 4 }]}>{pad2(i + 1)}</span>
           <div class="step__body">
             <h2 class="h3">{s.name}</h2>

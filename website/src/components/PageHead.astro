@@ -1,16 +1,19 @@
 ---
-import Label from "./Label.astro";
-
 interface Props {
-  label: string;
   title: string;
   intro?: string;
+  /** Optional link back up the tree, e.g. { href: "/#problems", text: "All problems" }. */
+  back?: { href: string; text: string };
 }
-const { label, title, intro } = Astro.props;
+const { title, intro, back } = Astro.props;
 ---
 
 <div class="ph">
-  <Label>{label}</Label>
+  {back && (
+    <a href={back.href} class="ph__back">
+      <span aria-hidden="true">←</span> {back.text}
+    </a>
+  )}
   <h1 class="ph__title">
     <span class="line" style="--i:0" set:html={title} />
   </h1>
@@ -24,6 +27,19 @@ const { label, title, intro } = Astro.props;
     flex-direction: column;
     gap: 28px;
     max-width: 1100px;
+  }
+  .ph__back {
+    align-self: flex-start;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--green);
+  }
+  .ph__back span {
+    display: inline-block;
+    transition: transform 200ms var(--ease-out);
+  }
+  .ph__back:hover span {
+    transform: translateX(-4px);
   }
   .ph__title {
     font-size: clamp(44px, 5.6vw, 84px);

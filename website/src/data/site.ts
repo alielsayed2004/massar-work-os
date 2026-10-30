@@ -37,33 +37,6 @@ export const services = [
   },
 ];
 
-/** Disciplines that scroll in the home marquee. */
-export const disciplines = [
-  "Brand strategy",
-  "Identity",
-  "Campaigns",
-  "Outdoor",
-  "Digital marketing",
-  "Content",
-  "Business development",
-  "Consulting",
-];
-
-export const beforeAfter = {
-  before: [
-    "Five suppliers, five briefs, five invoices",
-    "Every channel says something different",
-    "Spend goes up, results stay flat",
-    "Nobody owns the number",
-  ],
-  after: [
-    "One partner, one brief, one plan",
-    "One message across every touchpoint",
-    "Spend only where it moves the objective",
-    "One accountable owner, reported plainly",
-  ],
-};
-
 export const processSteps = [
   { name: "Diagnose", line: "Find what's really blocking growth." },
   { name: "Direct", line: "One objective, in numbers, in writing." },

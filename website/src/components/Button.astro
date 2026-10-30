@@ -32,8 +32,12 @@ const { href, variant = "primary", on = "light", size = "md", class: className }
     line-height: 1.4;
     border: 1px solid transparent;
     transition:
-      background-color 240ms var(--ease),
-      color 240ms var(--ease);
+      background-color 200ms ease,
+      color 200ms ease,
+      transform 140ms var(--ease-out);
+  }
+  .btn:active {
+    transform: scale(0.97);
   }
   .btn--lg {
     padding: 18px 34px;

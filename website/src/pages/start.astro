@@ -1,6 +1,5 @@
 ---
 import Base from "../layouts/Base.astro";
-import Label from "../components/Label.astro";
 import { getProblems } from "../lib/content";
 import { org } from "../data/site";
 
@@ -22,7 +21,6 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
 >
   <section class="container start" aria-labelledby="start-title">
     <header class="start__head">
-      <Label>Start a project</Label>
       <h1 id="start-title" class="start__title">
         <span class="line" style="--i:0">
           Bring us the problem.
@@ -147,7 +145,6 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
     </form>
 
     <div class="success" data-success hidden tabindex="-1">
-      <Label>Sent</Label>
       <h2 class="h2">Thank you. We'll reply within [00] working days.</h2>
       <p data-success-mailto hidden>
         Your email app opened with the brief. Press send, or write to

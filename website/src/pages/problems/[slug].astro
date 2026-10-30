@@ -40,7 +40,7 @@ const cases = casesFor(entry.id, await getWork());
   ]}
 >
   <Section labelledby="problem-title">
-    <PageHead label={`Problems we solve · P/${pad2(d.order)}`} title={`"${d.title}"`}>
+    <PageHead title={`"${d.title}"`} back={{ href: "/#problems", text: "All problems" }}>
       <p class="answer">{d.answer}</p>
       <p class="updated">
         Last updated <time datetime={d.updated.toISOString()}>{formatDate(d.updated)}</time>
@@ -50,7 +50,7 @@ const cases = casesFor(entry.id, await getWork());
       <h2 class="label">How we solve it</h2>
       <ol class="how__steps">
         {d.steps.map((s, i) => (
-          <li data-reveal>
+          <li>
             <span class="how__num">{pad2(i + 1)}</span>
             <p>{s}</p>
           </li>
@@ -61,7 +61,7 @@ const cases = casesFor(entry.id, await getWork());
 
   {cases.length > 0 && (
     <Section tone="green" labelledby="related-title">
-      <SectionHead label="Solved by" title="Cases where we fixed this." id="related-title" />
+      <SectionHead title="Cases where we fixed this." id="related-title" />
       <div class="cases">
         {cases.map((w) => (
           <CaseCard
@@ -84,7 +84,7 @@ const cases = casesFor(entry.id, await getWork());
   )}
 
   <Section labelledby="pfaq-title">
-    <SectionHead label="FAQ" title="Questions buyers ask." id="pfaq-title" />
+    <SectionHead title="Questions buyers ask." id="pfaq-title" />
     <FAQ items={d.faqs} />
   </Section>
 
