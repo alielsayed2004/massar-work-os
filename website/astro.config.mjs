@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import sitemap from "@astrojs/sitemap";
+import mdx from "@astrojs/mdx";
 
 // The production domain is still an open question for Ali.
 // Set SITE_URL (e.g. in Vercel env) once it is confirmed; until then no
@@ -12,5 +13,5 @@ export default defineConfig({
   output: "static",
   trailingSlash: "never",
   build: { format: "file" },
-  integrations: site ? [sitemap()] : [],
+  integrations: [mdx(), ...(site ? [sitemap()] : [])],
 });
