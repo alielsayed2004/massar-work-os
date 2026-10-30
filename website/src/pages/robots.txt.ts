@@ -4,10 +4,18 @@ import type { APIRoute } from "astro";
 const agents = [
   "Googlebot",
   "Bingbot",
-  "GPTBot",
-  "ClaudeBot",
-  "PerplexityBot",
+  "DuckDuckBot",
+  "Applebot",
+  "Applebot-Extended",
   "Google-Extended",
+  "GPTBot",
+  "OAI-SearchBot",
+  "ChatGPT-User",
+  "ClaudeBot",
+  "Claude-SearchBot",
+  "Claude-User",
+  "PerplexityBot",
+  "Perplexity-User",
   "*",
 ];
 

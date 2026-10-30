@@ -21,7 +21,10 @@ const { stops, variant = "compact", class: className } = Astro.props;
 
 <ol class:list={["path", `path--${variant}`, className]} style={`--n:${stops.length}`}>
   {stops.map((s, i) => (
-    <li class:list={["path__stop", { "path__stop--end": i === stops.length - 1 }]}>
+    <li
+      id={variant === "detailed" ? `step-${i + 1}` : undefined}
+      class:list={["path__stop", { "path__stop--end": i === stops.length - 1 }]}
+    >
       <span class="path__dot" aria-hidden="true" />
       <div class="path__head">
         <h3 class="path__name">{s.name}</h3>

@@ -33,14 +33,25 @@ const { entry, others } = Astro.props;
 const d = entry.data;
 const cases = casesFor(entry.id, await getWork());
 const stationNames = ["Diagnose", "Direct", "Build and prove"];
+const q = d.title.replace(/[.!]$/, "");
+const seoTitle = [`${q}? How we fix it | Massar`, `${q}? How we fix it`, q].find(
+  (t) => t.length <= 60,
+)!;
+const faqs = [
+  {
+    q: `How does Massar solve "${d.title}"?`,
+    a: `${d.cause} ${d.short} ${d.answer}`,
+  },
+  ...d.faqs,
+];
 const used = services.filter((s) => (s.problems as readonly string[]).includes(entry.id));
 ---
 
 <Base
-  title={`"${d.title}" — Massar`.slice(0, 60)}
+  title={seoTitle}
   description={d.answer.slice(0, 155)}
   noindex={d.draft && showDrafts}
-  faqs={d.faqs}
+  faqs={faqs}
   breadcrumbs={[
     { name: "Problems we solve", path: "/problems" },
     { name: d.title, path: `/problems/${entry.id}` },
@@ -107,7 +118,7 @@ const used = services.filter((s) => (s.problems as readonly string[]).includes(e
       <h2 id="pfaq-title" class="h2">
         Questions buyers ask
       </h2>
-      <FAQ items={d.faqs} />
+      <FAQ items={faqs} />
     </div>
   </Section>
 

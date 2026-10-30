@@ -42,7 +42,8 @@ const approach = [
 const result = d.results[0];
 const description = `${d.problem} ${d.solution}`.slice(0, 155);
 const ogImage = `/og/work/${entry.id}.png`;
-const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
+const base = `${d.client}: ${d.summary}`.replace(/\.$/, "");
+const seoTitle = base.length <= 51 ? `${base} | Massar` : base.slice(0, 60);
 ---
 
 <Base

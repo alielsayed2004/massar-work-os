@@ -23,6 +23,8 @@ export const GET: APIRoute = async ({ site }) => {
     `- [About](${url("/about")}): the company, services and team.`,
     `- [Start a project](${url("/start")}): four-step project brief.`,
     "",
+    `Full text for AI assistants: ${url("/llms-full.txt")}`,
+    "",
     "## Case studies",
     ...work.map(
       (w) => `- [${w.data.title}](${url(`/work/${w.id}`)}): ${w.data.problem} ${w.data.solution}`,

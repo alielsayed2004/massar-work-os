@@ -7,6 +7,7 @@ import Path from "../components/Path.astro";
 import FAQ from "../components/FAQ.astro";
 import CtaBand from "../components/CtaBand.astro";
 import { processSteps } from "../data/site";
+import { howTo } from "../lib/seo";
 
 const principles = [
   {
@@ -33,10 +34,18 @@ const faqs = [
 ---
 
 <Base
-  title="How we work — Massar"
+  title="How we work: one path, five stations | Massar"
   description="Diagnose, Direct, Build, Prove, Next step. One path with five stations on every Massar project, from the first audit to the measured result."
   breadcrumbs={[{ name: "Process", path: "/process" }]}
   faqs={faqs}
+  jsonLd={[
+    howTo(
+      "How Massar runs a project",
+      "Every Massar project follows one path with five stations: Diagnose, Direct, Build, Prove and Next step.",
+      processSteps,
+      Astro.site,
+    ),
+  ]}
 >
   <Section labelledby="process-title">
     <PageHead

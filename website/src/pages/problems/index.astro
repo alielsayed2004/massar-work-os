@@ -5,15 +5,29 @@ import PageHead from "../../components/PageHead.astro";
 import Media from "../../components/Media.astro";
 import CtaBand from "../../components/CtaBand.astro";
 import { casesFor, getProblems, getWork } from "../../lib/content";
+import { faqPage, itemList } from "../../lib/seo";
 
 const problems = await getProblems();
 const work = await getWork();
 ---
 
 <Base
-  title="Problems we solve — Massar"
+  title="Marketing & growth problems we solve | Massar"
   description="Most businesses bring Massar one of four problems: a scattered brand, ads that don't sell, a launch with too many parts, or suppliers nobody owns."
   breadcrumbs={[{ name: "Problems we solve", path: "/problems" }]}
+  jsonLd={[
+    itemList(
+      "Problems Massar solves",
+      problems.map((p) => ({ name: p.data.title, path: `/problems/${p.id}` })),
+      Astro.site,
+    ),
+    faqPage(
+      problems.map((p) => ({
+        q: `What usually causes "${p.data.title}"?`,
+        a: `${p.data.cause} What Massar does: ${p.data.short}`,
+      })),
+    ),
+  ]}
 >
   <Section labelledby="problems-title">
     <PageHead

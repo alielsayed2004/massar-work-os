@@ -18,11 +18,18 @@ interface Props {
 const { entry } = Astro.props;
 const d = entry.data;
 const { Content } = await render(entry);
+const firstPara = (entry.body ?? "")
+  .trim()
+  .split(/\n\s*\n/)[0]
+  .replace(/\s+/g, " ");
+const description =
+  (firstPara.length > 150 ? firstPara.slice(0, 149) + "…" : firstPara) ||
+  `Field note from Massar, ${formatDate(d.date)}.`;
 ---
 
 <Base
-  title={`${d.title}`.slice(0, 50) + " | Massar"}
-  description={`Field note from Massar, ${formatDate(d.date)}.`}
+  title={d.title.length <= 51 ? `${d.title} | Massar` : d.title.slice(0, 60)}
+  description={description}
   noindex={d.draft && showDrafts}
   breadcrumbs={[
     { name: "Field notes", path: "/notes" },
@@ -32,7 +39,7 @@ const { Content } = await render(entry);
     article(
       {
         headline: d.title,
-        description: d.title,
+        description,
         path: `/notes/${entry.id}`,
         image: "/og/default.png",
         published: d.date,

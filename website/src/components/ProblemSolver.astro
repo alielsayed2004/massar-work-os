@@ -17,23 +17,25 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
 ---
 
 <div class="solver" data-solver>
-  <div class="solver__tabs" role="tablist" aria-label="Pick the problem that sounds like you">
-    {items.map(({ p }, i) => (
-      <button
-        type="button"
-        role="tab"
-        id={`tab-${p.id}`}
-        aria-controls={`panel-${p.id}`}
-        aria-selected={i === 0 ? "true" : "false"}
-        tabindex={i === 0 ? 0 : -1}
-        class="solver__tab"
-      >
-        <span class="solver__q">"{p.data.title}"</span>
-        <span class="solver__arrow" aria-hidden="true">
-          →
-        </span>
-      </button>
-    ))}
+  <div class="solver__side">
+    <div class="solver__tabs" role="tablist" aria-label="Pick the problem that sounds like you">
+      {items.map(({ p }, i) => (
+        <button
+          type="button"
+          role="tab"
+          id={`tab-${p.id}`}
+          aria-controls={`panel-${p.id}`}
+          aria-selected={i === 0 ? "true" : "false"}
+          tabindex={i === 0 ? 0 : -1}
+          class="solver__tab"
+        >
+          <span class="solver__q">"{p.data.title}"</span>
+          <span class="solver__arrow" aria-hidden="true">
+            →
+          </span>
+        </button>
+      ))}
+    </div>
     <a href="/start" class="solver__other">
       Something else? <span class="link">Tell us the problem</span>
     </a>
@@ -176,6 +178,10 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
     opacity: 1;
     transform: none;
     color: var(--clay);
+  }
+  .solver__side {
+    display: flex;
+    flex-direction: column;
   }
   .solver__other {
     padding: 20px 24px 0;

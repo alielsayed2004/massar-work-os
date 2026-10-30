@@ -11,5 +11,16 @@ const site = process.env.SITE_URL || undefined;
 export default defineConfig({
   site,
   output: "static",
-  integrations: [mdx(), ...(site ? [sitemap({ filter: (page) => !page.includes("/404") })] : [])],
+  integrations: [
+    mdx(),
+    ...(site
+      ? [
+          sitemap({
+            filter: (page) => !page.includes("/404"),
+            changefreq: "monthly",
+            lastmod: new Date(),
+          }),
+        ]
+      : []),
+  ],
 });

@@ -6,15 +6,28 @@ import PageHead from "../components/PageHead.astro";
 import ImagePlaceholder from "../components/ImagePlaceholder.astro";
 import CtaBand from "../components/CtaBand.astro";
 import { org, services } from "../data/site";
+import { aboutPage, professionalService } from "../lib/seo";
+
+const facts = [
+  { k: "Name", v: 'Massar (Arabic for "path")' },
+  { k: "What it is", v: "A creative and business partner for startups and SMEs" },
+  { k: "Based in", v: "Cairo, Egypt" },
+  { k: "Works in", v: "Egypt, then the GCC" },
+  { k: "Services", v: services.map((s) => s.name).join(", ") },
+  { k: "How it works", v: "One team, one objective, one accountable owner" },
+  { k: "Founded", v: "[Year]" },
+  { k: "Contact", v: org.email },
+];
 
 const team = [1, 2, 3, 4];
 const values = [1, 2, 3];
 ---
 
 <Base
-  title="About Massar — Creative + business partner, Cairo"
+  title="About Massar: creative & business partner, Cairo"
   description={org.description.slice(0, 155)}
   breadcrumbs={[{ name: "About", path: "/about" }]}
+  jsonLd={[aboutPage(Astro.site), professionalService(Astro.site)]}
 >
   <section class="container hero" aria-labelledby="about-title">
     <div class="hero__text">
@@ -23,6 +36,20 @@ const values = [1, 2, 3];
     <div class="hero__mark" aria-hidden="true">
       <img src="/brand/massar_mono_green.png" width="599" height="596" alt="" />
     </div>
+  </section>
+
+  <section class="container facts-wrap" aria-labelledby="facts-title">
+    <h2 id="facts-title" class="facts__title">
+      Massar in brief
+    </h2>
+    <dl class="facts">
+      {facts.map((f) => (
+        <div>
+          <dt>{f.k}</dt>
+          <dd>{f.v}</dd>
+        </div>
+      ))}
+    </dl>
   </section>
 
   <Section tone="ink" labelledby="name-title">
@@ -106,7 +133,7 @@ const values = [1, 2, 3];
     grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     align-items: center;
     gap: 48px;
-    padding-block: 96px 104px;
+    padding-block: 96px 64px;
   }
   .hero__mark {
     display: grid;
@@ -117,6 +144,34 @@ const values = [1, 2, 3];
   .hero__mark img {
     width: 58%;
     height: auto;
+  }
+  .facts-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: var(--section-y);
+  }
+  .facts__title {
+    font-size: var(--fs-h3);
+    font-weight: 500;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 24px var(--gutter);
+    margin: 0;
+    padding: 32px;
+    background: var(--bone);
+  }
+  .facts dt {
+    font-size: var(--fs-xs);
+    color: var(--green);
+    font-weight: 500;
+  }
+  .facts dd {
+    margin: 4px 0 0;
+    font-size: var(--fs-body);
+    line-height: 1.5;
   }
   .story {
     display: grid;
@@ -217,6 +272,9 @@ const values = [1, 2, 3];
     font-size: inherit;
   }
   @media (max-width: 1023px) {
+    .facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
     .hero,
     .story,
     .values {

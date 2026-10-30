@@ -4,7 +4,14 @@ import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import { abs, breadcrumbList, faqPage, organization, type Crumb } from "../lib/seo";
+import {
+  abs,
+  breadcrumbList,
+  faqPage,
+  professionalService,
+  siteEntities,
+  type Crumb,
+} from "../lib/seo";
 
 interface Props {
   /** ≤ 60 characters. */
@@ -38,7 +45,8 @@ const canonical = site ? new URL(Astro.url.pathname, site).href : undefined;
 const ogImage = abs(image, site);
 
 const ld = [
-  ...(isHome ? organization(site) : []),
+  ...siteEntities(site),
+  ...(isHome ? [professionalService(site)] : []),
   ...jsonLd,
   ...(faqs?.length ? [faqPage(faqs)] : []),
   ...(isHome ? [] : [breadcrumbList([{ name: "Home", path: "/" }, ...breadcrumbs], site)]),
@@ -53,7 +61,6 @@ const ld = [
     <title>{title}</title>
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
-    {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/png" href="/brand/massar_mono_green.png" />
     <link
       rel="preload"
@@ -64,12 +71,22 @@ const ld = [
     />
     <link
       rel="preload"
-      href="/fonts/switzer-latin-600-normal.woff2"
+      href="/fonts/switzer-latin-500-normal.woff2"
       as="font"
       type="font/woff2"
       crossorigin
     />
     <meta name="theme-color" content="#FFFFFF" />
+    <meta
+      name="robots"
+      content={
+        noindex
+          ? "noindex"
+          : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+      }
+    />
+    <meta property="og:locale" content="en_US" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" title="LLM summary" />
     <meta property="og:type" content={isHome ? "website" : "article"} />
     <meta property="og:site_name" content="Massar" />
     <meta property="og:title" content={title} />
