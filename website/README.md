@@ -26,3 +26,14 @@ This site lives in the `website/` folder of the massar-work-os repo, on the `web
 > Work only inside website/. Read website/CLAUDE.md and the reference mockups, then do step 1 of the build order.
 
 Then continue step by step. Real client names, numbers and photos come from Ali; until then everything stays as `[placeholder]`.
+
+## Develop
+
+```bash
+pnpm install
+pnpm dev          # http://localhost:4321
+pnpm build        # astro check + static build to dist/
+pnpm lint && pnpm format:check
+```
+
+Set `SITE_URL` (e.g. `https://massar.agency`, once confirmed) to emit canonical URLs, the sitemap and the `Sitemap:` line in `robots.txt`.

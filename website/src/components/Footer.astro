@@ -1,0 +1,59 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="container footer__inner">
+    <a href="/" aria-label="Massar — home">
+      <img src="/brand/massar_wordmark_white.png" width="222" height="36" alt="Massar" />
+    </a>
+    <nav aria-label="Footer">
+      <ul class="footer__links">
+        <li>
+          <a href="/work">Work</a>
+        </li>
+        <li>
+          <a href="/#problems">Problems</a>
+        </li>
+        <li>
+          <a href="/process">Process</a>
+        </li>
+        <li>
+          <a href="mailto:brand@massar.agency">brand@massar.agency</a>
+        </li>
+        <li>
+          <span>© {year} Massar</span>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .footer__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding-block: 48px;
+  }
+  .footer img {
+    height: 28px;
+    width: auto;
+  }
+  .footer__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+</style>

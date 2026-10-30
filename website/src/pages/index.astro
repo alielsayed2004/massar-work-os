@@ -1,0 +1,56 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base
+  title="Massar — Creative + business partner, Cairo"
+  description="Massar finds the real business problem, sets one direction and delivers it: strategy, brand, marketing and execution under one accountable owner."
+>
+  <!-- Scaffold placeholder. The full home page is build step 4. -->
+  <section class="container scaffold">
+    <span class="label">Creative + business partner · Cairo</span>
+    <h1>
+      Too many moving parts?
+      <br />
+      <span>One clear direction.</span>
+    </h1>
+    <p>
+      We find the real business problem, set one direction, and deliver it: strategy, brand,
+      marketing and execution under one accountable owner.
+    </p>
+    <p class="tagline">One partner. One path.</p>
+  </section>
+</Base>
+
+<style>
+  .scaffold {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding-block: 96px var(--section-y);
+  }
+  .label {
+    color: var(--green);
+  }
+  h1 {
+    font-size: var(--t-display);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+  }
+  h1 span {
+    color: var(--green);
+  }
+  p {
+    max-width: 560px;
+    font-size: 20px;
+    line-height: 1.65;
+  }
+  .tagline {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 34px;
+    line-height: 1.2;
+    color: var(--green);
+  }
+</style>

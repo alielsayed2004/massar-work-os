@@ -1,0 +1,52 @@
+:root {
+  --green: #0d3b34;
+  --bone: #f1ece2;
+  --ink: #101815;
+  --clay: #b85333;
+  --stone: #9a9791;
+  --white: #ffffff;
+
+  --font-sans: "Switzer", system-ui, sans-serif;
+  --font-serif: "Cormorant Garamond", Georgia, serif; /* tagline only */
+
+  /* type: clamp(mobile, fluid, desktop) */
+  --t-display: clamp(48px, 6.4vw, 92px); /* 600, line-height 1.02, tracking -0.03em */
+  --t-h2: clamp(34px, 3.9vw, 56px); /* 600, 1.1, -0.02em */
+  --t-h3: clamp(24px, 2.1vw, 30px); /* 600, 1.25 */
+  --t-body: 18px;
+  --t-body-sm: 16px; /* 400, 1.7 */
+  --t-label: 13px; /* 600, caps, tracking 0.22em */
+  --t-stat: clamp(64px, 6.7vw, 96px); /* 900, -0.04em */
+
+  /* space (8 scale) */
+  --s-1: 8px;
+  --s-2: 16px;
+  --s-3: 24px;
+  --s-4: 40px;
+  --s-5: 64px;
+  --s-6: 104px;
+  --s-7: 140px;
+
+  --gutter: 24px;
+  --margin: clamp(20px, 5.5vw, 80px);
+  --max: 1440px;
+  --section-y: var(--s-7);
+
+  --rule: 1px solid currentColor;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Tablet: 8 cols, gutter 20 */
+@media (max-width: 1199px) {
+  :root {
+    --gutter: 20px;
+  }
+}
+
+/* Mobile: 4 cols, gutter 16, section padding 96 */
+@media (max-width: 767px) {
+  :root {
+    --gutter: 16px;
+    --section-y: 96px;
+  }
+}

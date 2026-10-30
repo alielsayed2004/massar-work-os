@@ -1,0 +1,117 @@
+---
+interface Props {
+  /** "light" = white header (home); "ink" = dark header (case pages). */
+  variant?: "light" | "ink";
+}
+
+const { variant = "light" } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+
+const links = [
+  { href: "/work", label: "Work" },
+  { href: "/#problems", label: "Problems we solve" },
+  { href: "/process", label: "Process" },
+  { href: "/#faq", label: "FAQ" },
+];
+
+const isCurrent = (href: string) => !href.includes("#") && path.startsWith(href);
+const logo =
+  variant === "ink"
+    ? { src: "/brand/massar_wordmark_white.png", width: 222, height: 36 }
+    : { src: "/brand/massar_wordmark_green.png", width: 505, height: 82 };
+---
+
+<header class:list={["header", `header--${variant}`]}>
+  <div class="container header__inner">
+    <a href="/" class="header__logo" aria-label="Massar — home">
+      <img src={logo.src} width={logo.width} height={logo.height} alt="Massar" />
+    </a>
+    <nav aria-label="Main">
+      <ul class="header__nav">
+        {links.map((l) => (
+          <li>
+            <a
+              href={l.href}
+              class="header__link"
+              aria-current={isCurrent(l.href) ? "page" : undefined}
+            >
+              {l.label}
+            </a>
+          </li>
+        ))}
+        <li>
+          <a href="/start" class="header__cta">
+            Start a project
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header {
+    border-bottom: 1px solid var(--ink);
+    background: var(--white);
+    color: var(--green);
+  }
+  .header--ink {
+    border-bottom-color: var(--white);
+    background: var(--ink);
+    color: var(--white);
+  }
+  .header__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding-block: 22px;
+  }
+  .header__logo img {
+    height: 32px;
+    width: auto;
+  }
+  .header__nav {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 36px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .header__link {
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+  }
+  .header__link:hover {
+    color: var(--ink);
+  }
+  .header--ink .header__link:hover {
+    color: var(--white);
+  }
+  .header__link[aria-current="page"] {
+    border-bottom-color: var(--clay);
+  }
+  .header__cta {
+    display: inline-block;
+    padding: 13px 22px;
+    background: var(--ink);
+    color: var(--white);
+    font-weight: 600;
+  }
+  .header--ink .header__cta {
+    background: var(--white);
+    color: var(--ink);
+  }
+
+  @media (max-width: 767px) {
+    .header__nav {
+      gap: 12px 24px;
+    }
+  }
+</style>
