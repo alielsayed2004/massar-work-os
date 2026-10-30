@@ -1,5 +1,6 @@
 ---
-import ImagePlaceholder from "./ImagePlaceholder.astro";
+import type { ImageMetadata } from "astro";
+import Media from "./Media.astro";
 
 interface Props {
   href: string;
@@ -10,18 +11,39 @@ interface Props {
   sector: string;
   result?: { value: string; metric: string };
   shot: string;
+  image?: ImageMetadata;
+  alt?: string;
+  demo?: boolean;
   tone?: "stone" | "ink" | "bone" | "white";
   /** Tag list used by the /work filter. */
   filterTags?: string[];
 }
-const { href, slug, client, summary, tags, sector, result, shot, tone, filterTags } = Astro.props;
+const {
+  href,
+  slug,
+  client,
+  summary,
+  tags,
+  sector,
+  result,
+  shot,
+  tone,
+  filterTags,
+  image,
+  alt,
+  demo,
+} = Astro.props;
 const kicker = [...tags, sector].join(" · ").toUpperCase();
 ---
 
 <article class="ccard" data-tilt data-tags={(filterTags ?? tags).join(",")} data-reveal>
   <a href={href} class="ccard__link">
     <div class="ccard__media">
-      <ImagePlaceholder
+      <Media
+        image={image}
+        alt={alt}
+        tag={demo ? "STOCK · DEMO" : undefined}
+        sizes="(min-width: 1200px) 640px, 100vw"
         shot={shot}
         tone={tone}
         height="clamp(260px, 30vw, 440px)"

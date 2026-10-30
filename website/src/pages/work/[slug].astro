@@ -2,7 +2,7 @@
 import { render } from "astro:content";
 import Base from "../../layouts/Base.astro";
 import Label from "../../components/Label.astro";
-import ImagePlaceholder from "../../components/ImagePlaceholder.astro";
+import Media from "../../components/Media.astro";
 import StatBlock from "../../components/StatBlock.astro";
 import Button from "../../components/Button.astro";
 import { formatDate, getWork, pad2, resultCaption, showDrafts, type Work } from "../../lib/content";
@@ -91,7 +91,11 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
         ))}
       </dl>
       <div class="hero__media">
-        <ImagePlaceholder
+        <Media
+          image={d.hero}
+          alt={d.heroAlt}
+          priority
+          tag={d.demoImages ? "STOCK · DEMO" : undefined}
           shot={d.heroShot}
           tone={d.heroTone}
           height="clamp(280px, 44vw, 640px)"
@@ -163,7 +167,13 @@ const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
         <div class="gallery">
           {d.gallery.map((g) => (
             <figure class:list={["gallery__item", { "gallery__item--wide": g.wide }]} data-reveal>
-              <ImagePlaceholder
+              <Media
+                image={g.src}
+                alt={g.alt}
+                tag={g.src && d.demoImages ? "STOCK · DEMO" : undefined}
+                sizes={
+                  g.wide ? "(min-width: 1200px) 1280px, 100vw" : "(min-width: 1200px) 640px, 100vw"
+                }
                 shot={g.shot}
                 label={g.label}
                 kind={g.kind === "video" ? "video" : "photo"}

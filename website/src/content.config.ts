@@ -46,6 +46,8 @@ const work = defineCollection({
             shot: shot.optional(),
             label: z.string().optional(),
             tone: tone.optional(),
+            src: image().optional(),
+            alt: z.string().optional(),
             wide: z.boolean().default(false),
           }),
         )
@@ -54,6 +56,8 @@ const work = defineCollection({
       /** Real hero photo. Until it exists, heroShot renders a placeholder. */
       hero: image().optional(),
       heroShot: shot,
+      /** True while images are stock stand-ins (shown with a STOCK · DEMO tag). */
+      demoImages: z.boolean().default(false),
       heroTone: tone.default("stone"),
       heroAlt: z.string(),
       featured: z.boolean().default(false),
