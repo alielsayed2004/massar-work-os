@@ -1,96 +1,105 @@
 ---
 import Base from "../layouts/Base.astro";
 import Section from "../components/Section.astro";
+import SectionHead from "../components/SectionHead.astro";
 import PageHead from "../components/PageHead.astro";
+import Path from "../components/Path.astro";
+import FAQ from "../components/FAQ.astro";
 import CtaBand from "../components/CtaBand.astro";
 import { processSteps } from "../data/site";
-import { pad2 } from "../lib/content";
+
+const principles = [
+  {
+    title: "One owner",
+    text: "One person at Massar answers for the result. You never chase five suppliers for one answer.",
+  },
+  {
+    title: "One objective",
+    text: "Agreed in numbers and in writing before we make anything. If work doesn't serve it, it waits.",
+  },
+  {
+    title: "Plain reports",
+    text: "Every number comes with its period and its source. What moved, what didn't, and why.",
+  },
+];
+const faqs = [
+  {
+    q: "Do we have to go through all five stations?",
+    a: "[Whether a client can join at Build or Prove, and when Diagnose is required.]",
+  },
+  { q: "How long does the whole path take?", a: "[Typical range in weeks, and what changes it.]" },
+  { q: "What do you need from us to start?", a: "[What the client prepares for Diagnose.]" },
+];
 ---
 
 <Base
   title="How we work — Massar"
-  description="Diagnose, Direct, Build, Prove, Next step. The same five steps on every Massar project, from the first audit to the measured result."
+  description="Diagnose, Direct, Build, Prove, Next step. One path with five stations on every Massar project, from the first audit to the measured result."
   breadcrumbs={[{ name: "Process", path: "/process" }]}
+  faqs={faqs}
 >
   <Section labelledby="process-title">
     <PageHead
-      title="Five steps.<br />Same order, every project."
-      intro="Every project starts with the business problem, not the deliverable. One objective is agreed in writing, and only the disciplines that serve it get built."
+      title="One path.<br />Five stations."
+      intro="Massar is Arabic for path. Every project runs the same route, in the same order, so you always know where you are and what comes next."
     />
-    <ol class="steps">
-      {processSteps.map((s, i) => (
-        <li class="step">
-          <span class:list={["step__num", { "step__num--clay": i === 4 }]}>{pad2(i + 1)}</span>
-          <div class="step__body">
-            <h2 class="h3">{s.name}</h2>
-            <p class="step__line">{s.line}</p>
-          </div>
-          <ul class="step__detail">
-            <li>[What happens in this step, in one sentence.]</li>
-            <li>[What the client gets at the end of it.]</li>
-            <li>[Typical length.]</li>
-          </ul>
-        </li>
-      ))}
-    </ol>
+    <Path stops={processSteps} variant="detailed" />
   </Section>
+
+  <Section tone="ink" labelledby="principles-title">
+    <SectionHead title="Three rules we don't bend." id="principles-title" />
+    <div class="rules">
+      {principles.map((p) => (
+        <div class="rule">
+          <h3 class="rule__title">{p.title}</h3>
+          <p>{p.text}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section labelledby="pfaq-title">
+    <div class="faq">
+      <h2 id="pfaq-title" class="h2">
+        Questions about the path
+      </h2>
+      <FAQ items={faqs} />
+    </div>
+  </Section>
+
   <CtaBand />
 </Base>
 
 <style>
-  .steps {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .step {
+  .rules {
     display: grid;
-    grid-template-columns: 120px 1fr 1fr;
-    gap: var(--gutter);
-    padding-block: 32px;
-    border-top: 2px solid var(--ink);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 48px var(--gutter);
   }
-  .step:last-child {
-    border-bottom: 2px solid var(--ink);
-  }
-  .step__num {
-    font-size: 56px;
-    font-weight: 300;
-    line-height: 1;
-    color: var(--green);
-  }
-  .step__num--clay {
-    color: var(--clay);
-  }
-  .step__body {
+  .rule {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 14px;
   }
-  .step__line {
-    font-size: 20px;
-    line-height: 1.5;
+  .rule__title {
+    font-size: clamp(32px, 3.4vw, 48px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
   }
-  .step__detail {
-    margin: 0;
-    padding-left: 1.1em;
-    font-size: 16px;
-    line-height: 1.7;
+  .rule p {
+    max-width: 32ch;
+    font-size: 19px;
+    line-height: 1.55;
+  }
+  .faq {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 32px 96px;
   }
   @media (max-width: 1023px) {
-    .step {
-      grid-template-columns: 80px 1fr;
-    }
-    .step__detail {
-      grid-column: 2;
-    }
-  }
-  @media (max-width: 767px) {
-    .step {
+    .rules,
+    .faq {
       grid-template-columns: 1fr;
-    }
-    .step__detail {
-      grid-column: auto;
     }
   }
 </style>

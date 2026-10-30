@@ -3,7 +3,6 @@ import Base from "../layouts/Base.astro";
 import Section from "../components/Section.astro";
 import SectionHead from "../components/SectionHead.astro";
 import PageHead from "../components/PageHead.astro";
-import Label from "../components/Label.astro";
 import ImagePlaceholder from "../components/ImagePlaceholder.astro";
 import CtaBand from "../components/CtaBand.astro";
 import { org, services } from "../data/site";
@@ -17,33 +16,51 @@ const values = [1, 2, 3];
   description={org.description.slice(0, 155)}
   breadcrumbs={[{ name: "About", path: "/about" }]}
 >
-  <Section labelledby="about-title">
-    <PageHead title="One team.<br />One accountable owner." intro={org.description} />
+  <section class="container hero" aria-labelledby="about-title">
+    <div class="hero__text">
+      <PageHead title="Massar means path." intro={org.description} />
+    </div>
+    <div class="hero__mark" aria-hidden="true">
+      <img src="/brand/massar_mono_green.png" width="599" height="596" alt="" />
+    </div>
+  </section>
+
+  <Section tone="ink" labelledby="name-title">
+    <div class="story">
+      <h2 id="name-title" class="story__title">
+        Four arms.
+        <br />
+        One centre.
+      </h2>
+      <div class="story__body">
+        <p>
+          Our mark is four arms pointing at one centre. It is the whole company in one shape:
+          strategy, brand, marketing and execution, all pointing at the same objective.
+        </p>
+        <p>[Why Ali started Massar, in two or three sentences: the problem he kept seeing.]</p>
+      </div>
+    </div>
   </Section>
 
-  <Section tone="ink" pad="tight" labelledby="do-title">
-    <SectionHead title="Four disciplines, one objective." id="do-title" />
+  <Section labelledby="do-title">
+    <SectionHead title="What we do" id="do-title">
+      <a slot="aside" href="/services" class="link">
+        All services
+      </a>
+    </SectionHead>
     <ul class="services">
       {services.map((s) => (
         <li>
-          <span class="services__name">{s.name}</span>
-          <span>{s.line}</span>
+          <a href={`/services#${s.id}`}>
+            <span class="services__name">{s.name}</span>
+            <span class="services__line">{s.line}</span>
+            <span class="services__arrow" aria-hidden="true">
+              →
+            </span>
+          </a>
         </li>
       ))}
     </ul>
-  </Section>
-
-  <Section labelledby="values-title">
-    <SectionHead title="[Values headline]" id="values-title" />
-    <div class="values">
-      {values.map((n) => (
-        <div class="value">
-          <Label>V/0{n}</Label>
-          <h3 class="h3">[Value {n}]</h3>
-          <p>[What it means on a real project, in one sentence.]</p>
-        </div>
-      ))}
-    </div>
   </Section>
 
   <Section tone="green" labelledby="team-title">
@@ -61,62 +78,104 @@ const values = [1, 2, 3];
     </div>
   </Section>
 
-  <Section labelledby="where-title" pad="tight">
-    <div class="where">
-      <h2 id="where-title" class="h2">
-        Egypt first. Then the GCC.
-      </h2>
-      <p>
-        Write to{" "}
-        <a class="link" href={`mailto:${org.email}`}>
-          {org.email}
-        </a>
-        .
-      </p>
+  <Section labelledby="values-title">
+    <SectionHead title="[Values headline]" id="values-title" />
+    <div class="values">
+      {values.map((n) => (
+        <div class="value">
+          <h3 class="h3">[Value {n}]</h3>
+          <p>[What it means on a real project, in one sentence.]</p>
+        </div>
+      ))}
     </div>
+    <p class="where">
+      Based in Cairo. Working across Egypt, then the GCC. Write to{" "}
+      <a class="link" href={`mailto:${org.email}`}>
+        {org.email}
+      </a>
+      .
+    </p>
   </Section>
 
-  <CtaBand />
+  <CtaBand picks={false} />
 </Base>
 
 <style>
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: center;
+    gap: 48px;
+    padding-block: 96px 104px;
+  }
+  .hero__mark {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    background: var(--bone);
+  }
+  .hero__mark img {
+    width: 58%;
+    height: auto;
+  }
+  .story {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 32px 96px;
+  }
+  .story__title {
+    font-size: var(--t-h2);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .story__body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .story__body p {
+    max-width: 52ch;
+    font-size: 22px;
+    line-height: 1.55;
+  }
   .services {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
-  .services li {
+  .services a {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
-    gap: 8px var(--gutter);
-    padding: 20px 0;
-    border-top: 1px solid var(--white);
-    font-size: 17px;
-    line-height: 1.6;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr) 32px;
+    align-items: baseline;
+    gap: 8px 48px;
+    padding: 28px 32px;
+    background: var(--bone);
+    transition: background-color 200ms ease;
   }
-  .services li:last-child {
-    border-bottom: 1px solid var(--white);
+  .services a:hover {
+    background: var(--green);
+    color: var(--white);
   }
   .services__name {
-    font-size: 24px;
+    font-size: clamp(24px, 2.4vw, 34px);
     font-weight: 600;
-    line-height: 1.3;
+    line-height: 1.2;
   }
-  .values {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
-    gap: var(--gutter);
+  .services__line {
+    font-size: 18px;
+    line-height: 1.5;
   }
-  .value {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding-top: 20px;
-    border-top: 2px solid var(--ink);
+  .services__arrow {
+    font-size: 24px;
+    color: var(--clay);
+    transition: transform 200ms var(--ease-out);
   }
-  .value p {
-    font-size: 16px;
-    line-height: 1.6;
+  .services a:hover .services__arrow {
+    transform: translateX(4px);
+    color: var(--white);
   }
   .team {
     display: grid;
@@ -138,12 +197,50 @@ const values = [1, 2, 3];
     font-size: 20px;
     font-weight: 600;
   }
-  .where {
+  .values {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 40px var(--gutter);
+  }
+  .value {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
+  }
+  .value p {
+    font-size: 17px;
+  }
+  .where {
+    font-size: 20px;
   }
   .where .link {
     font-size: inherit;
+  }
+  @media (max-width: 1023px) {
+    .hero,
+    .story,
+    .values {
+      grid-template-columns: 1fr;
+    }
+    .hero__mark {
+      max-width: 420px;
+    }
+    .services a {
+      grid-template-columns: 1fr 32px;
+    }
+    .services__line {
+      grid-column: 1;
+    }
+  }
+  @media (max-width: 767px) {
+    .hero {
+      padding-block: 56px 72px;
+    }
+    .services a {
+      padding: 22px 20px;
+    }
+    .story__body p {
+      font-size: 19px;
+    }
   }
 </style>

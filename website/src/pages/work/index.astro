@@ -2,12 +2,14 @@
 import Base from "../../layouts/Base.astro";
 import Section from "../../components/Section.astro";
 import SectionHead from "../../components/SectionHead.astro";
+import PageHead from "../../components/PageHead.astro";
 import CaseCard from "../../components/CaseCard.astro";
 import CaseFilter from "../../components/CaseFilter.astro";
 import CtaBand from "../../components/CtaBand.astro";
-import { getWork } from "../../lib/content";
+import { casesFor, getProblems, getWork } from "../../lib/content";
 
 const work = await getWork();
+const problems = await getProblems();
 ---
 
 <Base
@@ -15,13 +17,22 @@ const work = await getWork();
   description="Branding, campaigns, outdoor and growth work by Massar. Each case starts with the business problem and ends with a measured result."
   breadcrumbs={[{ name: "Work", path: "/work" }]}
 >
-  <Section labelledby="work-title">
-    <SectionHead title="Problem. Direction. Result." level={1} id="work-title">
-      <CaseFilter slot="aside" target="all-cases" />
-    </SectionHead>
+  <section class="container hero" aria-labelledby="work-title">
+    <PageHead
+      title="Work that solved something."
+      intro="Every case here starts with a business problem and ends with a number: what it was, where it came from, and over how long."
+    >
+      <CaseFilter target="all-cases" />
+    </PageHead>
+  </section>
+
+  <Section tone="green" labelledby="cases-title" class="cases-section">
+    <h2 id="cases-title" class="visually-hidden">
+      All case studies
+    </h2>
     {work.length ? (
       <div class="cases" id="all-cases">
-        {work.map((w) => (
+        {work.map((w, i) => (
           <CaseCard
             href={`/work/${w.id}`}
             slug={w.id}
@@ -35,25 +46,103 @@ const work = await getWork();
             image={w.data.hero}
             alt={w.data.heroAlt}
             demo={w.data.demoImages}
+            height={i === 0 ? "clamp(300px, 40vw, 580px)" : "clamp(240px, 26vw, 380px)"}
           />
         ))}
       </div>
     ) : (
-      <p>Case studies are being written up. Ask us for examples in the meantime.</p>
+      <p class="empty">Case studies are being written up. Ask us for examples in the meantime.</p>
     )}
   </Section>
-  <CtaBand />
+
+  <Section labelledby="byproblem-title">
+    <SectionHead title="Or start from your problem." id="byproblem-title" />
+    <ul class="byproblem">
+      {problems.map((p) => {
+        const n = casesFor(p.id, work).length;
+        return (
+          <li>
+            <a href={`/problems/${p.id}`}>
+              <span class="bp__q">"{p.data.title}"</span>
+              <span class="bp__n">
+                {n} {n === 1 ? "case" : "cases"} <span aria-hidden="true">→</span>
+              </span>
+            </a>
+          </li>
+        );
+      })}
+    </ul>
+  </Section>
+
+  <CtaBand picks={false} />
 </Base>
 
 <style>
+  .hero {
+    padding-block: 96px 88px;
+  }
   .cases {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 72px var(--gutter);
   }
+  .cases > :global(:first-child) {
+    grid-column: 1 / -1;
+  }
+  .empty {
+    font-size: 20px;
+  }
+  .byproblem {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .byproblem a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 24px;
+    height: 100%;
+    padding: 28px 32px;
+    background: var(--bone);
+    transition: background-color 200ms ease;
+  }
+  .byproblem a:hover {
+    background: var(--green);
+    color: var(--white);
+  }
+  .bp__q {
+    font-size: clamp(20px, 2vw, 28px);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .bp__n {
+    flex: none;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .bp__n span {
+    color: var(--clay);
+  }
+  .byproblem a:hover .bp__n span {
+    color: var(--white);
+  }
   @media (max-width: 767px) {
+    .hero {
+      padding-block: 56px 64px;
+    }
+    .cases,
+    .byproblem {
+      grid-template-columns: 1fr;
+    }
     .cases {
       gap: 56px;
+    }
+    .byproblem a {
+      padding: 22px 20px;
     }
   }
 </style>

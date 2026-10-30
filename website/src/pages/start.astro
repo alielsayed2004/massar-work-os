@@ -19,145 +19,172 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
   description="Tell Massar about the problem in four short steps. We reply with one clear next step."
   breadcrumbs={[{ name: "Start a project", path: "/start" }]}
 >
-  <section class="container start" aria-labelledby="start-title">
-    <header class="start__head">
-      <h1 id="start-title" class="start__title">
-        <span class="line" style="--i:0">
-          Bring us the problem.
-        </span>
-      </h1>
-      <p class="start__intro">Four short steps. We reply with one clear next step.</p>
-    </header>
+  <div class="container start-wrap">
+    <section class="start" aria-labelledby="start-title">
+      <header class="start__head">
+        <h1 id="start-title" class="start__title">
+          <span class="line" style="--i:0">
+            Bring us the problem.
+          </span>
+        </h1>
+        <p class="start__intro">Four short steps. We reply with one clear next step.</p>
+      </header>
 
-    <div class="progress" aria-hidden="true">
-      <div class="progress__bar" data-progress></div>
-    </div>
-    <ol class="stepper" data-stepper>
-      {steps.map((s, i) => (
-        <li data-step-label={i}>
-          <span>0{i + 1}</span> {s}
-        </li>
-      ))}
-    </ol>
-
-    <form
-      class="form"
-      data-start-form
-      data-endpoint={endpoint}
-      data-email={org.email}
-      action={endpoint ?? `mailto:${org.email}`}
-      method="post"
-      enctype={endpoint ? undefined : "text/plain"}
-      novalidate
-    >
-      <p class="form__status" role="status" aria-live="polite" data-status></p>
-
-      <fieldset data-step="0">
-        <legend class="h3">What's the problem?</legend>
-        <div class="choices">
-          {problemOptions.map((p, i) => (
-            <label class="choice">
-              <input type="radio" name="problem" value={p} required={i === 0} />
-              <span>{p}</span>
-            </label>
-          ))}
-        </div>
-        <label class="field">
-          <span>Tell us more (optional)</span>
-          <textarea name="problemDetail" rows="3"></textarea>
-        </label>
-      </fieldset>
-
-      <fieldset data-step="1">
-        <legend class="h3">Your business</legend>
-        <label class="field">
-          <span>Business name</span>
-          <input type="text" name="business" autocomplete="organization" required />
-        </label>
-        <label class="field">
-          <span>Sector</span>
-          <input type="text" name="sector" required />
-        </label>
-        <label class="field">
-          <span>Size</span>
-          <select name="size" required>
-            <option value="">Choose one</option>
-            {sizes.map((s) => (
-              <option>{s}</option>
-            ))}
-          </select>
-        </label>
-      </fieldset>
-
-      <fieldset data-step="2">
-        <legend class="h3">Goal, timeline, budget</legend>
-        <label class="field">
-          <span>What should be true when we're done?</span>
-          <textarea name="goal" rows="3" required></textarea>
-        </label>
-        <label class="field">
-          <span>Timeline</span>
-          <select name="timeline" required>
-            <option value="">Choose one</option>
-            {timelines.map((s) => (
-              <option>{s}</option>
-            ))}
-          </select>
-        </label>
-        <label class="field">
-          <span>Budget range</span>
-          <select name="budget" required>
-            <option value="">Choose one</option>
-            {budgets.map((s) => (
-              <option>{s}</option>
-            ))}
-          </select>
-        </label>
-      </fieldset>
-
-      <fieldset data-step="3">
-        <legend class="h3">How do we reach you?</legend>
-        <label class="field">
-          <span>Your name</span>
-          <input type="text" name="name" autocomplete="name" required />
-        </label>
-        <label class="field">
-          <span>Email</span>
-          <input type="email" name="email" autocomplete="email" required />
-        </label>
-        <label class="field">
-          <span>Phone or WhatsApp (optional)</span>
-          <input type="tel" name="phone" autocomplete="tel" />
-        </label>
-      </fieldset>
-
-      <div class="form__nav">
-        <button type="button" class="btn-secondary" data-back>
-          Back
-        </button>
-        <button type="button" class="btn-primary" data-next>
-          Next
-        </button>
-        <button type="submit" class="btn-primary" data-submit>
-          Send the brief
-        </button>
+      <div class="progress" aria-hidden="true">
+        <div class="progress__bar" data-progress></div>
       </div>
-    </form>
+      <ol class="stepper" data-stepper>
+        {steps.map((s, i) => (
+          <li data-step-label={i}>
+            <span>0{i + 1}</span> {s}
+          </li>
+        ))}
+      </ol>
 
-    <div class="success" data-success hidden tabindex="-1">
-      <h2 class="h2">Thank you. We'll reply within [00] working days.</h2>
-      <p data-success-mailto hidden>
-        Your email app opened with the brief. Press send, or write to
+      <form
+        class="form"
+        data-start-form
+        data-endpoint={endpoint}
+        data-email={org.email}
+        action={endpoint ?? `mailto:${org.email}`}
+        method="post"
+        enctype={endpoint ? undefined : "text/plain"}
+        novalidate
+      >
+        <p class="form__status" role="status" aria-live="polite" data-status></p>
+
+        <fieldset data-step="0">
+          <legend class="h3">What's the problem?</legend>
+          <div class="choices">
+            {problemOptions.map((p, i) => (
+              <label class="choice">
+                <input type="radio" name="problem" value={p} required={i === 0} />
+                <span>{p}</span>
+              </label>
+            ))}
+          </div>
+          <label class="field">
+            <span>Tell us more (optional)</span>
+            <textarea name="problemDetail" rows="3"></textarea>
+          </label>
+        </fieldset>
+
+        <fieldset data-step="1">
+          <legend class="h3">Your business</legend>
+          <label class="field">
+            <span>Business name</span>
+            <input type="text" name="business" autocomplete="organization" required />
+          </label>
+          <label class="field">
+            <span>Sector</span>
+            <input type="text" name="sector" required />
+          </label>
+          <label class="field">
+            <span>Size</span>
+            <select name="size" required>
+              <option value="">Choose one</option>
+              {sizes.map((s) => (
+                <option>{s}</option>
+              ))}
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset data-step="2">
+          <legend class="h3">Goal, timeline, budget</legend>
+          <label class="field">
+            <span>What should be true when we're done?</span>
+            <textarea name="goal" rows="3" required></textarea>
+          </label>
+          <label class="field">
+            <span>Timeline</span>
+            <select name="timeline" required>
+              <option value="">Choose one</option>
+              {timelines.map((s) => (
+                <option>{s}</option>
+              ))}
+            </select>
+          </label>
+          <label class="field">
+            <span>Budget range</span>
+            <select name="budget" required>
+              <option value="">Choose one</option>
+              {budgets.map((s) => (
+                <option>{s}</option>
+              ))}
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset data-step="3">
+          <legend class="h3">How do we reach you?</legend>
+          <label class="field">
+            <span>Your name</span>
+            <input type="text" name="name" autocomplete="name" required />
+          </label>
+          <label class="field">
+            <span>Email</span>
+            <input type="email" name="email" autocomplete="email" required />
+          </label>
+          <label class="field">
+            <span>Phone or WhatsApp (optional)</span>
+            <input type="tel" name="phone" autocomplete="tel" />
+          </label>
+        </fieldset>
+
+        <div class="form__nav">
+          <button type="button" class="btn-secondary" data-back>
+            Back
+          </button>
+          <button type="button" class="btn-primary" data-next>
+            Next
+          </button>
+          <button type="submit" class="btn-primary" data-submit>
+            Send the brief
+          </button>
+        </div>
+      </form>
+
+      <div class="success" data-success hidden tabindex="-1">
+        <h2 class="h2">Thank you. We'll reply within [00] working days.</h2>
+        <p data-success-mailto hidden>
+          Your email app opened with the brief. Press send, or write to
+          <a class="link" href={`mailto:${org.email}`}>
+            {org.email}
+          </a>
+          .
+        </p>
+        <a href="/work" class="link">
+          While you wait: see the case studies
+        </a>
+      </div>
+    </section>
+    <aside class="next" aria-labelledby="next-title">
+      <h2 id="next-title" class="next__title">
+        What happens next
+      </h2>
+      <ol>
+        <li>
+          <strong>We read your brief.</strong>
+          <span>A real person replies within [0] working days.</span>
+        </li>
+        <li>
+          <strong>One call about the problem.</strong>
+          <span>About the business, not about deliverables.</span>
+        </li>
+        <li>
+          <strong>A written diagnosis.</strong>
+          <span>The real problem, the one objective, and what it would take.</span>
+        </li>
+      </ol>
+      <p class="next__mail">
+        Prefer email?{" "}
         <a class="link" href={`mailto:${org.email}`}>
           {org.email}
         </a>
-        .
       </p>
-      <a href="/work" class="link">
-        While you wait: see the case studies
-      </a>
-    </div>
-  </section>
+    </aside>
+  </div>
 </Base>
 
 <script>
@@ -283,17 +310,66 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
 </script>
 
 <style>
+  .start-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 8fr) minmax(0, 4fr);
+    gap: 48px 80px;
+    align-items: start;
+    padding-block: 96px var(--section-y);
+  }
   .start {
     display: flex;
     flex-direction: column;
     gap: 40px;
-    max-width: 960px;
-    margin-inline: auto;
-    padding-block: 96px var(--section-y);
+    min-width: 0;
   }
-  @media (min-width: 1200px) {
-    .start {
-      max-width: calc(960px + 2 * var(--margin));
+  .next {
+    position: sticky;
+    top: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 36px;
+    background: var(--green);
+    color: var(--white);
+  }
+  .next__title {
+    font-size: var(--t-h3);
+    line-height: 1.2;
+  }
+  .next ol {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin: 0;
+    padding-left: 1.2em;
+  }
+  .next li {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .next li::marker {
+    font-weight: 600;
+  }
+  .next strong {
+    font-size: 18px;
+  }
+  .next__mail {
+    font-size: 15px;
+  }
+  .next__mail .link {
+    color: var(--white);
+    font-size: inherit;
+  }
+  @media (max-width: 1023px) {
+    .start-wrap {
+      grid-template-columns: 1fr;
+    }
+    .next {
+      position: static;
     }
   }
   .start__head {

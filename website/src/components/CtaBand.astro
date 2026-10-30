@@ -1,33 +1,53 @@
 ---
 import Button from "./Button.astro";
 import { org } from "../data/site";
+import { getProblems } from "../lib/content";
 
 interface Props {
   title?: string;
+  /** Show the "Which one is yours?" problem links. */
+  picks?: boolean;
 }
-const { title = "Bring us the problem.<br />We'll bring one direction." } = Astro.props;
+const { title = "Bring us the problem.<br />We'll bring one direction.", picks = true } =
+  Astro.props;
+const problems = picks ? await getProblems() : [];
 ---
 
 <section class="cta tone-green" aria-labelledby="cta-title">
-  <div class="container cta__inner">
+  <div class="container cta__inner" class:list={{ "cta__inner--solo": !problems.length }}>
     <div class="cta__main">
       <div class="cta__rule" aria-hidden="true"></div>
       <h2 id="cta-title" class="cta__title" set:html={title} />
       <p class="cta__tagline">{org.tagline}</p>
     </div>
-    <Button href="/start" on="dark" size="lg">
-      Start a project
-    </Button>
+    <div class="cta__pick">
+      {problems.length > 0 && (
+        <>
+          <p class="cta__ask">Which one is yours?</p>
+          <ul>
+            {problems.map((p) => (
+              <li>
+                <a href={`/start?problem=${encodeURIComponent(p.data.title)}`}>
+                  "{p.data.title}" <span aria-hidden="true">→</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+      <Button href="/start" on="dark" size="lg">
+        Start a project
+      </Button>
+    </div>
   </div>
 </section>
 
 <style>
   .cta__inner {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    gap: 48px;
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: end;
+    gap: 56px;
     padding-block: var(--section-y);
   }
   .cta__main {
@@ -42,7 +62,7 @@ const { title = "Bring us the problem.<br />We'll bring one direction." } = Astr
   }
   .cta__title {
     font-size: clamp(40px, 5.4vw, 80px);
-    line-height: 1.05;
+    line-height: 1.02;
     letter-spacing: -0.03em;
   }
   .cta__tagline {
@@ -51,5 +71,54 @@ const { title = "Bring us the problem.<br />We'll bring one direction." } = Astr
     font-weight: 500;
     font-size: 34px;
     line-height: 1.2;
+  }
+  .cta__pick {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .cta__inner--solo .cta__pick {
+    justify-self: end;
+  }
+  .cta__ask {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .cta__pick ul {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 0 0 12px;
+    padding: 0;
+    list-style: none;
+  }
+  .cta__pick li a {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 18px;
+    background: var(--white);
+    color: var(--green);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.35;
+    transition: transform 200ms var(--ease-out);
+  }
+  .cta__pick li a:hover {
+    transform: translateX(6px);
+  }
+  .cta__pick li a span {
+    color: var(--clay);
+  }
+  .cta__pick :global(.btn) {
+    align-self: flex-start;
+  }
+  @media (max-width: 1023px) {
+    .cta__inner {
+      grid-template-columns: 1fr;
+    }
+    .cta__inner--solo .cta__pick {
+      justify-self: start;
+    }
   }
 </style>

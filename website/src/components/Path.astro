@@ -1,0 +1,194 @@
+---
+/**
+ * Massar means "path": the process drawn as one thick line with stations.
+ * `compact` = horizontal on wide screens (home); `detailed` = vertical with
+ * what happens and what you get at each station (/process).
+ */
+interface Stop {
+  name: string;
+  line: string;
+  does?: string;
+  get?: string;
+  time?: string;
+}
+interface Props {
+  stops: Stop[];
+  variant?: "compact" | "detailed";
+  class?: string;
+}
+const { stops, variant = "compact", class: className } = Astro.props;
+---
+
+<ol class:list={["path", `path--${variant}`, className]} style={`--n:${stops.length}`}>
+  {stops.map((s, i) => (
+    <li class:list={["path__stop", { "path__stop--end": i === stops.length - 1 }]}>
+      <span class="path__dot" aria-hidden="true" />
+      <div class="path__head">
+        <h3 class="path__name">{s.name}</h3>
+        <p class="path__line">{s.line}</p>
+      </div>
+      {variant === "detailed" && (
+        <dl class="path__detail">
+          {s.does && (
+            <div>
+              <dt>What happens</dt>
+              <dd>{s.does}</dd>
+            </div>
+          )}
+          {s.get && (
+            <div>
+              <dt>What you get</dt>
+              <dd>{s.get}</dd>
+            </div>
+          )}
+          {s.time && (
+            <div>
+              <dt>Typical length</dt>
+              <dd>{s.time}</dd>
+            </div>
+          )}
+        </dl>
+      )}
+    </li>
+  ))}
+</ol>
+
+<style>
+  .path {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .path::before {
+    content: "";
+    position: absolute;
+    background: var(--green);
+  }
+  .path__stop {
+    position: relative;
+  }
+  .path__dot {
+    display: block;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--white);
+    box-shadow: inset 0 0 0 6px var(--green);
+  }
+  .path__stop--end .path__dot {
+    background: var(--clay);
+    box-shadow: none;
+  }
+  .path__head {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .path__name {
+    font-size: var(--t-h3);
+    line-height: 1.2;
+  }
+  .path__line {
+    font-size: 17px;
+    line-height: 1.55;
+  }
+
+  /* Compact: horizontal line across the stations */
+  .path--compact {
+    display: grid;
+    grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr));
+    gap: var(--gutter);
+  }
+  .path--compact::before {
+    left: 0;
+    right: 0;
+    top: 11px;
+    height: 6px;
+  }
+  .path--compact .path__dot {
+    margin-bottom: 24px;
+  }
+
+  /* Detailed: vertical line, big station names, detail on the right */
+  .path--detailed {
+    display: flex;
+    flex-direction: column;
+    gap: 72px;
+    padding-left: 72px;
+  }
+  .path--detailed::before {
+    left: 11px;
+    top: 14px;
+    bottom: 14px;
+    width: 6px;
+  }
+  .path--detailed .path__stop {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 24px 64px;
+  }
+  .path--detailed .path__dot {
+    position: absolute;
+    left: -72px;
+    top: 10px;
+  }
+  .path--detailed .path__name {
+    font-size: var(--t-h2);
+    letter-spacing: -0.02em;
+  }
+  .path--detailed .path__line {
+    font-size: 20px;
+    color: var(--green);
+    font-weight: 600;
+  }
+  .path__detail {
+    display: grid;
+    gap: 20px;
+    margin: 0;
+  }
+  .path__detail dt {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--green);
+  }
+  .path__detail dd {
+    margin: 4px 0 0;
+    font-size: 18px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 1023px) {
+    .path--detailed .path__stop {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 767px) {
+    .path--compact {
+      grid-template-columns: 1fr;
+      gap: 32px;
+      padding-left: 48px;
+    }
+    .path--compact::before {
+      left: 11px;
+      right: auto;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      height: auto;
+    }
+    .path--compact .path__dot {
+      position: absolute;
+      left: -48px;
+      top: 0;
+      margin: 0;
+    }
+    .path--detailed {
+      gap: 56px;
+      padding-left: 48px;
+    }
+    .path--detailed .path__dot {
+      left: -48px;
+    }
+  }
+</style>

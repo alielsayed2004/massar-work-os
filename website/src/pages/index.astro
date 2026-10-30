@@ -11,8 +11,10 @@ import FAQ from "../components/FAQ.astro";
 import HeroMonogram from "../components/HeroMonogram.astro";
 import ProblemSolver from "../components/ProblemSolver.astro";
 import MovingParts from "../components/MovingParts.astro";
+import Path from "../components/Path.astro";
+import CtaBand from "../components/CtaBand.astro";
 import { getProblems, getWork } from "../lib/content";
-import { homeFaqs, org, processSteps, services } from "../data/site";
+import { homeFaqs, processSteps, services } from "../data/site";
 
 const work = await getWork();
 const problems = await getProblems();
@@ -126,15 +128,7 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
         How each step works
       </Button>
     </SectionHead>
-    <ol class="path">
-      {processSteps.map((s, i) => (
-        <li class:list={["path__stop", { "path__stop--end": i === processSteps.length - 1 }]}>
-          <span class="path__dot" aria-hidden="true" />
-          <h3 class="path__name">{s.name}</h3>
-          <p class="path__line">{s.line}</p>
-        </li>
-      ))}
-    </ol>
+    <Path stops={processSteps} />
   </Section>
 
   <!-- CASE STUDIES -->
@@ -189,35 +183,7 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
     </div>
   </Section>
 
-  <!-- CTA -->
-  <section class="cta tone-green" aria-labelledby="cta-title">
-    <div class="container cta__inner">
-      <div class="cta__main">
-        <div class="cta__rule" aria-hidden="true"></div>
-        <h2 id="cta-title" class="cta__title">
-          Bring us the problem.
-          <br />
-          We'll bring one direction.
-        </h2>
-        <p class="cta__tagline">{org.tagline}</p>
-      </div>
-      <div class="cta__pick">
-        <p class="cta__ask">Which one is yours?</p>
-        <ul>
-          {problems.map((p) => (
-            <li>
-              <a href={`/start?problem=${encodeURIComponent(p.data.title)}`}>
-                "{p.data.title}" <span aria-hidden="true">→</span>
-              </a>
-            </li>
-          ))}
-        </ul>
-        <Button href="/start" on="dark" size="lg">
-          Start a project
-        </Button>
-      </div>
-    </div>
-  </section>
+  <CtaBand />
 </Base>
 
 <style>
@@ -308,51 +274,6 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
     line-height: 1.6;
   }
 
-  .path {
-    position: relative;
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: var(--gutter);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .path::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 11px;
-    height: 6px;
-    background: var(--green);
-  }
-  .path__stop {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .path__dot {
-    width: 28px;
-    height: 28px;
-    margin-bottom: 20px;
-    border-radius: 50%;
-    background: var(--white);
-    box-shadow: inset 0 0 0 6px var(--green);
-  }
-  .path__stop--end .path__dot {
-    background: var(--clay);
-    box-shadow: none;
-  }
-  .path__name {
-    font-size: var(--t-h3);
-    line-height: 1.2;
-  }
-  .path__line {
-    font-size: 17px;
-    line-height: 1.55;
-  }
-
   .cases {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -401,78 +322,9 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
     line-height: 1.55;
   }
 
-  .cta__inner {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    align-items: end;
-    gap: 56px;
-    padding-block: var(--section-y);
-  }
-  .cta__main {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-  }
-  .cta__rule {
-    width: 96px;
-    height: 6px;
-    background: var(--clay);
-  }
-  .cta__title {
-    font-size: clamp(40px, 5.4vw, 80px);
-    line-height: 1.02;
-    letter-spacing: -0.03em;
-  }
-  .cta__tagline {
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-weight: 500;
-    font-size: 34px;
-    line-height: 1.2;
-  }
-  .cta__pick {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-  .cta__ask {
-    font-size: 18px;
-    font-weight: 600;
-  }
-  .cta__pick ul {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin: 0 0 12px;
-    padding: 0;
-    list-style: none;
-  }
-  .cta__pick li a {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    padding: 14px 18px;
-    background: var(--white);
-    color: var(--green);
-    font-size: 18px;
-    font-weight: 600;
-    line-height: 1.35;
-    transition: transform 200ms var(--ease-out);
-  }
-  .cta__pick li a:hover {
-    transform: translateX(6px);
-  }
-  .cta__pick li a span {
-    color: var(--clay);
-  }
-  .cta__pick :global(.btn) {
-    align-self: flex-start;
-  }
-
   @media (max-width: 1023px) {
     .hero__row,
-    .split,
-    .cta__inner {
+    .split {
       grid-template-columns: 1fr;
     }
     .featured__flow {
@@ -496,25 +348,6 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
     .cases {
       grid-template-columns: 1fr;
       gap: 56px;
-    }
-    .path {
-      grid-template-columns: 1fr;
-      gap: 32px;
-      padding-left: 48px;
-    }
-    .path::before {
-      left: 11px;
-      right: auto;
-      top: 0;
-      bottom: 0;
-      width: 6px;
-      height: auto;
-    }
-    .path__dot {
-      position: absolute;
-      left: -48px;
-      top: 0;
-      margin: 0;
     }
   }
 </style>

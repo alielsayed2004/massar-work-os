@@ -3,30 +3,37 @@ import Base from "../../layouts/Base.astro";
 import Section from "../../components/Section.astro";
 import SectionHead from "../../components/SectionHead.astro";
 import PageHead from "../../components/PageHead.astro";
+import Path from "../../components/Path.astro";
 import CaseCard from "../../components/CaseCard.astro";
 import FAQ from "../../components/FAQ.astro";
 import CtaBand from "../../components/CtaBand.astro";
+import { services } from "../../data/site";
 import {
   casesFor,
   formatDate,
   getProblems,
   getWork,
-  pad2,
   showDrafts,
   type Problem,
 } from "../../lib/content";
 
 export async function getStaticPaths() {
   const problems = await getProblems();
-  return problems.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+  return problems.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry, others: problems.filter((p) => p.id !== entry.id) },
+  }));
 }
 
 interface Props {
   entry: Problem;
+  others: Problem[];
 }
-const { entry } = Astro.props;
+const { entry, others } = Astro.props;
 const d = entry.data;
 const cases = casesFor(entry.id, await getWork());
+const stationNames = ["Diagnose", "Direct", "Build and prove"];
+const used = services.filter((s) => (s.problems as readonly string[]).includes(entry.id));
 ---
 
 <Base
@@ -35,33 +42,45 @@ const cases = casesFor(entry.id, await getWork());
   noindex={d.draft && showDrafts}
   faqs={d.faqs}
   breadcrumbs={[
-    { name: "Problems we solve", path: "/#problems" },
+    { name: "Problems we solve", path: "/problems" },
     { name: d.title, path: `/problems/${entry.id}` },
   ]}
 >
-  <Section labelledby="problem-title">
-    <PageHead title={`"${d.title}"`} back={{ href: "/#problems", text: "All problems" }}>
+  <section class="container hero" aria-labelledby="problem-title">
+    <PageHead title={`"${d.title}"`} back={{ href: "/problems", text: "All problems" }}>
       <p class="answer">{d.answer}</p>
-      <p class="updated">
-        Last updated <time datetime={d.updated.toISOString()}>{formatDate(d.updated)}</time>
-      </p>
     </PageHead>
-    <div class="how">
-      <h2 class="label">How we solve it</h2>
-      <ol class="how__steps">
-        {d.steps.map((s, i) => (
-          <li>
-            <span class="how__num">{pad2(i + 1)}</span>
-            <p>{s}</p>
-          </li>
-        ))}
-      </ol>
+    <div class="diag">
+      <div class="diag__col">
+        <h2 class="diag__k">Usually behind it</h2>
+        <p class="diag__big">{d.cause}</p>
+      </div>
+      <div class="diag__col diag__col--do">
+        <h2 class="diag__k">What we do</h2>
+        <p class="diag__big">{d.short}</p>
+        {used.length > 0 && (
+          <p class="diag__with">
+            With{" "}
+            {used.map((s, i) => (
+              <>
+                <a href={`/services#${s.id}`}>{s.name}</a>
+                {i < used.length - 1 ? " and " : "."}
+              </>
+            ))}
+          </p>
+        )}
+      </div>
     </div>
+  </section>
+
+  <Section tone="ink" labelledby="how-title">
+    <SectionHead title="How we solve it" id="how-title" />
+    <Path stops={d.steps.map((s, i) => ({ name: stationNames[i], line: s }))} class="how-path" />
   </Section>
 
   {cases.length > 0 && (
-    <Section tone="green" labelledby="related-title">
-      <SectionHead title="Cases where we fixed this." id="related-title" />
+    <Section labelledby="related-title">
+      <SectionHead title="Where we've done it" id="related-title" />
       <div class="cases">
         {cases.map((w) => (
           <CaseCard
@@ -83,57 +102,155 @@ const cases = casesFor(entry.id, await getWork());
     </Section>
   )}
 
-  <Section labelledby="pfaq-title">
-    <SectionHead title="Questions buyers ask." id="pfaq-title" />
-    <FAQ items={d.faqs} />
+  <Section tone="green" labelledby="pfaq-title">
+    <div class="faq">
+      <h2 id="pfaq-title" class="h2">
+        Questions buyers ask
+      </h2>
+      <FAQ items={d.faqs} />
+    </div>
   </Section>
 
-  <CtaBand />
+  <Section labelledby="others-title">
+    <SectionHead title="Not quite your problem?" id="others-title" />
+    <ul class="others">
+      {others.map((p) => (
+        <li>
+          <a href={`/problems/${p.id}`}>
+            "{p.data.title}" <span aria-hidden="true">→</span>
+          </a>
+        </li>
+      ))}
+    </ul>
+    <p class="updated">
+      Last updated <time datetime={d.updated.toISOString()}>{formatDate(d.updated)}</time>
+    </p>
+  </Section>
+
+  <CtaBand picks={false} />
 </Base>
 
 <style>
+  .hero {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+    padding-block: 96px 104px;
+  }
   .answer {
-    max-width: 760px;
+    max-width: 52ch;
     font-size: 22px;
     font-weight: 500;
     line-height: 1.55;
   }
-  .updated {
-    font-size: 14px;
-  }
-  .how {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-  .how__steps {
+  .diag {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    grid-template-columns: 1fr 1fr;
     gap: var(--gutter);
-    margin: 0;
-    padding: 0;
-    list-style: none;
   }
-  .how__steps li {
+  .diag__col {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding-top: 20px;
-    border-top: 2px solid var(--ink);
+    gap: 14px;
+    padding: 40px;
+    background: var(--bone);
   }
-  .how__num {
-    font-size: 44px;
-    font-weight: 300;
-    line-height: 1;
-    color: var(--green);
+  .diag__col--do {
+    background: var(--green);
+    color: var(--white);
   }
-  .how__steps p {
-    font-size: var(--t-body);
-    line-height: 1.6;
+  .diag__k {
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .diag__big {
+    font-size: clamp(22px, 2.2vw, 30px);
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .diag__with {
+    margin-top: auto;
+    padding-top: 12px;
+    font-size: 17px;
+  }
+  .diag__with a {
+    text-decoration: underline;
+    text-decoration-color: var(--clay);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 5px;
+  }
+  .tone-ink :global(.path__dot) {
+    background: var(--ink);
+    box-shadow: inset 0 0 0 6px var(--white);
+  }
+  .tone-ink :global(.path)::before {
+    background: var(--white);
+  }
+  .tone-ink :global(.path) {
+    --n: 3;
+  }
+  .tone-ink :global(.path__stop--end .path__dot) {
+    background: var(--clay);
+    box-shadow: none;
   }
   .cases {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(460px, 100%), 1fr));
     gap: 72px var(--gutter);
+  }
+  .faq {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: 32px 96px;
+  }
+  .others {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .others a {
+    display: inline-block;
+    padding: 14px 20px;
+    border-radius: 999px;
+    background: var(--bone);
+    color: var(--green);
+    font-size: 18px;
+    font-weight: 600;
+    transition: background-color 200ms ease;
+  }
+  .others a:hover {
+    background: var(--green);
+    color: var(--white);
+  }
+  .others span {
+    color: var(--clay);
+  }
+  .others a:hover span {
+    color: inherit;
+  }
+  .updated {
+    font-size: 14px;
+  }
+  @media (max-width: 1023px) {
+    .faq {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 767px) {
+    .hero {
+      padding-block: 56px 72px;
+    }
+    .diag {
+      grid-template-columns: 1fr;
+    }
+    .diag__col {
+      padding: 28px 20px;
+    }
+    .answer {
+      font-size: 19px;
+    }
   }
 </style>

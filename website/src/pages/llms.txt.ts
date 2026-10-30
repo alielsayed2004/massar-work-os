@@ -17,6 +17,8 @@ export const GET: APIRoute = async ({ site }) => {
     "## Pages",
     `- [Home](${url("/")}): what Massar does, featured case, problems we solve, process, FAQ.`,
     `- [Case studies](${url("/work")}): every case, each with problem, solution and measured result.`,
+    `- [Problems we solve](${url("/problems")}): the four problems clients bring, what causes them and the cases that fixed them.`,
+    `- [Services](${url("/services")}): digital and outdoor marketing, business development, brand, consulting.`,
     `- [Process](${url("/process")}): Diagnose, Direct, Build, Prove, Next step.`,
     `- [About](${url("/about")}): the company, services and team.`,
     `- [Start a project](${url("/start")}): four-step project brief.`,

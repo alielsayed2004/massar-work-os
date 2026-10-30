@@ -1,0 +1,175 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import PageHead from "../../components/PageHead.astro";
+import Media from "../../components/Media.astro";
+import CtaBand from "../../components/CtaBand.astro";
+import { casesFor, getProblems, getWork } from "../../lib/content";
+
+const problems = await getProblems();
+const work = await getWork();
+---
+
+<Base
+  title="Problems we solve — Massar"
+  description="Most businesses bring Massar one of four problems: a scattered brand, ads that don't sell, a launch with too many parts, or suppliers nobody owns."
+  breadcrumbs={[{ name: "Problems we solve", path: "/problems" }]}
+>
+  <Section labelledby="problems-title">
+    <PageHead
+      title="What's in the way?"
+      intro="Most businesses that call us bring one of four problems. Each one usually has the same cause underneath, and a case where we've already fixed it."
+    />
+
+    <div class="list">
+      {problems.map((p) => {
+        const proof = casesFor(p.id, work)[0];
+        return (
+          <article class="row" aria-labelledby={`p-${p.id}`}>
+            <div class="row__main">
+              <h2 id={`p-${p.id}`} class="row__title">
+                <a href={`/problems/${p.id}`}>"{p.data.title}"</a>
+              </h2>
+              <dl class="row__pairs">
+                <div>
+                  <dt>Usually behind it</dt>
+                  <dd>{p.data.cause}</dd>
+                </div>
+                <div>
+                  <dt>What we do</dt>
+                  <dd class="row__do">{p.data.short}</dd>
+                </div>
+              </dl>
+              <a href={`/problems/${p.id}`} class="link row__more">
+                How we solve it
+              </a>
+            </div>
+            {proof && (
+              <a href={`/work/${proof.id}`} class="row__proof">
+                <Media
+                  image={proof.data.hero}
+                  alt={proof.data.heroAlt}
+                  shot={proof.data.heroShot}
+                  tone={proof.data.heroTone}
+                  tag={proof.data.demoImages ? "Stock photo · demo" : undefined}
+                  height="clamp(220px, 22vw, 300px)"
+                  sizes="(min-width: 1200px) 520px, 100vw"
+                />
+                <span class="row__prooftext">
+                  <span class="row__k">Solved for</span>
+                  <span class="row__case">
+                    {proof.data.client}: {proof.data.summary}
+                  </span>
+                </span>
+              </a>
+            )}
+          </article>
+        );
+      })}
+    </div>
+
+    <p class="other">
+      Not on the list?{" "}
+      <a href="/start" class="link">
+        Tell us the problem in your own words.
+      </a>
+    </p>
+  </Section>
+
+  <CtaBand picks={false} />
+</Base>
+
+<style>
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 32px 64px;
+    padding: 48px;
+    background: var(--bone);
+  }
+  .row__main {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .row__title {
+    font-size: var(--t-h2);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .row__title a:hover {
+    color: var(--green);
+  }
+  .row__pairs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 40px;
+    margin: 0;
+  }
+  .row__pairs dt {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--green);
+  }
+  .row__pairs dd {
+    margin: 6px 0 0;
+    font-size: 19px;
+    line-height: 1.5;
+  }
+  .row__do {
+    font-weight: 600;
+    color: var(--green);
+  }
+  .row__more {
+    color: var(--green);
+  }
+  .row__proof {
+    display: flex;
+    flex-direction: column;
+    background: var(--white);
+    align-self: start;
+  }
+  .row__prooftext {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 18px 20px 22px;
+  }
+  .row__k {
+    font-size: 14px;
+    color: var(--green);
+    font-weight: 600;
+  }
+  .row__case {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.35;
+  }
+  .row__proof:hover .row__case {
+    color: var(--green);
+  }
+  .other {
+    font-size: 20px;
+  }
+  @media (max-width: 1023px) {
+    .row {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 767px) {
+    .row {
+      padding: 28px 20px;
+    }
+    .row__pairs {
+      grid-template-columns: 1fr;
+    }
+    .row__pairs dd {
+      font-size: 17px;
+    }
+  }
+</style>
