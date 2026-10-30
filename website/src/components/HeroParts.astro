@@ -7,9 +7,9 @@
  */
 import type { ImageMetadata } from "astro";
 import { getImage } from "astro:assets";
-import billboard from "../assets/demo/s04-billboard-road.jpg";
-import cafe from "../assets/demo/s02-cafe-guests.jpg";
-import shop from "../assets/demo/s09-store-interior.jpg";
+import billboard from "../assets/demo/billboard-desert.jpg";
+import cafe from "../assets/demo/cafe-counter.jpg";
+import shop from "../assets/demo/retail.jpg";
 
 const thumb = async (src: ImageMetadata) =>
   (await getImage({ src, width: 400, format: "webp", quality: 65 })).src;

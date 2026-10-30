@@ -98,7 +98,7 @@ const seoTitle = base.length <= 51 ? `${base} | Massar` : base.slice(0, 60);
           image={d.hero}
           alt={d.heroAlt}
           priority
-          tag={d.demoImages ? "Stock photo · demo" : undefined}
+          tag={d.demoImages ? "Generated image · demo" : undefined}
           shot={d.heroShot}
           tone={d.heroTone}
           height="clamp(280px, 44vw, 640px)"
@@ -171,7 +171,7 @@ const seoTitle = base.length <= 51 ? `${base} | Massar` : base.slice(0, 60);
               <Media
                 image={g.src}
                 alt={g.alt}
-                tag={g.src && d.demoImages ? "Stock photo · demo" : undefined}
+                tag={g.src && d.demoImages ? "Generated image · demo" : undefined}
                 sizes={
                   g.wide ? "(min-width: 1200px) 1280px, 100vw" : "(min-width: 1200px) 640px, 100vw"
                 }

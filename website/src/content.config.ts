@@ -56,7 +56,7 @@ const work = defineCollection({
       /** Real hero photo. Until it exists, heroShot renders a placeholder. */
       hero: image().optional(),
       heroShot: shot,
-      /** True while images are stock stand-ins (shown with a STOCK · DEMO tag). */
+      /** True while images are generated stand-ins (tagged "Generated image · demo"). */
       demoImages: z.boolean().default(false),
       heroTone: tone.default("stone"),
       heroAlt: z.string(),

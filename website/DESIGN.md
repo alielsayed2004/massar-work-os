@@ -48,3 +48,17 @@ Bone is the one panel fill. Clay is emphasis only: link underline, the last path
 - **Panels:** Bone fill, no border, no radius, no shadow.
 - **Path:** one thick Green line with round stations; the brand idea (Massar = path).
 - No eyebrow labels above headings, no 01/02 section numbers, no tracked caps, no pills.
+
+## Art direction (imagery)
+One shoot, one look. Every picture on the site follows this recipe until real photography replaces it.
+
+- **Where:** Cairo and its new cities: streets, shops, offices, roads. Real places, unstaged moments.
+- **Light:** soft late-afternoon daylight, calm and warm.
+- **Colour:** muted matte grade dominated by Massar Green, Bone and near-black, with one small Clay accent per frame (a clay pot, a cup, a stamp).
+- **Camera:** eye-level 35mm, clean composition, generous negative space, shallow depth of field, fine film grain.
+- **Never:** text, letters, logos, readable signage, watermarks.
+
+Current demo images are generated with Freepik (Nano Banana 2.1) using the café storefront as the style reference, and are tagged "Generated image · demo" on the page. The brand book asks for real photography at launch: reshoot the same list (café front, counter, identity flat lay, desert billboard, hoardings, billboard at dusk, clinic, campaign review, retail, shop counter, business review, workshop) with this recipe.
+
+Prompt suffix used for every image:
+> Editorial documentary photograph in Cairo, Egypt. Soft late-afternoon natural daylight, calm and warm. Muted matte colour grade dominated by deep forest green (#0D3B34), warm bone cream (#F1ECE2) and near-black, with one small terracotta clay (#B85333) accent. Eye-level 35mm lens, clean composition with generous negative space, shallow depth of field, fine film grain, real unstaged feel. No text, no letters, no logos, no readable signage, no watermark.

@@ -33,7 +33,7 @@ const { work } = Astro.props;
         <span class="container panel__body">
           <span class="panel__meta">
             <span>{[...w.data.tags, w.data.sector].join(" · ")}</span>
-            {w.data.demoImages && <span>Stock photo · demo</span>}
+            {w.data.demoImages && <span>Generated image · demo</span>}
           </span>
           <span class="panel__title">
             {w.data.client}: {w.data.summary}

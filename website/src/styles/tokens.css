@@ -19,11 +19,11 @@
   --fs-body: 16px; /* body, buttons, nav */
   --fs-lead: 18px; /* lead paragraphs, emphasised lines */
   --fs-h3: 22px; /* card titles, small headings */
-  --fs-title: clamp(30px, 4vw, 56px); /* section titles */
-  --fs-statement: clamp(36px, 5vw, 64px); /* page H1, CTA, the one big number */
+  --fs-title: clamp(26px, 2.8vw, 40px); /* section titles */
+  --fs-statement: clamp(28px, 3.4vw, 48px); /* page H1, the hero answer line, CTA */
   /* Agency scale: used only by the home hero and the service index. */
-  --fs-display: clamp(56px, 10.5vw, 176px);
-  --fs-mega: clamp(36px, 6.4vw, 104px);
+  --fs-display: clamp(44px, 6.2vw, 96px);
+  --fs-mega: clamp(30px, 3.8vw, 56px);
 
   /* Weights: 400 to read, 500 for titles and controls. */
   --fw-regular: 400;
