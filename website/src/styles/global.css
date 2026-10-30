@@ -223,3 +223,55 @@ textarea {
   font-weight: 600;
   line-height: 1.25;
 }
+
+/* ---------- Motion (CLAUDE.md §6). All of it is off under reduced motion. ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  /* Hero H1 lines: opacity 0→1, y 24→0, 80ms stagger, 700ms. */
+  h1 .line {
+    animation: line-in 700ms var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 80ms);
+  }
+
+  /* Scroll reveal: fade + 24px rise, once. */
+  .js [data-reveal] {
+    transition:
+      opacity 700ms var(--ease),
+      transform 700ms var(--ease);
+  }
+  .js [data-reveal]:not(.is-in) {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+
+  /* Case images scale 0.92→1 while entering the viewport. */
+  @supports (animation-timeline: view()) {
+    .scale-in {
+      animation: scale-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+  }
+  @supports not (animation-timeline: view()) {
+    .js .scale-in {
+      transition: transform 900ms var(--ease);
+    }
+    .js .scale-in:not(.is-in) {
+      transform: scale(0.92);
+    }
+  }
+}
+
+@keyframes line-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+@keyframes scale-in {
+  from {
+    transform: scale(0.92);
+  }
+  to {
+    transform: scale(1);
+  }
+}

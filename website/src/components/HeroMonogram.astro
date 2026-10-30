@@ -1,7 +1,8 @@
 ---
 /**
  * Hero monogram on a Bone panel. The static PNG is the LCP element and the
- * fallback; the three.js scene (step 7) fades in over it.
+ * fallback (mobile < 768px, reduced motion, no WebGL). On larger screens the
+ * three.js scene loads when the panel is visible and fades in over it.
  */
 ---
 
@@ -22,6 +23,48 @@
   />
 </div>
 
+<script>
+  let teardown: (() => void) | undefined;
+
+  function webgl() {
+    try {
+      return !!document.createElement("canvas").getContext("webgl2");
+    } catch {
+      return false;
+    }
+  }
+
+  function initMonogram() {
+    teardown?.();
+    teardown = undefined;
+    const host = document.querySelector<HTMLElement>("[data-monogram]");
+    if (!host) return;
+    if (
+      window.innerWidth < 768 ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      !webgl()
+    )
+      return;
+    const io = new IntersectionObserver(async ([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      try {
+        const { mountMonogram } = await import("./monogram-scene");
+        teardown = await mountMonogram(host, "/brand/massar_mono_green.png");
+      } catch {
+        // Keep the static image.
+      }
+    });
+    io.observe(host);
+  }
+
+  document.addEventListener("astro:page-load", initMonogram);
+  document.addEventListener("astro:before-swap", () => {
+    teardown?.();
+    teardown = undefined;
+  });
+</script>
+
 <style>
   .mono {
     position: relative;
@@ -41,6 +84,25 @@
   }
   .mono__front {
     height: auto;
+  }
+  .mono :global(.mono__canvas) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 400ms var(--ease);
+  }
+  .mono:global(.is-3d) :global(.mono__canvas) {
+    opacity: 1;
+  }
+  .mono__static,
+  .mono__front {
+    transition: opacity 400ms var(--ease);
+  }
+  .mono:global(.is-3d) .mono__static,
+  .mono:global(.is-3d) .mono__front {
+    opacity: 0;
   }
   .s {
     position: absolute;
