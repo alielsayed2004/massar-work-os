@@ -1,0 +1,169 @@
+---
+/**
+ * Cases as full-screen panels that stack over each other as you scroll
+ * (position: sticky; no scroll-jacking). Each panel: picture, title, result.
+ */
+import Media from "./Media.astro";
+import type { Work } from "../lib/content";
+
+interface Props {
+  work: Work[];
+}
+const { work } = Astro.props;
+---
+
+<section class="stack" aria-labelledby="stack-title">
+  <h2 id="stack-title" class="visually-hidden">
+    Selected work
+  </h2>
+  {work.map((w, i) => (
+    <article class="panel" style={`--z:${i + 1}`}>
+      <a href={`/work/${w.id}`} class="panel__link">
+        <Media
+          image={w.data.hero}
+          alt={w.data.heroAlt}
+          shot={w.data.heroShot}
+          tone={w.data.heroTone}
+          height="100%"
+          sizes="100vw"
+          class="panel__img"
+          transitionName={`case-${w.id}`}
+        />
+        <span class="panel__shade" aria-hidden="true" />
+        <span class="container panel__body">
+          <span class="panel__meta">
+            <span>{[...w.data.tags, w.data.sector].join(" · ")}</span>
+            {w.data.demoImages && <span>Stock photo · demo</span>}
+          </span>
+          <span class="panel__title">
+            {w.data.client}: {w.data.summary}
+          </span>
+          <span class="panel__row">
+            <span class="panel__problem">{w.data.problem}</span>
+            {w.data.results[0] && (
+              <span class="panel__result">
+                <span class="panel__value">{w.data.results[0].value}</span>
+                <span>{w.data.results[0].metric}</span>
+              </span>
+            )}
+            <span class="panel__cta">
+              Read the case <span aria-hidden="true">→</span>
+            </span>
+          </span>
+        </span>
+      </a>
+    </article>
+  ))}
+</section>
+
+<style>
+  .stack {
+    position: relative;
+    background: var(--ink);
+  }
+  .panel {
+    position: sticky;
+    top: 0;
+    z-index: var(--z);
+    height: 100svh;
+    min-height: 600px;
+    color: var(--white);
+  }
+  .panel__link {
+    position: relative;
+    display: block;
+    height: 100%;
+    overflow: hidden;
+  }
+  .panel__link :global(.panel__img) {
+    position: absolute;
+    inset: 0;
+    height: 100% !important;
+    transition: transform 900ms var(--ease-out);
+  }
+  .panel__link:hover :global(.panel__img) {
+    transform: scale(1.03);
+  }
+  .panel__link :global(.media__tag) {
+    display: none;
+  }
+  .panel__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgb(16 24 21 / 0.9) 0%,
+      rgb(16 24 21 / 0.35) 55%,
+      rgb(16 24 21 / 0.1) 100%
+    );
+  }
+  .panel__body {
+    position: absolute;
+    inset: auto 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-bottom: 56px;
+  }
+  .panel__meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: var(--fs-xs);
+    opacity: 0.85;
+  }
+  .panel__title {
+    max-width: 18ch;
+    font-size: var(--fs-mega);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+  .panel__row {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 4fr) minmax(0, 3fr);
+    gap: 24px var(--gutter);
+    align-items: end;
+  }
+  .panel__problem {
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+  }
+  .panel__result {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: var(--fs-body);
+  }
+  .panel__value {
+    font-size: var(--fs-title);
+    font-weight: 500;
+    line-height: 1;
+  }
+  .panel__cta {
+    justify-self: end;
+    font-size: var(--fs-body);
+    font-weight: 500;
+    padding-bottom: 4px;
+    background-image: linear-gradient(var(--clay), var(--clay));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 2px;
+  }
+  @media (max-width: 767px) {
+    .panel__row {
+      grid-template-columns: 1fr;
+    }
+    .panel__cta {
+      justify-self: start;
+    }
+    .panel__body {
+      padding-bottom: 40px;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .panel {
+      position: relative;
+    }
+  }
+</style>

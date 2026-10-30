@@ -1,0 +1,55 @@
+---
+/**
+ * One big sentence that turns Green word by word as it scrolls through the
+ * viewport (CSS scroll-driven animation). Every state passes contrast; without
+ * support, or under reduced motion, it stays in Ink.
+ */
+interface Props {
+  text: string;
+  id?: string;
+}
+const { text, id } = Astro.props;
+const words = text.split(" ");
+---
+
+<section class="container sr" aria-labelledby={id}>
+  <h2 id={id} class="sr__text">
+    {words.map((w, i) => (
+      <span class="sr__w" style={`--i:${i};--n:${words.length}`}>
+        {w}{" "}
+      </span>
+    ))}
+  </h2>
+</section>
+
+<style>
+  .sr {
+    padding-block: var(--s-7) var(--s-6);
+  }
+  .sr__text {
+    max-width: 22ch;
+    font-size: var(--fs-mega);
+    font-weight: 500;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .sr__text {
+        view-timeline-name: --sr;
+      }
+      .sr__w {
+        color: var(--ink);
+        animation: sr-fill linear both;
+        animation-timeline: --sr;
+        animation-range: cover calc(10% + var(--i) / var(--n) * 40%) cover
+          calc(14% + var(--i) / var(--n) * 40%);
+      }
+    }
+  }
+  @keyframes sr-fill {
+    to {
+      color: var(--green);
+    }
+  }
+</style>

@@ -1,129 +1,97 @@
 ---
+import { Image } from "astro:assets";
 import Base from "../layouts/Base.astro";
 import Section from "../components/Section.astro";
 import SectionHead from "../components/SectionHead.astro";
 import Button from "../components/Button.astro";
-import Media from "../components/Media.astro";
-import StatBlock from "../components/StatBlock.astro";
-import CaseCard from "../components/CaseCard.astro";
-import CaseFilter from "../components/CaseFilter.astro";
 import FAQ from "../components/FAQ.astro";
-import HeroMonogram from "../components/HeroMonogram.astro";
+import HeroVideo from "../components/HeroVideo.astro";
+import StatementReveal from "../components/StatementReveal.astro";
+import CaseStack from "../components/CaseStack.astro";
 import ProblemSolver from "../components/ProblemSolver.astro";
 import MovingParts from "../components/MovingParts.astro";
+import ServiceRows from "../components/ServiceRows.astro";
 import Path from "../components/Path.astro";
 import CtaBand from "../components/CtaBand.astro";
 import { getProblems, getWork } from "../lib/content";
-import { homeFaqs, processSteps, services } from "../data/site";
+import { homeFaqs, processSteps } from "../data/site";
+import cairo from "../assets/demo/cairo-rooftops.jpg";
+import imgMarketing from "../assets/demo/s04-billboard-road.jpg";
+import imgBizdev from "../assets/demo/s10-store-service.jpg";
+import imgBrand from "../assets/demo/s01-cafe-shopfront.jpg";
+import imgConsulting from "../assets/demo/s08-clinic-reception.jpg";
 
 const work = await getWork();
 const problems = await getProblems();
-const featured = work.find((w) => w.data.featured) ?? work[0];
-const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
 ---
 
 <Base
   title="Massar | Creative & business partner in Cairo, Egypt"
   description="Massar finds the real business problem, sets one direction and delivers it: strategy, brand, marketing and execution under one accountable owner."
   faqs={homeFaqs}
+  headerVariant="overlay"
   isHome
 >
-  <!-- HERO: the title owns the full width; the mark sits under it -->
-  <section class="container hero" aria-labelledby="hero-title">
-    <h1 id="hero-title" class="hero__title">
-      <span class="line" style="--i:0">
-        Too many moving parts?
-      </span>
-      <span class="line hero__green" style="--i:1">
-        One clear direction.
-      </span>
-    </h1>
-    <div class="hero__row">
-      <div class="hero__copy">
-        <p class="hero__sub">
-          Massar is a creative and business partner in Cairo. We find the real business problem, set
-          one direction, and deliver it: strategy, brand, marketing and execution under one
-          accountable owner.
-        </p>
-        <div class="hero__ctas">
-          <Button href="/start">Start a project</Button>
-          <Button href="#problems" variant="secondary">
-            Find your problem
-          </Button>
-        </div>
-        <p class="hero__trusted">Trusted by {clients.join(", ")}.</p>
-      </div>
-      <div class="hero__visual">
-        <HeroMonogram />
-      </div>
-    </div>
-  </section>
+  <HeroVideo />
 
-  <!-- FEATURED CASE: full-bleed picture, problem → result -->
-  {featured && (
-    <section class="tone-ink featured" id="work" aria-labelledby="featured-title">
-      <div class="container featured__head">
-        <h2 id="featured-title" class="h2">
-          {featured.data.client}: {featured.data.summary}
-        </h2>
-        <Button href={`/work/${featured.id}`} variant="link" on="dark">
-          Read the case study
-        </Button>
-      </div>
-      <a href={`/work/${featured.id}`} class="featured__media" tabindex="-1" aria-hidden="true">
-        <Media
-          image={featured.data.hero}
-          alt={featured.data.heroAlt}
-          tag={featured.data.demoImages ? "Stock photo · demo" : undefined}
-          shot={featured.data.heroShot}
-          tone={featured.data.heroTone}
-          height="clamp(320px, 52vw, 760px)"
-          sizes="100vw"
-          class="scale-in"
-          transitionName={`case-${featured.id}`}
-        />
-      </a>
-      <div class="container featured__flow">
-        <div class="flow__step">
-          <h3 class="flow__k">The problem</h3>
-          <p>{featured.data.problem}</p>
-        </div>
-        <div class="flow__step">
-          <h3 class="flow__k">What we did</h3>
-          <p>{featured.data.solution}</p>
-        </div>
-        {featured.data.results[0] && (
-          <div class="flow__step">
-            <h3 class="flow__k">The result</h3>
-            <StatBlock
-              value={featured.data.results[0].value}
-              caption={featured.data.results[0].metric}
-            />
-          </div>
-        )}
-      </div>
-    </section>
-  )}
+  <StatementReveal
+    id="statement"
+    text="We don't sell services. We find the real problem, set one direction, and own the result."
+  />
 
-  <!-- PROBLEMS: the visitor picks theirs -->
+  {work.length > 0 && <CaseStack work={work} />}
+
   <Section id="problems" labelledby="problems-title">
     <SectionHead title="Start with the problem. We'll show you the case." id="problems-title">
-      <p slot="aside" class="aside-text">
-        Pick the one that sounds like you: what usually causes it, what we do about it, and where
-        we've done it before.
-      </p>
+      <Button slot="aside" href="/problems" variant="link">
+        All problems
+      </Button>
     </SectionHead>
     <ProblemSolver problems={problems} work={work} />
   </Section>
 
-  <!-- THE LIVE THING: many parts become one path -->
   <Section tone="green" labelledby="mp-title">
     <MovingParts />
   </Section>
 
-  <!-- PROCESS: one path, five stations -->
+  <Section labelledby="services-title">
+    <SectionHead title="What we do" id="services-title">
+      <Button slot="aside" href="/services" variant="link">
+        All services
+      </Button>
+    </SectionHead>
+    <ServiceRows
+      images={{
+        marketing: imgMarketing,
+        "business-development": imgBizdev,
+        brand: imgBrand,
+        consulting: imgConsulting,
+      }}
+    />
+  </Section>
+
+  <figure class="cairo">
+    <Image
+      src={cairo}
+      alt="Cairo rooftops and apartment blocks under a clear sky"
+      widths={[960, 1600, 2400]}
+      sizes="100vw"
+      format="webp"
+      quality={72}
+      class="cairo__img"
+    />
+    <figcaption class="container cairo__cap">
+      <span class="cairo__line">
+        Built in Cairo.
+        <br />
+        For businesses with too many moving parts.
+      </span>
+      <span class="cairo__tag">Stock photo · demo</span>
+    </figcaption>
+  </figure>
+
   <Section id="process" labelledby="process-title">
-    <SectionHead title="One path. Same five stations, every project." id="process-title">
+    <SectionHead title="One path. Five stations." id="process-title">
       <Button slot="aside" href="/process" variant="link">
         How each step works
       </Button>
@@ -131,55 +99,12 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
     <Path stops={processSteps} />
   </Section>
 
-  <!-- CASE STUDIES -->
-  <Section tone="green" labelledby="cases-title">
-    <SectionHead title="Problem. Direction. Result." id="cases-title">
-      <CaseFilter slot="aside" target="home-cases" />
-    </SectionHead>
-    <div class="cases" id="home-cases">
-      {work.map((w, i) => (
-        <CaseCard
-          href={`/work/${w.id}`}
-          slug={w.id}
-          client={w.data.client}
-          summary={w.data.summary}
-          tags={w.data.tags}
-          sector={w.data.sector}
-          result={w.data.results[0]}
-          shot={w.data.heroShot}
-          tone={w.data.heroTone}
-          image={w.data.hero}
-          alt={w.data.heroAlt}
-          demo={w.data.demoImages}
-          height={i === 0 ? "clamp(300px, 40vw, 580px)" : "clamp(220px, 22vw, 320px)"}
-        />
-      ))}
-    </div>
-    <Button href="/work" variant="secondary" on="dark" class="self-start">
-      All case studies
-    </Button>
-  </Section>
-
-  <!-- SERVICES + FAQ -->
-  <Section id="faq" labelledby="do-title">
-    <div class="split">
-      <div class="split__a">
-        <h2 id="do-title" class="h2">
-          What we do
-        </h2>
-        <ul class="services">
-          {services.map((s) => (
-            <li>
-              <span class="services__name">{s.name}</span>
-              <span class="services__line">{s.line}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div class="split__b">
-        <h2 class="h2">Questions</h2>
-        <FAQ items={homeFaqs} />
-      </div>
+  <Section id="faq" labelledby="faq-title" class="faq-section">
+    <div class="faq">
+      <h2 id="faq-title" class="h2">
+        Questions
+      </h2>
+      <FAQ items={homeFaqs} />
     </div>
   </Section>
 
@@ -187,167 +112,66 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
 </Base>
 
 <style>
-  .hero {
-    display: flex;
-    flex-direction: column;
-    gap: 56px;
-    padding-block: 80px 104px;
+  .cairo {
+    position: relative;
+    margin: 0;
+    height: clamp(420px, 70vw, 860px);
+    overflow: hidden;
+    color: var(--white);
   }
-  .hero__title {
-    font-size: var(--fs-statement);
-    letter-spacing: -0.025em;
-    line-height: 0.98;
+  .cairo :global(.cairo__img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
-  .hero__title .line {
-    display: block;
+  .cairo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(16 24 21 / 0.85) 0%, rgb(16 24 21 / 0.2) 60%);
   }
-  .hero__green {
-    color: var(--green);
-  }
-  .hero__row {
-    display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 48px var(--gutter);
-    align-items: start;
-  }
-  .hero__copy {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-  }
-  .hero__sub {
-    max-width: 34ch;
-    font-size: var(--fs-h3);
-    line-height: 1.55;
-  }
-  .hero__ctas {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .hero__trusted {
-    font-size: var(--fs-body);
-    color: var(--ink);
-  }
-
-  .featured {
-    padding-block: min(120px, var(--section-y));
-  }
-  .featured__head {
+  .cairo__cap {
+    position: absolute;
+    inset: auto 0 0;
+    z-index: 1;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    flex-wrap: wrap;
-    gap: 24px 48px;
-    margin-bottom: 56px;
+    gap: 24px;
+    padding-bottom: 56px;
   }
-  .featured__head .h2 {
-    max-width: 16em;
-  }
-  .featured__media {
-    display: block;
-  }
-  .featured__flow {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 48px var(--gutter);
-    margin-top: 64px;
-  }
-  .flow__step {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-  }
-  .flow__k {
-    font-size: var(--fs-body);
+  .cairo__line {
+    font-size: var(--fs-mega);
     font-weight: 500;
-    color: var(--stone);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    max-width: 16ch;
   }
-  .flow__step p {
-    font-size: var(--fs-h3);
-    line-height: 1.4;
+  .cairo__tag {
+    flex: none;
+    font-size: var(--fs-xs);
+    opacity: 0.8;
   }
-
-  .aside-text {
-    max-width: 420px;
-    font-size: var(--fs-body);
-    line-height: 1.6;
-  }
-
-  .cases {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 72px var(--gutter);
-  }
-  .cases > :global(:first-child) {
-    grid-column: 1 / -1;
-  }
-  :global(.self-start) {
-    align-self: flex-start;
-  }
-
-  .split {
+  .faq {
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-    gap: 64px 96px;
+    gap: 32px 96px;
   }
-  .split__a,
-  .split__b {
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
+  :global(.faq-section) :global(.section__inner) {
+    padding-top: 0;
   }
-  .services {
-    display: flex;
-    flex-direction: column;
-    gap: 28px;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .services li {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .services__name {
-    font-size: var(--fs-h3);
-    font-weight: 500;
-    line-height: 1.25;
-    color: var(--green);
-  }
-  .services__line {
-    max-width: 40ch;
-    font-size: var(--fs-body);
-    line-height: 1.55;
-  }
-
   @media (max-width: 1023px) {
-    .hero__row,
-    .split {
+    .faq {
       grid-template-columns: 1fr;
-    }
-    .featured__flow {
-      grid-template-columns: 1fr;
-    }
-    .cases {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
   @media (max-width: 767px) {
-    .hero {
-      padding-block: 48px 72px;
-      gap: 36px;
-    }
-    .hero__sub {
-      font-size: var(--fs-body);
-    }
-    .flow__step p {
-      font-size: var(--fs-lead);
-    }
-    .cases {
-      grid-template-columns: 1fr;
-      gap: 56px;
+    .cairo__cap {
+      flex-direction: column;
+      align-items: flex-start;
+      padding-bottom: 32px;
     }
   }
 </style>

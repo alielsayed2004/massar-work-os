@@ -1,0 +1,133 @@
+---
+/**
+ * The service index: giant names in rows. On a fine pointer, hovering a row
+ * shows a picture that follows the cursor.
+ */
+import type { ImageMetadata } from "astro";
+import { getImage } from "astro:assets";
+import { services } from "../data/site";
+
+interface Props {
+  /** One picture per service, by service id. */
+  images?: Record<string, ImageMetadata | undefined>;
+}
+const { images = {} } = Astro.props;
+const pics = await Promise.all(
+  services.map(async (s) => {
+    const img = images[s.id];
+    return img
+      ? (await getImage({ src: img, width: 640, format: "webp", quality: 70 })).src
+      : undefined;
+  }),
+);
+---
+
+<div class="rows" data-rows>
+  {services.map((s, i) => (
+    <a href={`/services#${s.id}`} class="row" data-pic={pics[i]}>
+      <span class="row__name">{s.name}</span>
+      <span class="row__line">{s.line}</span>
+      <span class="row__arrow" aria-hidden="true">
+        →
+      </span>
+    </a>
+  ))}
+  <img class="rows__pic" alt="" aria-hidden="true" data-pic-el />
+</div>
+
+<script>
+  function initRows() {
+    const root = document.querySelector<HTMLElement>("[data-rows]");
+    const pic = root?.querySelector<HTMLImageElement>("[data-pic-el]");
+    if (!root || !pic) return;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    root.querySelectorAll<HTMLElement>(".row").forEach((row) => {
+      row.addEventListener("pointerenter", () => {
+        if (!row.dataset.pic) return;
+        pic.src = row.dataset.pic;
+        root.classList.add("show-pic");
+      });
+      row.addEventListener("pointerleave", () => root.classList.remove("show-pic"));
+    });
+    root.addEventListener("pointermove", (e) => {
+      const r = root.getBoundingClientRect();
+      pic.style.translate = `${e.clientX - r.left + 24}px ${e.clientY - r.top - 120}px`;
+    });
+  }
+  document.addEventListener("astro:page-load", initRows);
+</script>
+
+<style>
+  .rows {
+    position: relative;
+    border-top: 1px solid var(--ink);
+  }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 8fr) minmax(0, 3fr) 40px;
+    align-items: center;
+    gap: 16px var(--gutter);
+    padding-block: 28px;
+    border-bottom: 1px solid var(--ink);
+    transition: color 200ms ease;
+  }
+  .row__name {
+    font-size: var(--fs-mega);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.035em;
+    transition: transform 400ms var(--ease-out);
+  }
+  .row__line {
+    font-size: var(--fs-body);
+    line-height: 1.5;
+  }
+  .row__arrow {
+    justify-self: end;
+    font-size: var(--fs-title);
+    color: var(--clay);
+    transition: transform 300ms var(--ease-out);
+  }
+  .row:hover {
+    color: var(--green);
+  }
+  .row:hover .row__name {
+    transform: translateX(16px);
+  }
+  .row:hover .row__arrow {
+    transform: translateX(-8px);
+  }
+  .rows__pic {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    width: 280px;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    pointer-events: none;
+    opacity: 0;
+    scale: 0.9;
+    transition:
+      opacity 200ms ease,
+      scale 300ms var(--ease-out);
+  }
+  .show-pic .rows__pic {
+    opacity: 1;
+    scale: 1;
+  }
+  @media (max-width: 767px) {
+    .row {
+      grid-template-columns: 1fr 32px;
+      padding-block: 22px;
+    }
+    .row__line {
+      grid-row: 2;
+    }
+    .row__arrow {
+      grid-row: 1;
+      grid-column: 2;
+    }
+  }
+</style>

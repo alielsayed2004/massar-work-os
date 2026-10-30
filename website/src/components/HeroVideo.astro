@@ -1,0 +1,249 @@
+---
+/**
+ * Full-screen home hero: a muted loop of an interchange (many roads, one
+ * junction) under the headline. The poster is the first paint; the video is
+ * skipped on phones, under reduced motion and on save-data, and can be paused.
+ */
+import { getImage } from "astro:assets";
+import poster from "../assets/demo/hero-interchange-poster.jpg";
+
+interface Props {
+  demo?: boolean;
+}
+const { demo = true } = Astro.props;
+const posterImg = await getImage({ src: poster, width: 1600, format: "webp", quality: 70 });
+const posterSmall = await getImage({ src: poster, width: 800, format: "webp", quality: 65 });
+---
+
+<section class="hv" aria-labelledby="hero-title" data-hero-video>
+  <div class="hv__media" aria-hidden="true">
+    <img src={posterImg.src} width="1600" height="900" alt="" decoding="async" class="hv__poster" />
+    <video
+      class="hv__video"
+      muted
+      loop
+      playsinline
+      preload="none"
+      poster={posterImg.src}
+      data-src="/media/hero-interchange.mp4"
+    ></video>
+    <div class="hv__shade"></div>
+  </div>
+
+  <div class="container hv__content">
+    <h1 id="hero-title" class="hv__title">
+      <span class="line" style="--i:0">
+        Too many
+      </span>
+      <span class="line" style="--i:1">
+        moving parts?
+      </span>
+    </h1>
+    <div class="hv__row">
+      <p class="hv__answer">
+        <span>One clear direction.</span>
+      </p>
+      <div class="hv__side">
+        <p class="hv__sub">
+          Massar finds the real business problem, sets one direction and delivers it: strategy,
+          brand, marketing and execution under one accountable owner.
+        </p>
+        <div class="hv__ctas">
+          <a href="/start" class="hv__btn hv__btn--primary">
+            Start a project
+          </a>
+          <a href="/work" class="hv__btn">
+            See the work
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container hv__foot">
+    <button type="button" class="hv__toggle" data-video-toggle hidden>
+      <span data-label>Pause video</span>
+    </button>
+    {demo && <span class="hv__tag">Stock footage · demo</span>}
+  </div>
+</section>
+
+<script>
+  function initHeroVideo() {
+    const root = document.querySelector<HTMLElement>("[data-hero-video]");
+    const video = root?.querySelector<HTMLVideoElement>("video");
+    const toggle = root?.querySelector<HTMLButtonElement>("[data-video-toggle]");
+    if (!root || !video || !toggle) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
+      ?.saveData;
+    // Phones keep the still: it saves data and keeps the first paint fast.
+    if (reduce || saveData || window.innerWidth < 768) return;
+    video.src = video.dataset.src!;
+    video.addEventListener("playing", () => root.classList.add("is-playing"), { once: true });
+    video.play().catch(() => {});
+    toggle.hidden = false;
+    const label = toggle.querySelector<HTMLElement>("[data-label]")!;
+    toggle.addEventListener("click", () => {
+      if (video.paused) {
+        video.play();
+        label.textContent = "Pause video";
+      } else {
+        video.pause();
+        label.textContent = "Play video";
+      }
+    });
+  }
+  document.addEventListener("astro:page-load", initHeroVideo);
+</script>
+
+<style>
+  .hv {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: max(100svh, 680px);
+    background: var(--ink);
+    color: var(--white);
+    overflow: hidden;
+  }
+  .hv__media,
+  .hv__poster,
+  .hv__video,
+  .hv__shade {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .hv__poster,
+  .hv__video {
+    object-fit: cover;
+  }
+  .hv__video {
+    opacity: 0;
+    transition: opacity 800ms ease;
+  }
+  .is-playing .hv__video {
+    opacity: 1;
+  }
+  .hv__shade {
+    background: linear-gradient(
+      to top,
+      rgb(16 24 21 / 0.92) 0%,
+      rgb(16 24 21 / 0.55) 45%,
+      rgb(16 24 21 / 0.35) 100%
+    );
+  }
+  .hv__content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding-top: 140px;
+  }
+  .hv__title {
+    font-size: var(--fs-display);
+    font-weight: 500;
+    line-height: 0.9;
+    letter-spacing: -0.045em;
+  }
+  .hv__title .line {
+    display: block;
+  }
+  .hv__row {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    gap: 32px var(--gutter);
+    align-items: end;
+  }
+  .hv__answer {
+    font-size: var(--fs-statement);
+    font-weight: 500;
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    color: var(--bone);
+  }
+  .hv__answer span {
+    background-image: linear-gradient(var(--clay), var(--clay));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 100% 6px;
+    padding-bottom: 6px;
+  }
+  .hv__side {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .hv__sub {
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+  }
+  .hv__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .hv__btn {
+    display: inline-block;
+    padding: 16px 28px;
+    border: 1px solid var(--white);
+    font-size: var(--fs-body);
+    font-weight: 500;
+    transition:
+      background-color 200ms ease,
+      color 200ms ease,
+      transform 140ms var(--ease-out);
+  }
+  .hv__btn:hover {
+    background: var(--white);
+    color: var(--ink);
+  }
+  .hv__btn:active {
+    transform: scale(0.97);
+  }
+  .hv__btn--primary {
+    background: var(--white);
+    color: var(--ink);
+  }
+  .hv__btn--primary:hover {
+    background: var(--bone);
+  }
+  .hv__foot {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-block: 40px 28px;
+  }
+  .hv__toggle {
+    padding: 8px 0;
+    border: 0;
+    background: none;
+    color: var(--white);
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .hv__tag {
+    margin-left: auto;
+    font-size: var(--fs-xs);
+    opacity: 0.8;
+  }
+  @media (max-width: 1023px) {
+    .hv__row {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 767px) {
+    .hv__content {
+      padding-top: 120px;
+      gap: 28px;
+    }
+  }
+</style>

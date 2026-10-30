@@ -11,6 +11,8 @@ const site = process.env.SITE_URL || undefined;
 export default defineConfig({
   site,
   output: "static",
+  // Inline CSS so the first paint does not wait on a stylesheet request.
+  build: { inlineStylesheets: "always" },
   integrations: [
     mdx(),
     ...(site

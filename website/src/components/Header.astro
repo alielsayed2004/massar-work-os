@@ -3,14 +3,14 @@ import { nav } from "../data/site";
 
 interface Props {
   /** "light" = white header (home); "ink" = dark header (case pages). */
-  variant?: "light" | "ink";
+  variant?: "light" | "ink" | "overlay";
 }
 
 const { variant = "light" } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
 const isCurrent = (href: string) => !href.includes("#") && path.startsWith(href);
 const logo =
-  variant === "ink"
+  variant !== "light"
     ? { src: "/brand/massar_wordmark_white.png", width: 222, height: 36 }
     : { src: "/brand/massar_wordmark_green.png", width: 505, height: 82 };
 ---
@@ -111,6 +111,17 @@ const logo =
     border-bottom-color: var(--white);
     background: var(--ink);
     color: var(--white);
+  }
+  .header--overlay {
+    position: absolute;
+    inset: 0 0 auto;
+    border-bottom-color: transparent;
+    background: transparent;
+    color: var(--white);
+  }
+  .header--overlay .header__cta {
+    background: var(--white);
+    color: var(--ink);
   }
   .header__inner {
     display: flex;
