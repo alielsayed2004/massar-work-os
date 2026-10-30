@@ -2,7 +2,7 @@
 
 Portfolio site for Massar: an integrated creative + business partner. English, white background, case-study first.
 
-**Status:** design approved, build not started. The build instructions for Claude Code are in [`CLAUDE.md`](CLAUDE.md).
+**Status:** build steps 1–8 done; waiting on real content and the open questions in `CLAUDE.md` §12. The build instructions for Claude Code are in [`CLAUDE.md`](CLAUDE.md).
 
 ## What's here
 
@@ -31,9 +31,32 @@ Then continue step by step. Real client names, numbers and photos come from Ali;
 
 ```bash
 pnpm install
-pnpm dev          # http://localhost:4321
-pnpm build        # astro check + static build to dist/
+pnpm dev                              # http://localhost:4321 — drafts visible
+pnpm build                            # astro check + static build to dist/
+PUBLIC_SHOW_DRAFTS=true pnpm build    # preview build that includes draft content
 pnpm lint && pnpm format:check
 ```
 
-Set `SITE_URL` (e.g. `https://massar.agency`, once confirmed) to emit canonical URLs, the sitemap and the `Sitemap:` line in `robots.txt`.
+### Environment variables
+
+| Variable               | What it does                                                                                                                                                              |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `SITE_URL`             | Production domain (e.g. `https://massar.agency`, once confirmed). Turns on canonical URLs, absolute OG/JSON-LD URLs, the sitemap and the `Sitemap:` line in `robots.txt`. |
+| `PUBLIC_SHOW_DRAFTS`   | `true` on preview deploys to show `draft: true` content. Leave unset in production.                                                                                       |
+| `PUBLIC_FORM_ENDPOINT` | Where `/start` POSTs the brief as JSON (e.g. a Formspree URL). Unset = the brief opens as an email to brand@massar.agency.                                                |
+
+## Add a case study
+
+1. Create `src/content/work/<slug>.mdx`. Copy an existing case as the template; the schema is in `src/content.config.ts` and the build fails if a field is missing or wrong.
+2. Fill the frontmatter:
+   - `title` — the outcome sentence (the H1). `summary` — the problem in one line, shown on cards as "Client: summary".
+   - `problem` / `solution` — one sentence each; they become "The case in 20 seconds".
+   - `results` — up to 3, each with `value`, `metric`, `period`, `source`. Only real, approved numbers.
+   - `tags` — any of Branding, Campaigns, Outdoor, Growth. `problems` — ids from `src/content/problems/`.
+   - `heroShot` / `gallery[].shot` — shot codes S01–S12. When the real photo exists, put it in `src/assets/work/` and set `hero: ../../assets/work/<file>.jpg` plus `heroAlt`.
+   - `updated` — today's date; it is shown as "Last updated".
+3. Write the challenge (two short paragraphs) as the MDX body.
+4. Set `draft: false` only when the client has approved the names, numbers and quote.
+5. `pnpm build`, check `/work/<slug>`, commit.
+
+Problems (`src/content/problems/`) and field notes (`src/content/notes/`) work the same way.
