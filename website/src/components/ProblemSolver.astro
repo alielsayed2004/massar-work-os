@@ -156,12 +156,12 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
       color 240ms var(--ease);
   }
   .solver__q {
-    font-size: clamp(22px, 2.1vw, 30px);
-    font-weight: 600;
+    font-size: var(--fs-h3);
+    font-weight: 500;
     line-height: 1.25;
   }
   .solver__arrow {
-    font-size: 24px;
+    font-size: var(--fs-h3);
     opacity: 0;
     transform: translateX(-8px);
     transition:
@@ -179,7 +179,7 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
   }
   .solver__other {
     padding: 20px 24px 0;
-    font-size: 16px;
+    font-size: var(--fs-body);
   }
   .solver__other .link {
     margin-left: 6px;
@@ -216,18 +216,18 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
     gap: 10px;
   }
   .solver__label {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: var(--fs-body);
+    font-weight: 500;
     color: var(--green);
   }
   .solver__big {
-    font-size: 22px;
+    font-size: var(--fs-h3);
     font-weight: 500;
     line-height: 1.45;
   }
   .solver__big--green {
     color: var(--green);
-    font-weight: 600;
+    font-weight: 500;
   }
   .solver__proof {
     display: grid;
@@ -241,22 +241,22 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
     padding: 24px;
   }
   .solver__prooftitle {
-    font-size: 20px;
-    font-weight: 600;
+    font-size: var(--fs-lead);
+    font-weight: 500;
     line-height: 1.3;
   }
   .solver__result {
-    font-size: 16px;
+    font-size: var(--fs-body);
   }
   .solver__proof .link {
     margin-top: auto;
     color: var(--green);
-    font-size: 15px;
+    font-size: var(--fs-body);
   }
   .solver__more {
     align-self: flex-start;
     color: var(--green);
-    font-size: 15px;
+    font-size: var(--fs-body);
   }
   @keyframes panel-in {
     from {
@@ -278,7 +278,7 @@ const items = problems.map((p) => ({ p, proof: casesFor(p.id, work)[0] }));
       grid-template-columns: 1fr;
     }
     .solver__big {
-      font-size: 19px;
+      font-size: var(--fs-lead);
     }
   }
 </style>

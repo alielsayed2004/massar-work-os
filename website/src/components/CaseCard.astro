@@ -87,13 +87,13 @@ const kicker = [...tags, sector].join(" · ");
     transform: scale(1.02);
   }
   .ccard__kicker {
-    font-size: 15px;
+    font-size: var(--fs-body);
     line-height: 1.4;
     opacity: 0.8;
   }
   .ccard__title {
-    font-size: var(--t-h3);
-    font-weight: 600;
+    font-size: var(--fs-h3);
+    font-weight: 500;
     line-height: 1.25;
   }
   .ccard__link:hover .ccard__title {
@@ -103,7 +103,7 @@ const kicker = [...tags, sector].join(" · ");
     text-decoration-color: var(--clay);
   }
   .ccard__result {
-    font-size: 17px;
+    font-size: var(--fs-body);
     line-height: 1.6;
   }
   @media (prefers-reduced-motion: reduce) {

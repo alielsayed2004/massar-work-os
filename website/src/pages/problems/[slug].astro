@@ -139,7 +139,7 @@ const used = services.filter((s) => (s.problems as readonly string[]).includes(e
   }
   .answer {
     max-width: 52ch;
-    font-size: 22px;
+    font-size: var(--fs-h3);
     font-weight: 500;
     line-height: 1.55;
   }
@@ -160,18 +160,18 @@ const used = services.filter((s) => (s.problems as readonly string[]).includes(e
     color: var(--white);
   }
   .diag__k {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: var(--fs-body);
+    font-weight: 500;
   }
   .diag__big {
-    font-size: clamp(22px, 2.2vw, 30px);
-    font-weight: 600;
+    font-size: var(--fs-h3);
+    font-weight: 500;
     line-height: 1.3;
   }
   .diag__with {
     margin-top: auto;
     padding-top: 12px;
-    font-size: 17px;
+    font-size: var(--fs-body);
   }
   .diag__with a {
     text-decoration: underline;
@@ -214,11 +214,11 @@ const used = services.filter((s) => (s.problems as readonly string[]).includes(e
   .others a {
     display: inline-block;
     padding: 14px 20px;
-    border-radius: 999px;
+    border-radius: 0;
     background: var(--bone);
     color: var(--green);
-    font-size: 18px;
-    font-weight: 600;
+    font-size: var(--fs-lead);
+    font-weight: 500;
     transition: background-color 200ms ease;
   }
   .others a:hover {
@@ -232,7 +232,7 @@ const used = services.filter((s) => (s.problems as readonly string[]).includes(e
     color: inherit;
   }
   .updated {
-    font-size: 14px;
+    font-size: var(--fs-xs);
   }
   @media (max-width: 1023px) {
     .faq {
@@ -250,7 +250,7 @@ const used = services.filter((s) => (s.problems as readonly string[]).includes(e
       padding: 28px 20px;
     }
     .answer {
-      font-size: 19px;
+      font-size: var(--fs-lead);
     }
   }
 </style>

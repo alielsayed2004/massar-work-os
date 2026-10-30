@@ -90,7 +90,7 @@ const problems = await getProblems();
     grid-column: 1 / -1;
   }
   .empty {
-    font-size: 20px;
+    font-size: var(--fs-lead);
   }
   .byproblem {
     display: grid;
@@ -115,14 +115,14 @@ const problems = await getProblems();
     color: var(--white);
   }
   .bp__q {
-    font-size: clamp(20px, 2vw, 28px);
-    font-weight: 600;
+    font-size: var(--fs-h3);
+    font-weight: 500;
     line-height: 1.25;
   }
   .bp__n {
     flex: none;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: var(--fs-body);
+    font-weight: 500;
   }
   .bp__n span {
     color: var(--clay);

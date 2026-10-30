@@ -334,7 +334,7 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
     color: var(--white);
   }
   .next__title {
-    font-size: var(--t-h3);
+    font-size: var(--fs-h3);
     line-height: 1.2;
   }
   .next ol {
@@ -348,17 +348,17 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
     display: flex;
     flex-direction: column;
     gap: 4px;
-    font-size: 16px;
+    font-size: var(--fs-body);
     line-height: 1.5;
   }
   .next li::marker {
-    font-weight: 600;
+    font-weight: 500;
   }
   .next strong {
-    font-size: 18px;
+    font-size: var(--fs-lead);
   }
   .next__mail {
-    font-size: 15px;
+    font-size: var(--fs-body);
   }
   .next__mail .link {
     color: var(--white);
@@ -378,15 +378,15 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
     gap: 24px;
   }
   .start__title {
-    font-size: clamp(44px, 5.6vw, 84px);
+    font-size: var(--fs-statement);
+    letter-spacing: -0.025em;
     line-height: 1.04;
-    letter-spacing: -0.03em;
   }
   .start__title .line {
     display: block;
   }
   .start__intro {
-    font-size: 20px;
+    font-size: var(--fs-lead);
   }
   .progress {
     height: 4px;
@@ -410,8 +410,8 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
     margin: -24px 0 0;
     padding: 0;
     list-style: none;
-    font-size: 14px;
-    font-weight: 600;
+    font-size: var(--fs-xs);
+    font-weight: 500;
     color: var(--stone);
   }
   .stepper li[data-active] {
@@ -453,8 +453,8 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
     gap: 14px;
     padding: 18px 20px;
     border: 1px solid var(--ink);
-    font-size: 18px;
-    font-weight: 600;
+    font-size: var(--fs-lead);
+    font-weight: 500;
     line-height: 1.35;
     cursor: pointer;
   }
@@ -472,8 +472,8 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
     display: flex;
     flex-direction: column;
     gap: 8px;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: var(--fs-body);
+    font-weight: 500;
   }
   .field input,
   .field select,
@@ -483,7 +483,7 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
     border: 1px solid var(--ink);
     border-radius: 0;
     background: var(--white);
-    font-size: 17px;
+    font-size: var(--fs-body);
     font-weight: 400;
   }
   .field [aria-invalid="true"] {
@@ -491,8 +491,8 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
     border-color: var(--clay);
   }
   :global(.field__error) {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: var(--fs-body);
+    font-weight: 500;
     color: var(--ink);
   }
   :global(.field__error)::before {
@@ -500,7 +500,7 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
     color: var(--clay);
   }
   .form__status {
-    font-weight: 600;
+    font-weight: 500;
   }
   .form__status:empty {
     display: none;
@@ -516,8 +516,8 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
   .btn-secondary {
     padding: 16px 28px;
     border: 1px solid var(--ink);
-    font-size: 16px;
-    font-weight: 600;
+    font-size: var(--fs-body);
+    font-weight: 500;
     cursor: pointer;
   }
   .btn-primary {

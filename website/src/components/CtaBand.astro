@@ -61,15 +61,16 @@ const problems = picks ? await getProblems() : [];
     background: var(--clay);
   }
   .cta__title {
-    font-size: clamp(40px, 5.4vw, 80px);
+    font-size: var(--fs-statement);
+    letter-spacing: -0.025em;
     line-height: 1.02;
-    letter-spacing: -0.03em;
   }
   .cta__tagline {
     font-family: var(--font-serif);
     font-style: italic;
     font-weight: 500;
-    font-size: 34px;
+    font-size: var(--fs-title);
+    letter-spacing: -0.015em;
     line-height: 1.2;
   }
   .cta__pick {
@@ -81,8 +82,8 @@ const problems = picks ? await getProblems() : [];
     justify-self: end;
   }
   .cta__ask {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: var(--fs-lead);
+    font-weight: 500;
   }
   .cta__pick ul {
     display: flex;
@@ -99,8 +100,8 @@ const problems = picks ? await getProblems() : [];
     padding: 14px 18px;
     background: var(--white);
     color: var(--green);
-    font-size: 18px;
-    font-weight: 600;
+    font-size: var(--fs-lead);
+    font-weight: 500;
     line-height: 1.35;
     transition: transform 200ms var(--ease-out);
   }

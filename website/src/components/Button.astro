@@ -27,8 +27,8 @@ const { href, variant = "primary", on = "light", size = "md", class: className }
   .btn {
     display: inline-block;
     padding: 16px 28px;
-    font-size: 16px;
-    font-weight: 600;
+    font-size: var(--fs-body);
+    font-weight: 500;
     line-height: 1.4;
     border: 1px solid transparent;
     transition:
@@ -41,7 +41,7 @@ const { href, variant = "primary", on = "light", size = "md", class: className }
   }
   .btn--lg {
     padding: 18px 34px;
-    font-size: 17px;
+    font-size: var(--fs-body);
   }
   .btn--primary.on-light {
     background: var(--ink);
@@ -78,7 +78,7 @@ const { href, variant = "primary", on = "light", size = "md", class: className }
   }
   .link {
     align-self: flex-start;
-    font-size: 16px;
+    font-size: var(--fs-body);
   }
   .link.on-light {
     color: var(--green);

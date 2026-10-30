@@ -124,9 +124,9 @@ const values = [1, 2, 3];
     gap: 32px 96px;
   }
   .story__title {
-    font-size: var(--t-h2);
+    font-size: var(--fs-title);
+    letter-spacing: -0.015em;
     line-height: 1.05;
-    letter-spacing: -0.02em;
   }
   .story__body {
     display: flex;
@@ -135,7 +135,7 @@ const values = [1, 2, 3];
   }
   .story__body p {
     max-width: 52ch;
-    font-size: 22px;
+    font-size: var(--fs-h3);
     line-height: 1.55;
   }
   .services {
@@ -160,16 +160,16 @@ const values = [1, 2, 3];
     color: var(--white);
   }
   .services__name {
-    font-size: clamp(24px, 2.4vw, 34px);
-    font-weight: 600;
+    font-size: var(--fs-h3);
+    font-weight: 500;
     line-height: 1.2;
   }
   .services__line {
-    font-size: 18px;
+    font-size: var(--fs-lead);
     line-height: 1.5;
   }
   .services__arrow {
-    font-size: 24px;
+    font-size: var(--fs-h3);
     color: var(--clay);
     transition: transform 200ms var(--ease-out);
   }
@@ -190,12 +190,12 @@ const values = [1, 2, 3];
   .person figcaption {
     display: flex;
     flex-direction: column;
-    font-size: 16px;
+    font-size: var(--fs-body);
     line-height: 1.5;
   }
   .person__name {
-    font-size: 20px;
-    font-weight: 600;
+    font-size: var(--fs-lead);
+    font-weight: 500;
   }
   .values {
     display: grid;
@@ -208,10 +208,10 @@ const values = [1, 2, 3];
     gap: 10px;
   }
   .value p {
-    font-size: 17px;
+    font-size: var(--fs-body);
   }
   .where {
-    font-size: 20px;
+    font-size: var(--fs-lead);
   }
   .where .link {
     font-size: inherit;
@@ -240,7 +240,7 @@ const values = [1, 2, 3];
       padding: 22px 20px;
     }
     .story__body p {
-      font-size: 19px;
+      font-size: var(--fs-lead);
     }
   }
 </style>

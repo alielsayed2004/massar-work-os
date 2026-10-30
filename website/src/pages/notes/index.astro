@@ -57,16 +57,16 @@ const notes = await getNotes();
     padding-block: 28px;
   }
   .notes time {
-    font-size: 15px;
+    font-size: var(--fs-body);
     color: var(--green);
   }
   .notes__title {
-    font-size: var(--t-h3);
-    font-weight: 600;
+    font-size: var(--fs-h3);
+    font-weight: 500;
     line-height: 1.25;
   }
   .notes__more {
-    font-size: 15px;
+    font-size: var(--fs-body);
     color: var(--green);
   }
   @media (max-width: 767px) {

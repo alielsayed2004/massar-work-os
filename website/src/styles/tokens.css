@@ -1,4 +1,9 @@
+/*
+ * Massar design system. Everything on the site maps to these tokens.
+ * Six type sizes, two weights, one 8px spacing scale, one 12-column frame.
+ */
 :root {
+  /* Brand colours (brand book). No tints. */
   --green: #0d3b34;
   --bone: #f1ece2;
   --ink: #101815;
@@ -9,16 +14,28 @@
   --font-sans: "Switzer", system-ui, sans-serif;
   --font-serif: "Cormorant Garamond", Georgia, serif; /* tagline only */
 
-  /* type: clamp(mobile, fluid, desktop) */
-  --t-display: clamp(48px, 6.4vw, 92px); /* 600, line-height 1.02, tracking -0.03em */
-  --t-h2: clamp(34px, 3.9vw, 56px); /* 600, 1.1, -0.02em */
-  --t-h3: clamp(24px, 2.1vw, 30px); /* 600, 1.25 */
-  --t-body: 18px;
-  --t-body-sm: 16px; /* 400, 1.7 */
-  --t-label: 15px; /* 600, sentence case */
-  --t-stat: clamp(64px, 6.7vw, 96px); /* 900, -0.04em */
+  /* Type: six sizes, nothing in between. */
+  --fs-xs: 13px; /* meta, tags, captions, small labels */
+  --fs-body: 16px; /* body, buttons, nav */
+  --fs-lead: 18px; /* lead paragraphs, emphasised lines */
+  --fs-h3: 22px; /* card titles, small headings */
+  --fs-title: clamp(28px, 3.2vw, 40px); /* section and page titles */
+  --fs-statement: clamp(36px, 5vw, 64px); /* hero line, CTA, the one big number */
 
-  /* space (8 scale) */
+  /* Weights: 400 to read, 500 for titles and controls. */
+  --fw-regular: 400;
+  --fw-medium: 500;
+
+  /* Legacy aliases, kept so older selectors resolve to the scale. */
+  --t-display: var(--fs-statement);
+  --t-h2: var(--fs-title);
+  --t-h3: var(--fs-h3);
+  --t-body: var(--fs-body);
+  --t-body-sm: var(--fs-body);
+  --t-label: var(--fs-xs);
+  --t-stat: var(--fs-title);
+
+  /* Space: 8px scale. */
   --s-1: 8px;
   --s-2: 16px;
   --s-3: 24px;
@@ -27,29 +44,22 @@
   --s-6: 104px;
   --s-7: 140px;
 
+  /* Frame: 12 columns, 24px gutter, 1040px of content. */
   --gutter: 24px;
-  --margin: clamp(20px, 5.5vw, 80px);
-  --max: 1440px;
-  --section-y: var(--s-7);
+  --margin: max(20px, 5vw);
+  --content: 1040px;
+  --max: calc(var(--content) + 2 * var(--margin));
+  --section-y: var(--s-6);
 
   --rule: 1px solid currentColor;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
-  /* Strong curves for UI feedback and on-screen movement. */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
-/* Tablet: 8 cols, gutter 20 */
-@media (max-width: 1199px) {
-  :root {
-    --gutter: 20px;
-  }
-}
-
-/* Mobile: 4 cols, gutter 16, section padding 96 */
 @media (max-width: 767px) {
   :root {
     --gutter: 16px;
-    --section-y: 96px;
+    --section-y: 72px;
   }
 }

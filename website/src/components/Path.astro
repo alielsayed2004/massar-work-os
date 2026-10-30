@@ -86,11 +86,11 @@ const { stops, variant = "compact", class: className } = Astro.props;
     gap: 10px;
   }
   .path__name {
-    font-size: var(--t-h3);
+    font-size: var(--fs-h3);
     line-height: 1.2;
   }
   .path__line {
-    font-size: 17px;
+    font-size: var(--fs-body);
     line-height: 1.55;
   }
 
@@ -134,13 +134,13 @@ const { stops, variant = "compact", class: className } = Astro.props;
     top: 10px;
   }
   .path--detailed .path__name {
-    font-size: var(--t-h2);
-    letter-spacing: -0.02em;
+    font-size: var(--fs-title);
+    letter-spacing: -0.015em;
   }
   .path--detailed .path__line {
-    font-size: 20px;
+    font-size: var(--fs-lead);
     color: var(--green);
-    font-weight: 600;
+    font-weight: 500;
   }
   .path__detail {
     display: grid;
@@ -148,13 +148,13 @@ const { stops, variant = "compact", class: className } = Astro.props;
     margin: 0;
   }
   .path__detail dt {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: var(--fs-body);
+    font-weight: 500;
     color: var(--green);
   }
   .path__detail dd {
     margin: 4px 0 0;
-    font-size: 18px;
+    font-size: var(--fs-lead);
     line-height: 1.6;
   }
 

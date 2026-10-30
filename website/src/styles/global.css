@@ -54,7 +54,7 @@ body {
   background: var(--white);
   color: var(--ink);
   font-family: var(--font-sans);
-  font-size: var(--t-body);
+  font-size: var(--fs-body);
   font-weight: 400;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
@@ -74,7 +74,7 @@ blockquote {
 h1,
 h2,
 h3 {
-  font-weight: 600;
+  font-weight: 500;
 }
 
 img,
@@ -139,8 +139,8 @@ button {
 }
 
 .label {
-  font-size: var(--t-label);
-  font-weight: 600;
+  font-size: var(--fs-xs);
+  font-weight: 500;
   line-height: 1.4;
 }
 
@@ -161,7 +161,7 @@ button {
   padding: 12px 20px;
   background: var(--ink);
   color: var(--white);
-  font-weight: 600;
+  font-weight: 500;
 }
 .skip-link:focus {
   top: var(--s-2);
@@ -214,7 +214,7 @@ button {
 }
 .link {
   background-size: 100% 2px;
-  font-weight: 600;
+  font-weight: 500;
 }
 .u-grow {
   background-size: 0 2px;
@@ -238,14 +238,14 @@ button {
 }
 
 .h2 {
-  font-size: var(--t-h2);
-  font-weight: 600;
+  font-size: var(--fs-title);
+  letter-spacing: -0.015em;
+  font-weight: 500;
   line-height: 1.1;
-  letter-spacing: -0.02em;
 }
 .h3 {
-  font-size: var(--t-h3);
-  font-weight: 600;
+  font-size: var(--fs-h3);
+  font-weight: 500;
   line-height: 1.25;
 }
 

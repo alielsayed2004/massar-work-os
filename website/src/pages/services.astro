@@ -108,11 +108,11 @@ const tones = ["ink", "white", "ink", "white"] as const;
   }
   .jump a {
     padding: 12px 18px;
-    border-radius: 999px;
+    border-radius: 0;
     background: var(--bone);
     color: var(--green);
-    font-size: 16px;
-    font-weight: 600;
+    font-size: var(--fs-body);
+    font-weight: 500;
     transition: background-color 200ms ease;
   }
   .jump a:hover {
@@ -140,17 +140,17 @@ const tones = ["ink", "white", "ink", "white"] as const;
     gap: 20px;
   }
   .svc__name {
-    font-size: var(--t-h2);
+    font-size: var(--fs-title);
+    letter-spacing: -0.015em;
     line-height: 1.08;
-    letter-spacing: -0.02em;
   }
   .svc__line {
-    font-size: 21px;
+    font-size: var(--fs-lead);
     line-height: 1.5;
   }
   .svc__k {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: var(--fs-body);
+    font-weight: 500;
     color: var(--stone);
   }
   .tone-white .svc__k {
@@ -169,8 +169,8 @@ const tones = ["ink", "white", "ink", "white"] as const;
     margin: 0;
     padding: 0;
     list-style: none;
-    font-size: 18px;
-    font-weight: 600;
+    font-size: var(--fs-lead);
+    font-weight: 500;
   }
   .svc__solves a {
     text-decoration: underline;
@@ -192,10 +192,9 @@ const tones = ["ink", "white", "ink", "white"] as const;
     list-style: none;
   }
   .svc__includes li {
-    font-size: clamp(22px, 2.2vw, 32px);
-    font-weight: 600;
+    font-size: var(--fs-h3);
+    font-weight: 500;
     line-height: 1.25;
-    letter-spacing: -0.01em;
   }
   .svc__cases {
     display: grid;
@@ -203,7 +202,7 @@ const tones = ["ink", "white", "ink", "white"] as const;
     gap: var(--gutter);
   }
   .svc__cases :global(.ccard__title) {
-    font-size: 20px;
+    font-size: var(--fs-lead);
   }
   @media (max-width: 1023px) {
     .svc__inner {

@@ -194,9 +194,9 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
     padding-block: 80px 104px;
   }
   .hero__title {
-    font-size: clamp(48px, 7.4vw, 112px);
+    font-size: var(--fs-statement);
+    letter-spacing: -0.025em;
     line-height: 0.98;
-    letter-spacing: -0.04em;
   }
   .hero__title .line {
     display: block;
@@ -208,7 +208,7 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
     display: grid;
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: 48px var(--gutter);
-    align-items: end;
+    align-items: start;
   }
   .hero__copy {
     display: flex;
@@ -217,7 +217,7 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
   }
   .hero__sub {
     max-width: 34ch;
-    font-size: 22px;
+    font-size: var(--fs-h3);
     line-height: 1.55;
   }
   .hero__ctas {
@@ -226,7 +226,7 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
     gap: 12px;
   }
   .hero__trusted {
-    font-size: 15px;
+    font-size: var(--fs-body);
     color: var(--ink);
   }
 
@@ -259,18 +259,18 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
     gap: 14px;
   }
   .flow__k {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: var(--fs-body);
+    font-weight: 500;
     color: var(--stone);
   }
   .flow__step p {
-    font-size: 24px;
+    font-size: var(--fs-h3);
     line-height: 1.4;
   }
 
   .aside-text {
     max-width: 420px;
-    font-size: var(--t-body);
+    font-size: var(--fs-body);
     line-height: 1.6;
   }
 
@@ -311,14 +311,14 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
     gap: 6px;
   }
   .services__name {
-    font-size: 26px;
-    font-weight: 600;
+    font-size: var(--fs-h3);
+    font-weight: 500;
     line-height: 1.25;
     color: var(--green);
   }
   .services__line {
     max-width: 40ch;
-    font-size: 17px;
+    font-size: var(--fs-body);
     line-height: 1.55;
   }
 
@@ -340,10 +340,10 @@ const clients = ["[Client]", "[Client]", "[Client]", "[Client]", "[Client]"];
       gap: 36px;
     }
     .hero__sub {
-      font-size: var(--t-body);
+      font-size: var(--fs-body);
     }
     .flow__step p {
-      font-size: 20px;
+      font-size: var(--fs-lead);
     }
     .cases {
       grid-template-columns: 1fr;

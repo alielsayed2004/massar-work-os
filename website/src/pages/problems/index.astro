@@ -98,9 +98,9 @@ const work = await getWork();
     gap: 28px;
   }
   .row__title {
-    font-size: var(--t-h2);
+    font-size: var(--fs-title);
+    letter-spacing: -0.015em;
     line-height: 1.1;
-    letter-spacing: -0.02em;
   }
   .row__title a:hover {
     color: var(--green);
@@ -112,17 +112,17 @@ const work = await getWork();
     margin: 0;
   }
   .row__pairs dt {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: var(--fs-body);
+    font-weight: 500;
     color: var(--green);
   }
   .row__pairs dd {
     margin: 6px 0 0;
-    font-size: 19px;
+    font-size: var(--fs-lead);
     line-height: 1.5;
   }
   .row__do {
-    font-weight: 600;
+    font-weight: 500;
     color: var(--green);
   }
   .row__more {
@@ -141,20 +141,20 @@ const work = await getWork();
     padding: 18px 20px 22px;
   }
   .row__k {
-    font-size: 14px;
+    font-size: var(--fs-xs);
     color: var(--green);
-    font-weight: 600;
+    font-weight: 500;
   }
   .row__case {
-    font-size: 18px;
-    font-weight: 600;
+    font-size: var(--fs-lead);
+    font-weight: 500;
     line-height: 1.35;
   }
   .row__proof:hover .row__case {
     color: var(--green);
   }
   .other {
-    font-size: 20px;
+    font-size: var(--fs-lead);
   }
   @media (max-width: 1023px) {
     .row {
@@ -169,7 +169,7 @@ const work = await getWork();
       grid-template-columns: 1fr;
     }
     .row__pairs dd {
-      font-size: 17px;
+      font-size: var(--fs-body);
     }
   }
 </style>

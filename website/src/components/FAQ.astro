@@ -32,8 +32,8 @@ const { items, openFirst = true } = Astro.props;
     align-items: baseline;
     gap: 24px;
     padding: 20px 0;
-    font-size: 22px;
-    font-weight: 600;
+    font-size: var(--fs-h3);
+    font-weight: 500;
     line-height: 1.35;
     cursor: pointer;
     list-style: none;
@@ -51,12 +51,12 @@ const { items, openFirst = true } = Astro.props;
   p {
     padding-bottom: 24px;
     max-width: 720px;
-    font-size: 17px;
+    font-size: var(--fs-body);
     line-height: 1.65;
   }
   @media (max-width: 767px) {
     summary {
-      font-size: 19px;
+      font-size: var(--fs-lead);
     }
   }
 </style>

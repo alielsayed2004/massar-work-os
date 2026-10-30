@@ -35,24 +35,24 @@ const { value, caption, size = "stat", rule = false } = Astro.props;
     font-variant-numeric: tabular-nums;
   }
   .stat--stat .stat__value {
-    font-size: var(--t-stat);
-    font-weight: 900;
-    letter-spacing: -0.04em;
+    font-size: var(--fs-title);
+    letter-spacing: -0.015em;
+    font-weight: 500;
   }
   .tone-white .stat--stat .stat__value {
     color: var(--green);
   }
   .stat--result .stat__value {
-    font-size: clamp(40px, 4.4vw, 64px);
-    font-weight: 600;
-    letter-spacing: -0.03em;
+    font-size: var(--fs-title);
+    letter-spacing: -0.015em;
+    font-weight: 500;
   }
   .stat__caption {
-    font-size: 16px;
+    font-size: var(--fs-body);
     line-height: 1.5;
   }
   .stat--stat .stat__caption {
-    font-size: 17px;
+    font-size: var(--fs-body);
     line-height: 1.6;
   }
 </style>
