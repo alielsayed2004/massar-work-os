@@ -1,0 +1,97 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import PageHead from "../components/PageHead.astro";
+import CtaBand from "../components/CtaBand.astro";
+import { processSteps } from "../data/site";
+import { pad2 } from "../lib/content";
+---
+
+<Base
+  title="How we work — Massar"
+  description="Diagnose, Direct, Build, Prove, Next step. The same five steps on every Massar project, from the first audit to the measured result."
+  breadcrumbs={[{ name: "Process", path: "/process" }]}
+>
+  <Section labelledby="process-title">
+    <PageHead
+      label="Process"
+      title="Five steps.<br />Same order, every project."
+      intro="Every project starts with the business problem, not the deliverable. One objective is agreed in writing, and only the disciplines that serve it get built."
+    />
+    <ol class="steps">
+      {processSteps.map((s, i) => (
+        <li class="step" data-reveal>
+          <span class:list={["step__num", { "step__num--clay": i === 4 }]}>{pad2(i + 1)}</span>
+          <div class="step__body">
+            <h2 class="h3">{s.name}</h2>
+            <p class="step__line">{s.line}</p>
+          </div>
+          <ul class="step__detail">
+            <li>[What happens in this step, in one sentence.]</li>
+            <li>[What the client gets at the end of it.]</li>
+            <li>[Typical length.]</li>
+          </ul>
+        </li>
+      ))}
+    </ol>
+  </Section>
+  <CtaBand />
+</Base>
+
+<style>
+  .steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .step {
+    display: grid;
+    grid-template-columns: 120px 1fr 1fr;
+    gap: var(--gutter);
+    padding-block: 32px;
+    border-top: 2px solid var(--ink);
+  }
+  .step:last-child {
+    border-bottom: 2px solid var(--ink);
+  }
+  .step__num {
+    font-size: 56px;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--green);
+  }
+  .step__num--clay {
+    color: var(--clay);
+  }
+  .step__body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .step__line {
+    font-size: 20px;
+    line-height: 1.5;
+  }
+  .step__detail {
+    margin: 0;
+    padding-left: 1.1em;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  @media (max-width: 1023px) {
+    .step {
+      grid-template-columns: 80px 1fr;
+    }
+    .step__detail {
+      grid-column: 2;
+    }
+  }
+  @media (max-width: 767px) {
+    .step {
+      grid-template-columns: 1fr;
+    }
+    .step__detail {
+      grid-column: auto;
+    }
+  }
+</style>

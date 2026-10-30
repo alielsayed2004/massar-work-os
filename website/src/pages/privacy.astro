@@ -1,0 +1,66 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import PageHead from "../components/PageHead.astro";
+import { org } from "../data/site";
+
+const sections = [
+  ["Who we are", "[Legal name, registered address and contact for privacy questions.]"],
+  [
+    "What we collect",
+    "[What the /start form collects, and what analytics (if any) the site uses.]",
+  ],
+  ["Why we collect it", "[To reply to project requests. Legal basis, if applicable.]"],
+  ["Who we share it with", "[Form provider / CRM / hosting, by name.]"],
+  ["How long we keep it", "[Retention period.]"],
+  ["Your rights", "[How to ask for a copy, a correction or deletion.]"],
+];
+---
+
+<Base
+  title="Privacy — Massar"
+  description="How Massar handles the information you send through this website."
+  breadcrumbs={[{ name: "Privacy", path: "/privacy" }]}
+>
+  <Section labelledby="privacy-title">
+    <PageHead
+      label="Privacy"
+      title="Privacy policy"
+      intro="[Draft outline. The final policy text comes from Massar.]"
+    />
+    <div class="policy">
+      {sections.map(([h, p]) => (
+        <section>
+          <h2 class="h3">{h}</h2>
+          <p>{p}</p>
+        </section>
+      ))}
+      <section>
+        <h2 class="h3">Contact</h2>
+        <p>
+          <a class="link" href={`mailto:${org.email}`}>
+            {org.email}
+          </a>
+        </p>
+      </section>
+    </div>
+  </Section>
+</Base>
+
+<style>
+  .policy {
+    display: flex;
+    flex-direction: column;
+    max-width: 760px;
+  }
+  .policy section {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-block: 24px;
+    border-top: 1px solid var(--ink);
+  }
+  .policy p {
+    font-size: 17px;
+  }
+</style>

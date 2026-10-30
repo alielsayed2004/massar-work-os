@@ -1,0 +1,136 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import SectionHead from "../../components/SectionHead.astro";
+import PageHead from "../../components/PageHead.astro";
+import CaseCard from "../../components/CaseCard.astro";
+import FAQ from "../../components/FAQ.astro";
+import CtaBand from "../../components/CtaBand.astro";
+import {
+  casesFor,
+  formatDate,
+  getProblems,
+  getWork,
+  pad2,
+  showDrafts,
+  type Problem,
+} from "../../lib/content";
+
+export async function getStaticPaths() {
+  const problems = await getProblems();
+  return problems.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+interface Props {
+  entry: Problem;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const cases = casesFor(entry.id, await getWork());
+---
+
+<Base
+  title={`"${d.title}" — Massar`.slice(0, 60)}
+  description={d.answer.slice(0, 155)}
+  noindex={d.draft && showDrafts}
+  faqs={d.faqs}
+  breadcrumbs={[
+    { name: "Problems we solve", path: "/#problems" },
+    { name: d.title, path: `/problems/${entry.id}` },
+  ]}
+>
+  <Section labelledby="problem-title">
+    <PageHead label={`Problems we solve · P/${pad2(d.order)}`} title={`"${d.title}"`}>
+      <p class="answer">{d.answer}</p>
+      <p class="updated">
+        Last updated <time datetime={d.updated.toISOString()}>{formatDate(d.updated)}</time>
+      </p>
+    </PageHead>
+    <div class="how">
+      <h2 class="label">How we solve it</h2>
+      <ol class="how__steps">
+        {d.steps.map((s, i) => (
+          <li data-reveal>
+            <span class="how__num">{pad2(i + 1)}</span>
+            <p>{s}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </Section>
+
+  {cases.length > 0 && (
+    <Section tone="green" labelledby="related-title">
+      <SectionHead label="Solved by" title="Cases where we fixed this." id="related-title" />
+      <div class="cases">
+        {cases.map((w) => (
+          <CaseCard
+            href={`/work/${w.id}`}
+            slug={w.id}
+            client={w.data.client}
+            summary={w.data.summary}
+            tags={w.data.tags}
+            sector={w.data.sector}
+            result={w.data.results[0]}
+            shot={w.data.heroShot}
+            tone={w.data.heroTone}
+          />
+        ))}
+      </div>
+    </Section>
+  )}
+
+  <Section labelledby="pfaq-title">
+    <SectionHead label="FAQ" title="Questions buyers ask." id="pfaq-title" />
+    <FAQ items={d.faqs} />
+  </Section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .answer {
+    max-width: 760px;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.55;
+  }
+  .updated {
+    font-size: 14px;
+  }
+  .how {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .how__steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    gap: var(--gutter);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .how__steps li {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 2px solid var(--ink);
+  }
+  .how__num {
+    font-size: 44px;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--green);
+  }
+  .how__steps p {
+    font-size: var(--t-body);
+    line-height: 1.6;
+  }
+  .cases {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(460px, 100%), 1fr));
+    gap: 72px var(--gutter);
+  }
+</style>

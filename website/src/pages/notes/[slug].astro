@@ -1,0 +1,96 @@
+---
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Label from "../../components/Label.astro";
+import ImagePlaceholder from "../../components/ImagePlaceholder.astro";
+import CtaBand from "../../components/CtaBand.astro";
+import { formatDate, getNotes, showDrafts, type Note } from "../../lib/content";
+import { article } from "../../lib/seo";
+
+export async function getStaticPaths() {
+  const notes = await getNotes();
+  return notes.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+}
+
+interface Props {
+  entry: Note;
+}
+const { entry } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+---
+
+<Base
+  title={`${d.title}`.slice(0, 50) + " | Massar"}
+  description={`Field note from Massar, ${formatDate(d.date)}.`}
+  noindex={d.draft && showDrafts}
+  breadcrumbs={[
+    { name: "Field notes", path: "/notes" },
+    { name: d.title, path: `/notes/${entry.id}` },
+  ]}
+  jsonLd={[
+    article(
+      {
+        headline: d.title,
+        description: d.title,
+        path: `/notes/${entry.id}`,
+        image: "/og/default.png",
+        published: d.date,
+        modified: d.date,
+      },
+      Astro.site,
+    ),
+  ]}
+>
+  <article class="container note">
+    <header class="note__head">
+      <Label>
+        <a href="/notes">Field notes</a> ·{" "}
+        <time datetime={d.date.toISOString()}>{formatDate(d.date)}</time>
+      </Label>
+      <h1 class="note__title">
+        <span class="line" style="--i:0">
+          {d.title}
+        </span>
+      </h1>
+    </header>
+    <ImagePlaceholder shot={d.shot} class="scale-in" />
+    <div class="note__body">
+      <Content />
+    </div>
+  </article>
+  <CtaBand />
+</Base>
+
+<style>
+  .note {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    padding-block: 96px var(--section-y);
+  }
+  .note__head {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    max-width: 960px;
+  }
+  .note__title {
+    font-size: clamp(36px, 4.4vw, 64px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+  .note__title .line {
+    display: block;
+  }
+  .note__body {
+    max-width: 720px;
+  }
+  .note__body :global(p) {
+    font-size: var(--t-body);
+    line-height: 1.75;
+  }
+  .note__body :global(p + p) {
+    margin-top: 1em;
+  }
+</style>

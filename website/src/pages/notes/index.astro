@@ -1,0 +1,78 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import PageHead from "../../components/PageHead.astro";
+import CtaBand from "../../components/CtaBand.astro";
+import { formatDate, getNotes } from "../../lib/content";
+
+const notes = await getNotes();
+---
+
+<Base
+  title="Field notes — Massar"
+  description="Short notes from real Massar projects: what happened, what we learned, and what we would do again."
+  breadcrumbs={[{ name: "Field notes", path: "/notes" }]}
+>
+  <Section labelledby="notes-title">
+    <PageHead
+      label="Field notes"
+      title="Notes from real work."
+      intro="Short posts from projects in progress. No theory."
+    />
+    {notes.length ? (
+      <ul class="notes">
+        {notes.map((n) => (
+          <li data-reveal>
+            <a href={`/notes/${n.id}`}>
+              <time datetime={n.data.date.toISOString()}>{formatDate(n.data.date)}</time>
+              <span class="notes__title">{n.data.title}</span>
+              <span class="link notes__more">Read the note</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <p>The first notes are on their way.</p>
+    )}
+  </Section>
+  <CtaBand />
+</Base>
+
+<style>
+  .notes {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .notes li {
+    border-top: 1px solid var(--ink);
+  }
+  .notes li:last-child {
+    border-bottom: 1px solid var(--ink);
+  }
+  .notes a {
+    display: grid;
+    grid-template-columns: 220px 1fr auto;
+    align-items: baseline;
+    gap: 8px var(--gutter);
+    padding-block: 28px;
+  }
+  .notes time {
+    font-size: 15px;
+    color: var(--green);
+  }
+  .notes__title {
+    font-size: var(--t-h3);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .notes__more {
+    font-size: 15px;
+    color: var(--green);
+  }
+  @media (max-width: 767px) {
+    .notes a {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

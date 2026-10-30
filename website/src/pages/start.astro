@@ -1,0 +1,466 @@
+---
+import Base from "../layouts/Base.astro";
+import Label from "../components/Label.astro";
+import { getProblems } from "../lib/content";
+import { org } from "../data/site";
+
+const problems = await getProblems();
+const problemOptions = [...problems.map((p) => p.data.title), "Something else"];
+// Where submissions go is an open question for Ali. Set PUBLIC_FORM_ENDPOINT
+// (e.g. a Formspree URL) to POST there; without it the brief opens as an email.
+const endpoint = import.meta.env.PUBLIC_FORM_ENDPOINT as string | undefined;
+const sizes = ["Just starting", "1–10 people", "11–50 people", "51–200 people", "200+ people"];
+const timelines = ["As soon as possible", "In 1–3 months", "In 3–6 months", "Not sure yet"];
+const budgets = ["[Budget range A]", "[Budget range B]", "[Budget range C]", "Not sure yet"];
+const steps = ["The problem", "Your business", "Goal", "Contact"];
+---
+
+<Base
+  title="Start a project — Massar"
+  description="Tell Massar about the problem in four short steps. We reply with one clear next step."
+  breadcrumbs={[{ name: "Start a project", path: "/start" }]}
+>
+  <section class="container start" aria-labelledby="start-title">
+    <header class="start__head">
+      <Label>Start a project</Label>
+      <h1 id="start-title" class="start__title">
+        <span class="line" style="--i:0">
+          Bring us the problem.
+        </span>
+      </h1>
+      <p class="start__intro">Four short steps. We reply with one clear next step.</p>
+    </header>
+
+    <div class="progress" aria-hidden="true">
+      <div class="progress__bar" data-progress></div>
+    </div>
+    <ol class="stepper" data-stepper>
+      {steps.map((s, i) => (
+        <li data-step-label={i}>
+          <span>0{i + 1}</span> {s}
+        </li>
+      ))}
+    </ol>
+
+    <form
+      class="form"
+      data-start-form
+      data-endpoint={endpoint}
+      data-email={org.email}
+      action={endpoint ?? `mailto:${org.email}`}
+      method="post"
+      enctype={endpoint ? undefined : "text/plain"}
+      novalidate
+    >
+      <p class="form__status" role="status" aria-live="polite" data-status></p>
+
+      <fieldset data-step="0">
+        <legend class="h3">What's the problem?</legend>
+        <div class="choices">
+          {problemOptions.map((p, i) => (
+            <label class="choice">
+              <input type="radio" name="problem" value={p} required={i === 0} />
+              <span>{p}</span>
+            </label>
+          ))}
+        </div>
+        <label class="field">
+          <span>Tell us more (optional)</span>
+          <textarea name="problemDetail" rows="3"></textarea>
+        </label>
+      </fieldset>
+
+      <fieldset data-step="1">
+        <legend class="h3">Your business</legend>
+        <label class="field">
+          <span>Business name</span>
+          <input type="text" name="business" autocomplete="organization" required />
+        </label>
+        <label class="field">
+          <span>Sector</span>
+          <input type="text" name="sector" required />
+        </label>
+        <label class="field">
+          <span>Size</span>
+          <select name="size" required>
+            <option value="">Choose one</option>
+            {sizes.map((s) => (
+              <option>{s}</option>
+            ))}
+          </select>
+        </label>
+      </fieldset>
+
+      <fieldset data-step="2">
+        <legend class="h3">Goal, timeline, budget</legend>
+        <label class="field">
+          <span>What should be true when we're done?</span>
+          <textarea name="goal" rows="3" required></textarea>
+        </label>
+        <label class="field">
+          <span>Timeline</span>
+          <select name="timeline" required>
+            <option value="">Choose one</option>
+            {timelines.map((s) => (
+              <option>{s}</option>
+            ))}
+          </select>
+        </label>
+        <label class="field">
+          <span>Budget range</span>
+          <select name="budget" required>
+            <option value="">Choose one</option>
+            {budgets.map((s) => (
+              <option>{s}</option>
+            ))}
+          </select>
+        </label>
+      </fieldset>
+
+      <fieldset data-step="3">
+        <legend class="h3">How do we reach you?</legend>
+        <label class="field">
+          <span>Your name</span>
+          <input type="text" name="name" autocomplete="name" required />
+        </label>
+        <label class="field">
+          <span>Email</span>
+          <input type="email" name="email" autocomplete="email" required />
+        </label>
+        <label class="field">
+          <span>Phone or WhatsApp (optional)</span>
+          <input type="tel" name="phone" autocomplete="tel" />
+        </label>
+      </fieldset>
+
+      <div class="form__nav">
+        <button type="button" class="btn-secondary" data-back>
+          Back
+        </button>
+        <button type="button" class="btn-primary" data-next>
+          Next
+        </button>
+        <button type="submit" class="btn-primary" data-submit>
+          Send the brief
+        </button>
+      </div>
+    </form>
+
+    <div class="success" data-success hidden tabindex="-1">
+      <Label>Sent</Label>
+      <h2 class="h2">Thank you. We'll reply within [00] working days.</h2>
+      <p data-success-mailto hidden>
+        Your email app opened with the brief. Press send, or write to
+        <a class="link" href={`mailto:${org.email}`}>
+          {org.email}
+        </a>
+        .
+      </p>
+      <a href="/work" class="link">
+        While you wait: see the case studies
+      </a>
+    </div>
+  </section>
+</Base>
+
+<script>
+  function initStart() {
+    const form = document.querySelector<HTMLFormElement>("[data-start-form]");
+    if (!form) return;
+    const steps = [...form.querySelectorAll<HTMLFieldSetElement>("[data-step]")];
+    const labels = [...document.querySelectorAll<HTMLElement>("[data-step-label]")];
+    const bar = document.querySelector<HTMLElement>("[data-progress]")!;
+    const status = form.querySelector<HTMLElement>("[data-status]")!;
+    const back = form.querySelector<HTMLButtonElement>("[data-back]")!;
+    const next = form.querySelector<HTMLButtonElement>("[data-next]")!;
+    const submit = form.querySelector<HTMLButtonElement>("[data-submit]")!;
+    const success = document.querySelector<HTMLElement>("[data-success]")!;
+    let current = 0;
+
+    const show = (i: number) => {
+      current = i;
+      steps.forEach((s, j) => (s.hidden = j !== i));
+      labels.forEach((l, j) => l.toggleAttribute("data-active", j <= i));
+      labels.forEach((l, j) =>
+        j === i ? l.setAttribute("aria-current", "step") : l.removeAttribute("aria-current"),
+      );
+      bar.style.transform = `scaleX(${(i + 1) / steps.length})`;
+      back.hidden = i === 0;
+      next.hidden = i === steps.length - 1;
+      submit.hidden = i !== steps.length - 1;
+      status.textContent = "";
+    };
+
+    const errorText = (el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement) => {
+      if (el.validity.valueMissing)
+        return el.type === "radio" ? "Choose one option." : "This field is required.";
+      if (el.validity.typeMismatch) return "Enter a valid email address.";
+      return "Check this field.";
+    };
+
+    const validate = (step: HTMLFieldSetElement) => {
+      step.querySelectorAll(".field__error").forEach((e) => e.remove());
+      const fields = [...step.querySelectorAll<HTMLInputElement>("input, select, textarea")];
+      let firstBad: HTMLElement | null = null;
+      const seen = new Set<string>();
+      for (const el of fields) {
+        el.removeAttribute("aria-invalid");
+        if (el.type === "radio") {
+          if (seen.has(el.name)) continue;
+          seen.add(el.name);
+        }
+        if (!el.checkValidity()) {
+          el.setAttribute("aria-invalid", "true");
+          const msg = document.createElement("span");
+          msg.className = "field__error";
+          msg.id = `${el.name}-error`;
+          msg.textContent = errorText(el);
+          el.setAttribute("aria-describedby", msg.id);
+          (el.type === "radio" ? step.querySelector(".choices")! : el.parentElement!).append(msg);
+          firstBad ??= el;
+        }
+      }
+      if (firstBad) {
+        status.textContent = "Some answers are missing. Check the highlighted fields.";
+        firstBad.focus();
+        return false;
+      }
+      return true;
+    };
+
+    next.addEventListener("click", () => {
+      if (validate(steps[current])) {
+        show(current + 1);
+        steps[current].querySelector<HTMLElement>("input, select, textarea")?.focus();
+      }
+    });
+    back.addEventListener("click", () => show(current - 1));
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!validate(steps[current])) return;
+      const data = Object.fromEntries(new FormData(form).entries()) as Record<string, string>;
+      const endpoint = form.dataset.endpoint;
+      submit.disabled = true;
+      try {
+        if (endpoint) {
+          const res = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(data),
+          });
+          if (!res.ok) throw new Error(String(res.status));
+        } else {
+          const body = Object.entries(data)
+            .filter(([, v]) => v)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join("\n");
+          const subject = `Project brief: ${data.business || "new project"}`;
+          window.location.href = `mailto:${form.dataset.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+          success.querySelector<HTMLElement>("[data-success-mailto]")!.hidden = false;
+        }
+        form.hidden = true;
+        document.querySelector<HTMLElement>(".progress")!.hidden = true;
+        document.querySelector<HTMLElement>("[data-stepper]")!.hidden = true;
+        success.hidden = false;
+        success.focus();
+      } catch {
+        status.textContent = `Something went wrong and the brief was not sent. Try again, or email ${form.dataset.email}.`;
+      } finally {
+        submit.disabled = false;
+      }
+    });
+
+    show(0);
+  }
+  document.addEventListener("astro:page-load", initStart);
+</script>
+
+<style>
+  .start {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    max-width: 960px;
+    margin-inline: auto;
+    padding-block: 96px var(--section-y);
+  }
+  @media (min-width: 1200px) {
+    .start {
+      max-width: calc(960px + 2 * var(--margin));
+    }
+  }
+  .start__head {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .start__title {
+    font-size: clamp(44px, 5.6vw, 84px);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+  }
+  .start__title .line {
+    display: block;
+  }
+  .start__intro {
+    font-size: 20px;
+  }
+  .progress {
+    height: 4px;
+    background: var(--bone);
+  }
+  .progress__bar {
+    height: 100%;
+    background: var(--green);
+    transform: scaleX(0.25);
+    transform-origin: left;
+    transition: transform 500ms var(--ease);
+  }
+  html:not(.js) .progress,
+  html:not(.js) .stepper {
+    display: none;
+  }
+  .stepper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 32px;
+    margin: -24px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--stone);
+  }
+  .stepper li[data-active] {
+    color: var(--ink);
+  }
+  .stepper span {
+    color: var(--green);
+  }
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+  fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin: 0;
+    padding: 32px 0 0;
+    border: 0;
+    border-top: 2px solid var(--ink);
+  }
+  fieldset[hidden] {
+    display: none;
+  }
+  legend {
+    float: left;
+    width: 100%;
+    margin-bottom: 8px;
+  }
+  .choices {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    gap: 12px;
+  }
+  .choice {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    border: 1px solid var(--ink);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.35;
+    cursor: pointer;
+  }
+  .choice:has(input:checked) {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .choice input {
+    accent-color: var(--green);
+    width: 18px;
+    height: 18px;
+    flex: none;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .field input,
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    background: var(--white);
+    font-size: 17px;
+    font-weight: 400;
+  }
+  .field [aria-invalid="true"] {
+    border-width: 2px;
+    border-color: var(--clay);
+  }
+  :global(.field__error) {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  :global(.field__error)::before {
+    content: "! ";
+    color: var(--clay);
+  }
+  .form__status {
+    font-weight: 600;
+  }
+  .form__status:empty {
+    display: none;
+  }
+  .form__nav {
+    display: flex;
+    gap: 12px;
+  }
+  .form__nav [hidden] {
+    display: none;
+  }
+  .btn-primary,
+  .btn-secondary {
+    padding: 16px 28px;
+    border: 1px solid var(--ink);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-primary {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .btn-primary:hover {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .btn-secondary {
+    background: var(--white);
+    color: var(--ink);
+  }
+  .success {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 32px;
+    border-top: 2px solid var(--ink);
+  }
+  .success[hidden] {
+    display: none;
+  }
+  .success .link {
+    align-self: flex-start;
+  }
+</style>

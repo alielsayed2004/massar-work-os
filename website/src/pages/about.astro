@@ -1,0 +1,154 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import SectionHead from "../components/SectionHead.astro";
+import PageHead from "../components/PageHead.astro";
+import Label from "../components/Label.astro";
+import ImagePlaceholder from "../components/ImagePlaceholder.astro";
+import CtaBand from "../components/CtaBand.astro";
+import { org, services } from "../data/site";
+
+const team = [1, 2, 3, 4];
+const values = [1, 2, 3];
+---
+
+<Base
+  title="About Massar — Creative + business partner, Cairo"
+  description={org.description.slice(0, 155)}
+  breadcrumbs={[{ name: "About", path: "/about" }]}
+>
+  <Section labelledby="about-title">
+    <PageHead
+      label="About · Cairo"
+      title="One team.<br />One accountable owner."
+      intro={org.description}
+    />
+  </Section>
+
+  <Section tone="ink" pad="tight" labelledby="do-title">
+    <SectionHead label="What we do" title="Four disciplines, one objective." id="do-title" />
+    <ul class="services">
+      {services.map((s) => (
+        <li data-reveal>
+          <span class="services__name">{s}</span>
+          <span>[One line on what this covers.]</span>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <Section labelledby="values-title">
+    <SectionHead label="How we behave" title="[Values headline]" id="values-title" />
+    <div class="values">
+      {values.map((n) => (
+        <div class="value" data-reveal>
+          <Label>V/0{n}</Label>
+          <h3 class="h3">[Value {n}]</h3>
+          <p>[What it means on a real project, in one sentence.]</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <Section tone="green" labelledby="team-title">
+    <SectionHead label="Team" title="The people you'll call." id="team-title" />
+    <div class="team">
+      {team.map(() => (
+        <figure class="person" data-reveal>
+          <ImagePlaceholder shot="S12" note="portrait, Ink mono" tone="ink" height="360px" />
+          <figcaption>
+            <span class="person__name">[Name]</span>
+            <span>[Role]</span>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </Section>
+
+  <Section labelledby="where-title" pad="tight">
+    <div class="where" data-reveal>
+      <Label>Where we work</Label>
+      <h2 id="where-title" class="h2">
+        Egypt first. Then the GCC.
+      </h2>
+      <p>
+        Write to{" "}
+        <a class="link" href={`mailto:${org.email}`}>
+          {org.email}
+        </a>
+        .
+      </p>
+    </div>
+  </Section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .services {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .services li {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+    gap: 8px var(--gutter);
+    padding: 20px 0;
+    border-top: 1px solid var(--white);
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  .services li:last-child {
+    border-bottom: 1px solid var(--white);
+  }
+  .services__name {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .values {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+    gap: var(--gutter);
+  }
+  .value {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 2px solid var(--ink);
+  }
+  .value p {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .team {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+    gap: 48px var(--gutter);
+  }
+  .person {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .person figcaption {
+    display: flex;
+    flex-direction: column;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .person__name {
+    font-size: 20px;
+    font-weight: 600;
+  }
+  .where {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .where .link {
+    font-size: inherit;
+  }
+</style>

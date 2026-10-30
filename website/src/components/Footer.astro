@@ -1,5 +1,16 @@
 ---
+import { org } from "../data/site";
+
 const year = new Date().getFullYear();
+const links = [
+  { href: "/work", label: "Work" },
+  { href: "/#problems", label: "Problems" },
+  { href: "/process", label: "Process" },
+  { href: "/about", label: "About" },
+  { href: "/notes", label: "Notes" },
+  { href: "/privacy", label: "Privacy" },
+  { href: `mailto:${org.email}`, label: org.email },
+];
 ---
 
 <footer class="footer">
@@ -14,18 +25,13 @@ const year = new Date().getFullYear();
     </a>
     <nav aria-label="Footer">
       <ul class="footer__links">
-        <li>
-          <a href="/work">Work</a>
-        </li>
-        <li>
-          <a href="/#problems">Problems</a>
-        </li>
-        <li>
-          <a href="/process">Process</a>
-        </li>
-        <li>
-          <a href="mailto:brand@massar.agency">brand@massar.agency</a>
-        </li>
+        {links.map((l) => (
+          <li>
+            <a class="u-grow" href={l.href}>
+              {l.label}
+            </a>
+          </li>
+        ))}
         <li>
           <span>© {year} Massar</span>
         </li>
