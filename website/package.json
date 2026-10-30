@@ -13,12 +13,17 @@
     "format:check": "prettier --check ."
   },
   "dependencies": {
+    "@astrojs/mdx": "^4.3.14",
     "@astrojs/sitemap": "^3.7.4",
     "@fontsource/cormorant-garamond": "^5.3.0",
-    "astro": "^5.18.2"
+    "@resvg/resvg-js": "^2.6.2",
+    "astro": "^5.18.2",
+    "satori": "^0.63.2",
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "@types/three": "^0.186.0",
     "@typescript-eslint/parser": "^8.72.1",
     "eslint": "^10.13.0",
     "eslint-plugin-astro": "^3.2.1",

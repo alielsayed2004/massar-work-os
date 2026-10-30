@@ -1,0 +1,12 @@
+---
+interface Props {
+  muted?: boolean;
+  as?: "span" | "p" | "div";
+  class?: string;
+}
+const { muted = false, as: Tag = "span", class: className } = Astro.props;
+---
+
+<Tag class:list={["label", { "label--muted": muted }, className]}>
+  <slot />
+</Tag>

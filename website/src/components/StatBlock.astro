@@ -1,0 +1,58 @@
+---
+/**
+ * A result number. The final value is always in the HTML (SEO);
+ * motion.ts counts up to it when it scrolls into view.
+ */
+interface Props {
+  value: string;
+  caption?: string;
+  /** "stat" = 900 weight, --t-stat; "result" = 600, smaller (featured case, TL;DR). */
+  size?: "stat" | "result";
+  rule?: boolean;
+}
+const { value, caption, size = "stat", rule = false } = Astro.props;
+---
+
+<div class:list={["stat", `stat--${size}`, { "stat--rule": rule }]}>
+  <span class="stat__value" data-count={value}>
+    {value}
+  </span>
+  {caption && <span class="stat__caption">{caption}</span>}
+</div>
+
+<style>
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .stat--rule {
+    border-top: 2px solid var(--line, currentColor);
+    padding-top: 24px;
+  }
+  .stat__value {
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat--stat .stat__value {
+    font-size: var(--t-stat);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+  }
+  .tone-white .stat--stat .stat__value {
+    color: var(--green);
+  }
+  .stat--result .stat__value {
+    font-size: clamp(40px, 4.4vw, 64px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+  .stat__caption {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  .stat--stat .stat__caption {
+    font-size: 17px;
+    line-height: 1.6;
+  }
+</style>

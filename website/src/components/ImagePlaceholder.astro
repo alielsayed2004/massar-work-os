@@ -1,0 +1,88 @@
+---
+/**
+ * Labeled block that stands in for a real photo until Massar's shoot exists.
+ * Never replace with stock or AI imagery.
+ */
+interface Props {
+  /** Shot code from Massar's shot library, S01–S12. */
+  shot?: string;
+  /** Override the visible label, e.g. "IDENTITY SYSTEM". */
+  label?: string;
+  note?: string;
+  tone?: "stone" | "ink" | "bone" | "white";
+  /** CSS height, e.g. "clamp(260px, 30vw, 440px)". Defaults to 3:2. */
+  height?: string;
+  kind?: "photo" | "video";
+  framed?: boolean;
+  class?: string;
+  transitionName?: string;
+}
+const {
+  shot,
+  label,
+  note,
+  tone = "stone",
+  height,
+  kind = "photo",
+  framed = false,
+  class: className,
+  transitionName,
+} = Astro.props;
+const text =
+  label ??
+  [kind === "video" ? "VIDEO" : "REAL PHOTO", shot, note].filter(Boolean).join(" · ").toUpperCase();
+---
+
+<div
+  class:list={["ph", `ph--${tone}`, className]}
+  style={height ? `height:${height}` : undefined}
+  role="img"
+  aria-label={`Placeholder: ${text.toLowerCase()}`}
+  transition:name={transitionName}
+>
+  {framed && <div class="ph__frame" />}
+  <span class="ph__label">{text}</span>
+</div>
+
+<style>
+  .ph {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+  }
+  .ph[style] {
+    aspect-ratio: auto;
+  }
+  .ph--stone {
+    background: var(--stone);
+    color: var(--ink);
+  }
+  .ph--ink {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .ph--bone {
+    background: var(--bone);
+    color: var(--green);
+  }
+  .ph--white {
+    background: var(--white);
+    color: var(--green);
+  }
+  .ph__frame {
+    position: absolute;
+    inset: clamp(24px, 5vw, 64px);
+    border: 1px solid var(--green);
+  }
+  .ph__label {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 16px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    line-height: 1.4;
+  }
+</style>

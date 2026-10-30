@@ -1,0 +1,43 @@
+---
+import Label from "./Label.astro";
+
+interface Props {
+  label: string;
+  title?: string;
+  /** Use h1 for page heroes. */
+  level?: 1 | 2;
+  id?: string;
+}
+const { label, title, level = 2, id } = Astro.props;
+const Heading = level === 1 ? "h1" : "h2";
+---
+
+<div class="head">
+  <div class="head__main" data-reveal>
+    <Label>{label}</Label>
+    {title && <Heading id={id} class="h2" set:html={title} />}
+  </div>
+  {Astro.slots.has("aside") && (
+    <div class="head__aside" data-reveal>
+      <slot name="aside" />
+    </div>
+  )}
+</div>
+
+<style>
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 24px 32px;
+  }
+  .head__main {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .head__aside {
+    max-width: 460px;
+  }
+</style>

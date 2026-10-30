@@ -1,0 +1,17 @@
+---
+interface Props {
+  weight?: 1 | 2;
+}
+const { weight = 1 } = Astro.props;
+---
+
+<hr class="rule" style={`border-top-width:${weight}px`} />
+
+<style>
+  .rule {
+    margin: 0;
+    border: 0;
+    border-top-style: solid;
+    border-top-color: var(--line, currentColor);
+  }
+</style>

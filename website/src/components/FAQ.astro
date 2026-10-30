@@ -1,0 +1,62 @@
+---
+interface Props {
+  items: { q: string; a: string }[];
+  /** Open the first item by default. */
+  openFirst?: boolean;
+}
+const { items, openFirst = true } = Astro.props;
+---
+
+<div class="faq">
+  {items.map((item, i) => (
+    <details class="faq__item" open={openFirst && i === 0}>
+      <summary>
+        <span>{item.q}</span>
+        <span class="faq__icon" aria-hidden="true" />
+      </summary>
+      <p>{item.a}</p>
+    </details>
+  ))}
+</div>
+
+<style>
+  .faq__item {
+    border-top: 1px solid var(--line, currentColor);
+  }
+  .faq__item:last-child {
+    border-bottom: 1px solid var(--line, currentColor);
+  }
+  summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 24px;
+    padding: 20px 0;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.35;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq__icon::before {
+    content: "+";
+    font-weight: 400;
+  }
+  details[open] .faq__icon::before {
+    content: "−";
+  }
+  p {
+    padding-bottom: 24px;
+    max-width: 720px;
+    font-size: 17px;
+    line-height: 1.65;
+  }
+  @media (max-width: 767px) {
+    summary {
+      font-size: 19px;
+    }
+  }
+</style>

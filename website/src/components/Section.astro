@@ -1,0 +1,40 @@
+---
+interface Props {
+  tone?: "white" | "ink" | "green";
+  id?: string;
+  /** Vertical padding: "default" = 140/96, "tight" = 120/96, "none". */
+  pad?: "default" | "tight" | "none";
+  class?: string;
+  labelledby?: string;
+}
+const { tone = "white", id, pad = "default", class: className, labelledby } = Astro.props;
+---
+
+<section
+  id={id}
+  aria-labelledby={labelledby}
+  class:list={["section", `tone-${tone}`, `section--${pad}`, className]}
+>
+  <div class="container section__inner">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .section--default .section__inner {
+    padding-block: var(--section-y);
+  }
+  .section--tight .section__inner {
+    padding-block: min(120px, var(--section-y));
+  }
+  .section__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+  @media (max-width: 767px) {
+    .section__inner {
+      gap: 40px;
+    }
+  }
+</style>

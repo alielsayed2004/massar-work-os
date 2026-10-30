@@ -1,0 +1,85 @@
+---
+interface Props {
+  href: string;
+  variant?: "primary" | "secondary" | "link";
+  /** "light" = on white; "dark" = on Ink or Green. */
+  on?: "light" | "dark";
+  size?: "md" | "lg";
+  class?: string;
+}
+const { href, variant = "primary", on = "light", size = "md", class: className } = Astro.props;
+---
+
+<a
+  href={href}
+  class:list={[
+    variant === "link" ? "link" : "btn",
+    variant !== "link" && `btn--${variant}`,
+    `on-${on}`,
+    `btn--${size}`,
+    className,
+  ]}
+>
+  <slot />
+</a>
+
+<style>
+  .btn {
+    display: inline-block;
+    padding: 16px 28px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    border: 1px solid transparent;
+    transition:
+      background-color 240ms var(--ease),
+      color 240ms var(--ease);
+  }
+  .btn--lg {
+    padding: 18px 34px;
+    font-size: 17px;
+  }
+  .btn--primary.on-light {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .btn--primary.on-light:hover {
+    background: var(--green);
+  }
+  .btn--primary.on-dark {
+    background: var(--white);
+    color: var(--ink);
+  }
+  .tone-green .btn--primary.on-dark {
+    color: var(--green);
+  }
+  .btn--primary.on-dark:hover {
+    background: var(--bone);
+  }
+  .btn--secondary.on-light {
+    border-color: var(--ink);
+    color: var(--ink);
+  }
+  .btn--secondary.on-light:hover {
+    background: var(--ink);
+    color: var(--white);
+  }
+  .btn--secondary.on-dark {
+    border-color: var(--white);
+    color: var(--white);
+  }
+  .btn--secondary.on-dark:hover {
+    background: var(--white);
+    color: var(--ink);
+  }
+  .link {
+    align-self: flex-start;
+    font-size: 16px;
+  }
+  .link.on-light {
+    color: var(--green);
+  }
+  .link.on-dark {
+    color: var(--white);
+  }
+</style>

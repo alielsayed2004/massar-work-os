@@ -1,0 +1,91 @@
+---
+import ImagePlaceholder from "./ImagePlaceholder.astro";
+
+interface Props {
+  href: string;
+  slug: string;
+  client: string;
+  summary: string;
+  tags: string[];
+  sector: string;
+  result?: { value: string; metric: string };
+  shot: string;
+  tone?: "stone" | "ink" | "bone" | "white";
+  /** Tag list used by the /work filter. */
+  filterTags?: string[];
+}
+const { href, slug, client, summary, tags, sector, result, shot, tone, filterTags } = Astro.props;
+const kicker = [...tags, sector].join(" · ").toUpperCase();
+---
+
+<article class="ccard" data-tilt data-tags={(filterTags ?? tags).join(",")} data-reveal>
+  <a href={href} class="ccard__link">
+    <div class="ccard__media">
+      <ImagePlaceholder
+        shot={shot}
+        tone={tone}
+        height="clamp(260px, 30vw, 440px)"
+        class="ccard__img"
+        transitionName={`case-${slug}`}
+      />
+    </div>
+    <span class="ccard__kicker">{kicker}</span>
+    <h3 class="ccard__title">
+      {client}: {summary}
+    </h3>
+    {result && (
+      <p class="ccard__result">
+        Result: <b>{result.value}</b> {result.metric}
+      </p>
+    )}
+  </a>
+</article>
+
+<style>
+  .ccard {
+    perspective: 1000px;
+  }
+  .ccard__link {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .ccard__media {
+    overflow: hidden;
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 400ms var(--ease);
+  }
+  .ccard__media :global(.ccard__img) {
+    transition: transform 400ms var(--ease);
+  }
+  .ccard:hover .ccard__media :global(.ccard__img) {
+    transform: scale(1.02);
+  }
+  .ccard__kicker {
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    line-height: 1.4;
+  }
+  .ccard__title {
+    font-size: var(--t-h3);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+  .ccard__link:hover .ccard__title {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+    text-decoration-color: var(--clay);
+  }
+  .ccard__result {
+    font-size: 17px;
+    line-height: 1.6;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ccard__media,
+    .ccard:hover .ccard__media :global(.ccard__img) {
+      transform: none;
+    }
+  }
+</style>

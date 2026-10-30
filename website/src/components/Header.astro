@@ -1,4 +1,6 @@
 ---
+import { nav } from "../data/site";
+
 interface Props {
   /** "light" = white header (home); "ink" = dark header (case pages). */
   variant?: "light" | "ink";
@@ -6,14 +8,6 @@ interface Props {
 
 const { variant = "light" } = Astro.props;
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
-
-const links = [
-  { href: "/work", label: "Work" },
-  { href: "/#problems", label: "Problems we solve" },
-  { href: "/process", label: "Process" },
-  { href: "/#faq", label: "FAQ" },
-];
-
 const isCurrent = (href: string) => !href.includes("#") && path.startsWith(href);
 const logo =
   variant === "ink"
@@ -21,20 +15,16 @@ const logo =
     : { src: "/brand/massar_wordmark_green.png", width: 505, height: 82 };
 ---
 
-<header class:list={["header", `header--${variant}`]}>
+<header class:list={["header", `header--${variant}`]} data-header>
   <div class="container header__inner">
     <a href="/" class="header__logo" aria-label="Massar — home">
       <img src={logo.src} width={logo.width} height={logo.height} alt="Massar" />
     </a>
-    <nav aria-label="Main">
+    <nav aria-label="Main" class="header__desktop">
       <ul class="header__nav">
-        {links.map((l) => (
+        {nav.map((l) => (
           <li>
-            <a
-              href={l.href}
-              class="header__link"
-              aria-current={isCurrent(l.href) ? "page" : undefined}
-            >
+            <a href={l.href} class="u-grow" aria-current={isCurrent(l.href) ? "page" : undefined}>
               {l.label}
             </a>
           </li>
@@ -46,11 +36,73 @@ const logo =
         </li>
       </ul>
     </nav>
+    <button
+      type="button"
+      class="header__toggle"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      data-menu-open
+    >
+      <span class="visually-hidden">Open menu</span>
+      <span class="burger" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <div id="mobile-menu" class="menu tone-ink" hidden data-menu>
+    <div class="container menu__top">
+      <a href="/" aria-label="Massar — home">
+        <img src="/brand/massar_wordmark_white.png" width="222" height="36" alt="Massar" />
+      </a>
+      <button type="button" class="header__toggle menu__close" data-menu-close>
+        <span class="visually-hidden">Close menu</span>
+        <span class="burger burger--x" aria-hidden="true"></span>
+      </button>
+    </div>
+    <nav aria-label="Mobile" class="container menu__body">
+      <ul>
+        {nav.map((l) => (
+          <li>
+            <a href={l.href} aria-current={isCurrent(l.href) ? "page" : undefined}>
+              {l.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <a href="/start" class="menu__cta">
+        Start a project
+      </a>
+    </nav>
   </div>
 </header>
 
+<script>
+  function initMenu() {
+    const header = document.querySelector<HTMLElement>("[data-header]");
+    const menu = header?.querySelector<HTMLElement>("[data-menu]");
+    const openBtn = header?.querySelector<HTMLButtonElement>("[data-menu-open]");
+    const closeBtn = header?.querySelector<HTMLButtonElement>("[data-menu-close]");
+    if (!header || !menu || !openBtn || !closeBtn) return;
+
+    const setOpen = (open: boolean) => {
+      menu.hidden = !open;
+      openBtn.setAttribute("aria-expanded", String(open));
+      document.documentElement.style.overflow = open ? "hidden" : "";
+      (open ? closeBtn : openBtn).focus();
+    };
+    openBtn.addEventListener("click", () => setOpen(true));
+    closeBtn.addEventListener("click", () => setOpen(false));
+    menu.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") setOpen(false);
+    });
+    menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+  }
+  document.addEventListener("astro:page-load", initMenu);
+</script>
+
 <style>
   .header {
+    position: relative;
+    z-index: 20;
     border-bottom: 1px solid var(--ink);
     background: var(--white);
     color: var(--green);
@@ -64,18 +116,17 @@ const logo =
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-wrap: wrap;
     gap: 20px;
     padding-block: 22px;
   }
-  .header__logo img {
+  .header__logo img,
+  .menu__top img {
     height: 32px;
     width: auto;
   }
   .header__nav {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
     gap: 36px;
     margin: 0;
     padding: 0;
@@ -83,19 +134,6 @@ const logo =
     font-size: 16px;
     font-weight: 500;
     line-height: 1.4;
-  }
-  .header__link {
-    padding-bottom: 2px;
-    border-bottom: 2px solid transparent;
-  }
-  .header__link:hover {
-    color: var(--ink);
-  }
-  .header--ink .header__link:hover {
-    color: var(--white);
-  }
-  .header__link[aria-current="page"] {
-    border-bottom-color: var(--clay);
   }
   .header__cta {
     display: inline-block;
@@ -109,9 +147,114 @@ const logo =
     color: var(--ink);
   }
 
+  .header__toggle {
+    display: none;
+    width: 48px;
+    height: 48px;
+    margin-right: -12px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    color: inherit;
+  }
+  .burger,
+  .burger::before,
+  .burger::after {
+    display: block;
+    width: 24px;
+    height: 2px;
+    margin-inline: auto;
+    background: currentColor;
+  }
+  .burger {
+    position: relative;
+  }
+  .burger::before,
+  .burger::after {
+    content: "";
+    position: absolute;
+    left: 0;
+  }
+  .burger::before {
+    top: -7px;
+  }
+  .burger::after {
+    top: 7px;
+  }
+  .burger--x {
+    background: transparent;
+  }
+  .burger--x::before {
+    top: 0;
+    transform: rotate(45deg);
+  }
+  .burger--x::after {
+    top: 0;
+    transform: rotate(-45deg);
+  }
+
+  .menu {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  .menu[hidden] {
+    display: none;
+  }
+  .menu__top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-block: 22px;
+    border-bottom: 1px solid var(--white);
+  }
+  .menu__close {
+    display: block;
+  }
+  .menu__body {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+    padding-block: 40px;
+  }
+  .menu__body ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .menu__body li a {
+    display: block;
+    padding: 12px 0;
+    font-size: var(--t-h2);
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .menu__body li a[aria-current="page"] {
+    text-decoration: underline;
+    text-decoration-color: var(--clay);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 8px;
+  }
+  .menu__cta {
+    align-self: flex-start;
+    padding: 18px 34px;
+    background: var(--white);
+    color: var(--ink);
+    font-size: 17px;
+    font-weight: 600;
+  }
+
   @media (max-width: 767px) {
-    .header__nav {
-      gap: 12px 24px;
+    .header__desktop {
+      display: none;
+    }
+    .header__toggle {
+      display: block;
     }
   }
 </style>
