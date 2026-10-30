@@ -1,0 +1,66 @@
+---
+/**
+ * Hero monogram on a Bone panel. The static PNG is the LCP element and the
+ * fallback; the three.js scene (step 7) fades in over it.
+ */
+---
+
+<div class="mono" data-monogram>
+  <div class="mono__static" aria-hidden="true">
+    <img src="/brand/massar_mono_ink.png" width="263" height="262" alt="" class="s s4" />
+    <img src="/brand/massar_mono_ink.png" width="263" height="262" alt="" class="s s3" />
+    <img src="/brand/massar_mono_ink.png" width="263" height="262" alt="" class="s s2" />
+    <img src="/brand/massar_mono_ink.png" width="263" height="262" alt="" class="s s1" />
+  </div>
+  <img
+    src="/brand/massar_mono_green.png"
+    width="599"
+    height="596"
+    alt="The Massar monogram: four arms that point to one centre"
+    class="mono__front"
+    fetchpriority="high"
+  />
+</div>
+
+<style>
+  .mono {
+    position: relative;
+    width: 100%;
+    height: clamp(320px, 38vw, 560px);
+    background: var(--bone);
+    overflow: hidden;
+  }
+  .mono__static,
+  .mono__front {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: min(300px, 62%);
+    aspect-ratio: 1;
+    transform: translate(-50%, -50%);
+  }
+  .mono__front {
+    height: auto;
+  }
+  .s {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: auto;
+  }
+  .s1 {
+    translate: 1% 1%;
+  }
+  .s2 {
+    translate: 2% 2%;
+    opacity: 0.6;
+  }
+  .s3 {
+    translate: 3.3% 3.3%;
+    opacity: 0.4;
+  }
+  .s4 {
+    translate: 4.6% 4.6%;
+    opacity: 0.25;
+  }
+</style>

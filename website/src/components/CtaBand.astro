@@ -1,0 +1,55 @@
+---
+import Button from "./Button.astro";
+import { org } from "../data/site";
+
+interface Props {
+  title?: string;
+}
+const { title = "Bring us the problem.<br />We'll bring one direction." } = Astro.props;
+---
+
+<section class="cta tone-green" aria-labelledby="cta-title">
+  <div class="container cta__inner">
+    <div class="cta__main" data-reveal>
+      <div class="cta__rule" aria-hidden="true"></div>
+      <h2 id="cta-title" class="cta__title" set:html={title} />
+      <p class="cta__tagline">{org.tagline}</p>
+    </div>
+    <Button href="/start" on="dark" size="lg">
+      Start a project
+    </Button>
+  </div>
+</section>
+
+<style>
+  .cta__inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 48px;
+    padding-block: var(--section-y);
+  }
+  .cta__main {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .cta__rule {
+    width: 96px;
+    height: 6px;
+    background: var(--clay);
+  }
+  .cta__title {
+    font-size: clamp(40px, 5.4vw, 80px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+  .cta__tagline {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 34px;
+    line-height: 1.2;
+  }
+</style>

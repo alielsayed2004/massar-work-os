@@ -1,56 +1,391 @@
 ---
 import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import SectionHead from "../components/SectionHead.astro";
+import Label from "../components/Label.astro";
+import Button from "../components/Button.astro";
+import ImagePlaceholder from "../components/ImagePlaceholder.astro";
+import StatBlock from "../components/StatBlock.astro";
+import ProblemCard from "../components/ProblemCard.astro";
+import CaseCard from "../components/CaseCard.astro";
+import CaseFilter from "../components/CaseFilter.astro";
+import FAQ from "../components/FAQ.astro";
+import CtaBand from "../components/CtaBand.astro";
+import HeroMonogram from "../components/HeroMonogram.astro";
+import { getProblems, getWork } from "../lib/content";
+import { homeFaqs, processSteps, services } from "../data/site";
+
+const work = await getWork();
+const problems = await getProblems();
+const featured = work.find((w) => w.data.featured) ?? work[0];
+const clients = ["[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]", "[CLIENT]"];
 ---
 
 <Base
   title="Massar — Creative + business partner, Cairo"
   description="Massar finds the real business problem, sets one direction and delivers it: strategy, brand, marketing and execution under one accountable owner."
+  faqs={homeFaqs}
+  isHome
 >
-  <!-- Scaffold placeholder. The full home page is build step 4. -->
-  <section class="container scaffold">
-    <span class="label">Creative + business partner · Cairo</span>
-    <h1>
-      Too many moving parts?
-      <br />
-      <span>One clear direction.</span>
-    </h1>
-    <p>
-      We find the real business problem, set one direction, and deliver it: strategy, brand,
-      marketing and execution under one accountable owner.
-    </p>
-    <p class="tagline">One partner. One path.</p>
+  <!-- HERO -->
+  <section class="container hero" aria-labelledby="hero-title">
+    <div class="hero__text">
+      <Label class="hero__label">Creative + business partner · Cairo</Label>
+      <h1 id="hero-title" class="hero__title">
+        <span class="line" style="--i:0">
+          Too many moving parts?
+        </span>
+        <span class="line hero__green" style="--i:1">
+          One clear direction.
+        </span>
+      </h1>
+      <p class="hero__sub">
+        We find the real business problem, set one direction, and deliver it: strategy, brand,
+        marketing and execution under one accountable owner.
+      </p>
+      <div class="hero__ctas">
+        <Button href="/start">Start a project</Button>
+        <Button href="/work" variant="secondary">
+          See the case studies
+        </Button>
+      </div>
+    </div>
+    <div class="hero__visual">
+      <HeroMonogram />
+    </div>
   </section>
+
+  <!-- TRUSTED BY -->
+  <div class="container trusted-wrap">
+    <div class="trusted">
+      <span class="label">Trusted by</span>
+      <ul>
+        {clients.map((c) => (
+          <li>{c}</li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <!-- FEATURED CASE -->
+  {featured && (
+    <Section tone="ink" pad="tight" id="work" labelledby="featured-title">
+      <SectionHead
+        label="01 — Featured case"
+        title={`${featured.data.client}: ${featured.data.summary}`}
+        id="featured-title"
+      >
+        <Button slot="aside" href={`/work/${featured.id}`} variant="link" on="dark">
+          Read the case study
+        </Button>
+      </SectionHead>
+      <a href={`/work/${featured.id}`} class="featured__media" tabindex="-1" aria-hidden="true">
+        <ImagePlaceholder
+          shot={featured.data.heroShot}
+          tone={featured.data.heroTone}
+          height="clamp(280px, 42vw, 620px)"
+          class="scale-in"
+          transitionName={`case-${featured.id}`}
+        />
+      </a>
+      <div class="featured__cols">
+        <div class="featured__col" data-reveal>
+          <Label muted>The problem</Label>
+          <p>{featured.data.problem}</p>
+        </div>
+        <div class="featured__col" data-reveal>
+          <Label muted>What we did</Label>
+          <p>{featured.data.solution}</p>
+        </div>
+        {featured.data.results[0] && (
+          <div class="featured__col" data-reveal>
+            <Label muted>The result</Label>
+            <StatBlock
+              value={featured.data.results[0].value}
+              caption={featured.data.results[0].metric}
+              size="result"
+            />
+          </div>
+        )}
+      </div>
+    </Section>
+  )}
+
+  <!-- PROBLEMS -->
+  <Section id="problems" labelledby="problems-title">
+    <SectionHead
+      label="02 — Problems we solve"
+      title="Start with the problem.<br />We'll show you the case."
+      id="problems-title"
+    >
+      <p slot="aside" class="aside-text">
+        Pick the one that sounds like you. Each links to work where we solved it.
+      </p>
+    </SectionHead>
+    <div class="problems">
+      {problems.map((p) => (
+        <ProblemCard
+          index={p.data.order}
+          title={p.data.title}
+          answer={p.data.short}
+          href={`/problems/${p.id}`}
+        />
+      ))}
+    </div>
+  </Section>
+
+  <!-- CASE STUDIES -->
+  <Section tone="green" labelledby="cases-title">
+    <SectionHead label="03 — Case studies" title="Problem. Direction. Result." id="cases-title">
+      <CaseFilter slot="aside" target="home-cases" />
+    </SectionHead>
+    <div class="cases" id="home-cases">
+      {work.map((w) => (
+        <CaseCard
+          href={`/work/${w.id}`}
+          slug={w.id}
+          client={w.data.client}
+          summary={w.data.summary}
+          tags={w.data.tags}
+          sector={w.data.sector}
+          result={w.data.results[0]}
+          shot={w.data.heroShot}
+          tone={w.data.heroTone}
+        />
+      ))}
+    </div>
+    <Button href="/work" variant="secondary" on="dark" class="self-start">
+      All case studies
+    </Button>
+  </Section>
+
+  <!-- PROCESS -->
+  <Section id="process" labelledby="process-title">
+    <SectionHead
+      label="04 — How we solve it"
+      title="Five steps. Same order, every project."
+      id="process-title"
+    />
+    <ol class="steps">
+      {processSteps.map((s, i) => (
+        <li class="step" data-reveal>
+          <span class:list={["step__num", { "step__num--clay": i === 4 }]}>
+            {String(i + 1).padStart(2, "0")}
+          </span>
+          <h3 class="step__name">{s.name}</h3>
+          <p class="step__line">{s.line}</p>
+        </li>
+      ))}
+    </ol>
+  </Section>
+
+  <!-- SERVICES + FAQ -->
+  <Section tone="ink" pad="tight" id="faq">
+    <div class="split">
+      <div class="split__a">
+        <Label>05 — What we do</Label>
+        <ul class="services">
+          {services.map((s) => (
+            <li>{s}</li>
+          ))}
+        </ul>
+      </div>
+      <div class="split__b">
+        <Label>06 — FAQ</Label>
+        <h2 class="visually-hidden">Frequently asked questions</h2>
+        <FAQ items={homeFaqs} />
+      </div>
+    </div>
+  </Section>
+
+  <CtaBand />
 </Base>
 
 <style>
-  .scaffold {
+  .hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 48px;
+    padding-block: 96px 120px;
+  }
+  .hero__text {
+    flex: 1 1 min(640px, 100%);
     display: flex;
     flex-direction: column;
     gap: 32px;
-    padding-block: 96px var(--section-y);
   }
-  .label {
-    color: var(--green);
+  .hero__visual {
+    flex: 1 1 min(480px, 100%);
   }
-  h1 {
+  .hero__title {
     font-size: var(--t-display);
     line-height: 1.02;
     letter-spacing: -0.03em;
   }
-  h1 span {
+  .hero__title .line {
+    display: block;
+  }
+  .hero__green {
     color: var(--green);
   }
-  p {
+  .hero__sub {
     max-width: 560px;
     font-size: 20px;
     line-height: 1.65;
   }
-  .tagline {
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-weight: 500;
-    font-size: 34px;
-    line-height: 1.2;
+  .hero__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .trusted-wrap {
+    padding-bottom: 96px;
+  }
+  .trusted {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px 24px;
+    padding-block: 24px;
+    border-block: 1px solid var(--ink);
+  }
+  .trusted .label {
+    color: var(--ink);
+  }
+  .trusted ul {
+    display: contents;
+    list-style: none;
+  }
+  .trusted li {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--stone);
+  }
+
+  .featured__media {
+    display: block;
+  }
+  .featured__cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+    gap: var(--gutter);
+  }
+  .featured__col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 20px;
+    border-top: 1px solid var(--white);
+  }
+  .featured__col p {
+    font-size: 20px;
+    line-height: 1.5;
+  }
+
+  .aside-text {
+    max-width: 460px;
+    font-size: var(--t-body);
+    line-height: 1.65;
+  }
+  .problems {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  }
+
+  .cases {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(460px, 100%), 1fr));
+    gap: 72px var(--gutter);
+  }
+  :global(.self-start) {
+    align-self: flex-start;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+    gap: var(--gutter);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .step {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 20px;
+    border-top: 2px solid var(--ink);
+  }
+  .step__num {
+    font-size: 44px;
+    font-weight: 300;
+    line-height: 1;
     color: var(--green);
+  }
+  .step__num--clay {
+    color: var(--clay);
+  }
+  .step__name {
+    font-size: 22px;
+    line-height: 1.3;
+  }
+  .step__line {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .split {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 80px;
+  }
+  .split__a {
+    flex: 1 1 min(360px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .split__b {
+    flex: 2 1 min(560px, 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .services {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .services li {
+    padding: 16px 0;
+    border-top: 1px solid var(--white);
+  }
+  .services li:last-child {
+    border-bottom: 1px solid var(--white);
+  }
+
+  @media (max-width: 767px) {
+    .hero {
+      padding-block: 56px 72px;
+      gap: 40px;
+    }
+    .hero__sub {
+      font-size: var(--t-body);
+    }
+    .cases {
+      gap: 56px;
+    }
+    .split {
+      gap: 56px;
+    }
+    .services {
+      font-size: 20px;
+    }
   }
 </style>

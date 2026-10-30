@@ -1,0 +1,70 @@
+---
+import { caseTags } from "../data/site";
+
+interface Props {
+  /** id of the grid whose [data-tags] children get filtered. */
+  target: string;
+}
+const { target } = Astro.props;
+---
+
+<div class="chips" role="group" aria-label="Filter case studies" data-filter={target}>
+  <button type="button" aria-pressed="true" data-tag="">
+    All
+  </button>
+  {caseTags.map((t) => (
+    <button type="button" aria-pressed="false" data-tag={t}>
+      {t}
+    </button>
+  ))}
+</div>
+
+<script>
+  function initFilters() {
+    document.querySelectorAll<HTMLElement>("[data-filter]").forEach((group) => {
+      const grid = document.getElementById(group.dataset.filter!);
+      if (!grid) return;
+      const buttons = group.querySelectorAll<HTMLButtonElement>("button");
+      buttons.forEach((btn) =>
+        btn.addEventListener("click", () => {
+          const tag = btn.dataset.tag;
+          buttons.forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+          grid.querySelectorAll<HTMLElement>("[data-tags]").forEach((card) => {
+            card.hidden = !!tag && !card.dataset.tags!.split(",").includes(tag);
+          });
+        }),
+      );
+    });
+  }
+  document.addEventListener("astro:page-load", initFilters);
+</script>
+
+<style>
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  button {
+    padding: 7px 12px;
+    border: 1px solid currentColor;
+    background: none;
+    color: inherit;
+    font-size: var(--t-label);
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    line-height: 1.4;
+    cursor: pointer;
+  }
+  .tone-green button[aria-pressed="true"],
+  .tone-ink button[aria-pressed="true"] {
+    background: var(--white);
+    border-color: var(--white);
+    color: var(--green);
+  }
+  .tone-white button[aria-pressed="true"] {
+    background: var(--ink);
+    color: var(--white);
+  }
+</style>

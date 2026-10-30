@@ -1,18 +1,48 @@
 ---
 import "@fontsource/cormorant-garamond/latin-500-italic.css";
 import "../styles/global.css";
+import { ClientRouter } from "astro:transitions";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import { ClientRouter } from "astro:transitions";
+import { abs, breadcrumbList, faqPage, organization, type Crumb } from "../lib/seo";
 
 interface Props {
+  /** ≤ 60 characters. */
   title: string;
+  /** ≤ 155 characters. */
   description: string;
   headerVariant?: "light" | "ink";
+  /** Root-relative OG image path. */
+  image?: string;
+  noindex?: boolean;
+  /** Breadcrumb trail after Home. */
+  breadcrumbs?: Crumb[];
+  faqs?: { q: string; a: string }[];
+  jsonLd?: Record<string, unknown>[];
+  isHome?: boolean;
 }
 
-const { title, description, headerVariant = "light" } = Astro.props;
-const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const {
+  title,
+  description,
+  headerVariant = "light",
+  image = "/og/default.png",
+  noindex = false,
+  breadcrumbs = [],
+  faqs,
+  jsonLd = [],
+  isHome = false,
+} = Astro.props;
+const site = Astro.site;
+const canonical = site ? new URL(Astro.url.pathname, site).href : undefined;
+const ogImage = abs(image, site);
+
+const ld = [
+  ...(isHome ? organization(site) : []),
+  ...jsonLd,
+  ...(faqs?.length ? [faqPage(faqs)] : []),
+  ...(isHome ? [] : [breadcrumbList([{ name: "Home", path: "/" }, ...breadcrumbs], site)]),
+];
 ---
 
 <!doctype html>
@@ -23,6 +53,7 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
     <title>{title}</title>
     <meta name="description" content={description} />
     {canonical && <link rel="canonical" href={canonical} />}
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="icon" type="image/png" href="/brand/massar_mono_green.png" />
     <link
       rel="preload"
@@ -38,12 +69,26 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
       type="font/woff2"
       crossorigin
     />
-    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#FFFFFF" />
+    <meta property="og:type" content={isHome ? "website" : "article"} />
+    <meta property="og:site_name" content="Massar" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     {canonical && <meta property="og:url" content={canonical} />}
     <meta name="twitter:card" content="summary_large_image" />
-    {Astro.site && <link rel="sitemap" href="/sitemap-index.xml" />}
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    {site && <link rel="sitemap" href="/sitemap-index.xml" />}
+    {ld.map((obj) => (
+      <script is:inline type="application/ld+json" set:html={JSON.stringify(obj)} />
+    ))}
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
     <ClientRouter />
   </head>
   <body>
@@ -55,5 +100,8 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : un
       <slot />
     </main>
     <Footer />
+    <script>
+      import "../scripts/motion";
+    </script>
   </body>
 </html>
