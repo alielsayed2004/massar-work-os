@@ -11,7 +11,5 @@ const site = process.env.SITE_URL || undefined;
 export default defineConfig({
   site,
   output: "static",
-  trailingSlash: "never",
-  build: { format: "file" },
   integrations: [mdx(), ...(site ? [sitemap()] : [])],
 });

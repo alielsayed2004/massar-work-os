@@ -1,0 +1,447 @@
+---
+import { render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import Label from "../../components/Label.astro";
+import ImagePlaceholder from "../../components/ImagePlaceholder.astro";
+import StatBlock from "../../components/StatBlock.astro";
+import Button from "../../components/Button.astro";
+import { formatDate, getWork, pad2, resultCaption, showDrafts, type Work } from "../../lib/content";
+import { article } from "../../lib/seo";
+
+export async function getStaticPaths() {
+  const work = await getWork();
+  return work.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, next: work.length > 1 ? work[(i + 1) % work.length] : undefined },
+  }));
+}
+
+interface Props {
+  entry: Work;
+  next?: Work;
+}
+const { entry, next } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+
+const kicker = ["Work / Case study " + pad2(d.order), ...d.tags, d.sector].join(" · ");
+const timeline = [d.durationWeeks ? `${d.durationWeeks} weeks` : null, d.year]
+  .filter(Boolean)
+  .join(" · ");
+const meta = [
+  { k: "Client", v: d.client },
+  { k: "Sector", v: d.sector },
+  { k: "Services", v: d.services.join(", ") },
+  { k: "Timeline", v: timeline },
+];
+const approach = [
+  { k: "Diagnose", v: d.approach.diagnose },
+  { k: "Direct", v: d.approach.direct },
+  { k: "Build", v: d.approach.build },
+  { k: "Prove", v: d.approach.prove },
+];
+const result = d.results[0];
+const description = `${d.problem} ${d.solution}`.slice(0, 155);
+const ogImage = `/og/work/${entry.id}.png`;
+const seoTitle = `${d.client}: ${d.summary}`.slice(0, 50) + " | Massar";
+---
+
+<Base
+  title={seoTitle}
+  description={description}
+  headerVariant="ink"
+  image={ogImage}
+  noindex={d.draft && showDrafts}
+  breadcrumbs={[
+    { name: "Work", path: "/work" },
+    { name: `${d.client}: ${d.summary}`, path: `/work/${entry.id}` },
+  ]}
+  jsonLd={[
+    article(
+      {
+        headline: d.title,
+        description,
+        path: `/work/${entry.id}`,
+        image: ogImage,
+        published: new Date(d.year, 0, 1),
+        modified: d.updated,
+        about: d.client,
+      },
+      Astro.site,
+    ),
+  ]}
+>
+  <!-- HERO -->
+  <section class="tone-ink hero" aria-labelledby="case-title">
+    <div class="container hero__inner">
+      <nav aria-label="Breadcrumb">
+        <Label muted>{kicker}</Label>
+      </nav>
+      <h1 id="case-title" class="hero__title">
+        <span class="line" style="--i:0">
+          {d.title}
+        </span>
+      </h1>
+      <dl class="meta">
+        {meta.map((m) => (
+          <div>
+            <dt>{m.k}</dt>
+            <dd>{m.v}</dd>
+          </div>
+        ))}
+      </dl>
+      <div class="hero__media">
+        <ImagePlaceholder
+          shot={d.heroShot}
+          tone={d.heroTone}
+          height="clamp(280px, 44vw, 640px)"
+          class="scale-in"
+          transitionName={`case-${entry.id}`}
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- TL;DR -->
+  <section class="container tldr" aria-labelledby="tldr-title">
+    <h2 id="tldr-title" class="label tldr__label">
+      The case in 20 seconds
+    </h2>
+    <div class="tldr__grid">
+      <div class="tldr__col">
+        <h3 class="label">Problem</h3>
+        <p>{d.problem}</p>
+      </div>
+      <div class="tldr__col">
+        <h3 class="label">Solution</h3>
+        <p>{d.solution}</p>
+      </div>
+      {result && (
+        <div class="tldr__col">
+          <h3 class="label">Result</h3>
+          <StatBlock value={result.value} caption={resultCaption(result)} size="result" />
+        </div>
+      )}
+    </div>
+    <p class="updated">
+      Last updated <time datetime={d.updated.toISOString()}>{formatDate(d.updated)}</time>
+    </p>
+  </section>
+
+  <!-- CHALLENGE / APPROACH -->
+  <section class="container ca">
+    <div class="ca__col" data-reveal>
+      <span class="label">01 — The challenge</span>
+      <h2 class="ca__title">{d.challengeTitle}</h2>
+      <div class="prose">
+        <Content />
+      </div>
+    </div>
+    <div class="ca__col" data-reveal>
+      <h2 class="label">02 — The approach</h2>
+      <ol class="approach">
+        {approach.map((a, i) => (
+          <li>
+            <span class="approach__num">{pad2(i + 1)}</span>
+            <span>
+              <b>{a.k}.</b> {a.v}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <!-- THE WORK -->
+  {d.gallery.length > 0 && (
+    <section class="tone-green work" aria-labelledby="work-title">
+      <div class="container work__inner">
+        <span class="label">03 — The work</span>
+        <h2 id="work-title" class="ca__title work__title">
+          [The solution, shown]
+        </h2>
+        <div class="gallery">
+          {d.gallery.map((g) => (
+            <figure class:list={["gallery__item", { "gallery__item--wide": g.wide }]} data-reveal>
+              <ImagePlaceholder
+                shot={g.shot}
+                label={g.label}
+                kind={g.kind === "video" ? "video" : "photo"}
+                tone={
+                  g.tone ?? (g.kind === "identity" ? "white" : g.kind === "video" ? "ink" : "stone")
+                }
+                framed={g.kind === "identity"}
+                height={g.wide ? "clamp(260px, 38vw, 560px)" : "clamp(320px, 36vw, 520px)"}
+                class="scale-in"
+              />
+            </figure>
+          ))}
+        </div>
+        {d.galleryCaption && <p class="work__caption">{d.galleryCaption}</p>}
+      </div>
+    </section>
+  )}
+
+  <!-- RESULTS -->
+  <section class="container results" aria-labelledby="results-title">
+    <h2 id="results-title" class="label">
+      04 — The results
+    </h2>
+    <div class="results__grid">
+      {d.results.map((r) => (
+        <StatBlock value={r.value} caption={resultCaption(r)} rule />
+      ))}
+    </div>
+    {d.quote && (
+      <blockquote class="quote" data-reveal>
+        <p>"{d.quote.text}"</p>
+        <footer>
+          {d.quote.name} · {d.quote.role}
+        </footer>
+      </blockquote>
+    )}
+  </section>
+
+  <!-- NEXT CASE (inside the Ink footer, so no two dark blocks stack) -->
+  <div slot="footer" class="next">
+    {next && (
+      <div class="next__main">
+        <Label muted>Next case</Label>
+        <a href={`/work/${next.id}`} class="next__link">
+          {next.data.client}: {next.data.summary}
+        </a>
+      </div>
+    )}
+    <Button href="/start" on="dark" size="lg">
+      Start a project
+    </Button>
+  </div>
+</Base>
+
+<style>
+  .hero__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding-top: 96px;
+  }
+  .hero__title {
+    max-width: 1100px;
+    font-size: clamp(44px, 5.6vw, 84px);
+    line-height: 1.04;
+    letter-spacing: -0.03em;
+  }
+  .hero__title .line {
+    display: block;
+  }
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr));
+    gap: var(--gutter);
+    margin: 0;
+    padding-top: 24px;
+    border-top: 1px solid var(--white);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .meta div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .meta dt {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+  .meta dd {
+    margin: 0;
+  }
+  .hero__media {
+    margin-bottom: -120px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tldr {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding-block: 200px 120px;
+    --label: var(--green);
+  }
+  .tldr__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+    border-top: 2px solid var(--ink);
+  }
+  .tldr__col {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 28px 28px 28px 0;
+  }
+  .tldr__col h3 {
+    letter-spacing: 0.2em;
+  }
+  .tldr__col p {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .updated {
+    font-size: 14px;
+    color: var(--ink);
+  }
+
+  .ca {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+    gap: 64px 96px;
+    padding-bottom: 120px;
+    --label: var(--green);
+  }
+  .ca__col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding-top: 24px;
+    border-top: 1px solid var(--ink);
+  }
+  .ca__title {
+    font-size: clamp(28px, 2.8vw, 40px);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .prose :global(p) {
+    font-size: var(--t-body);
+    line-height: 1.75;
+  }
+  .prose :global(p + p) {
+    margin-top: 1em;
+  }
+  .approach {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .approach li {
+    display: flex;
+    gap: 20px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--ink);
+    font-size: var(--t-body);
+    line-height: 1.6;
+  }
+  .approach__num {
+    flex: 0 0 40px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--green);
+    padding-top: 2px;
+  }
+
+  .work__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-block: 120px;
+  }
+  .work__title {
+    margin-bottom: 24px;
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+    gap: var(--gutter);
+  }
+  .gallery__item--wide {
+    grid-column: 1 / -1;
+  }
+  .work__caption {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  .results {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    padding-block: 120px;
+    --label: var(--green);
+    --line: var(--ink);
+  }
+  .results__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+    gap: var(--gutter);
+  }
+  .results__grid :global(.stat__value) {
+    color: var(--green);
+  }
+  .quote {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 980px;
+    margin: 32px 0 0;
+    padding-left: 32px;
+    border-left: 4px solid var(--clay);
+  }
+  .quote p {
+    font-size: clamp(26px, 2.5vw, 36px);
+    font-weight: 500;
+    line-height: 1.45;
+  }
+  .quote footer {
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .next {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 40px;
+  }
+  .next__main {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .next__link {
+    align-self: flex-start;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--clay);
+    font-size: clamp(32px, 3.9vw, 56px);
+    font-weight: 600;
+    line-height: 1.15;
+  }
+
+  @media (max-width: 767px) {
+    .hero__inner {
+      padding-top: 56px;
+    }
+    .hero__media {
+      margin-bottom: -64px;
+    }
+    .tldr {
+      padding-block: 120px 72px;
+    }
+    .tldr__col p {
+      font-size: 19px;
+    }
+    .ca,
+    .results {
+      padding-bottom: 72px;
+    }
+    .work__inner,
+    .results {
+      padding-block: 72px;
+    }
+  }
+</style>

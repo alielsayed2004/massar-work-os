@@ -3,6 +3,11 @@ const year = new Date().getFullYear();
 ---
 
 <footer class="footer">
+  {Astro.slots.has("default") && (
+    <div class="container footer__above">
+      <slot />
+    </div>
+  )}
   <div class="container footer__inner">
     <a href="/" aria-label="Massar — home">
       <img src="/brand/massar_wordmark_white.png" width="222" height="36" alt="Massar" />
@@ -33,6 +38,10 @@ const year = new Date().getFullYear();
   .footer {
     background: var(--ink);
     color: var(--white);
+  }
+  .footer__above {
+    padding-block: var(--s-6) var(--s-5);
+    border-bottom: 1px solid var(--white);
   }
   .footer__inner {
     display: flex;

@@ -99,7 +99,13 @@ const ld = [
     <main id="main">
       <slot />
     </main>
-    <Footer />
+    {Astro.slots.has("footer") ? (
+      <Footer>
+        <slot name="footer" />
+      </Footer>
+    ) : (
+      <Footer />
+    )}
     <script>
       import "../scripts/motion";
     </script>
