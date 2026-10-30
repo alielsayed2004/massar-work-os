@@ -43,11 +43,15 @@ Bone is the one panel fill. Clay is emphasis only: link underline, the last path
 - Service index: giant rows, picture follows the cursor.
 
 ## Page layout
+
 Every page uses the same three moves, so the site reads as one piece:
+
 - **PageHero:** full-bleed cinematic picture, title bottom-left over an Ink gradient, header overlaid (Services, Problems, Process, About, Work, each problem page).
 - **SplitRow:** editorial row, picture 7 columns and text 5, alternating sides (services, problems, the About story).
 - **Picture bands and stacks:** the case stack on Home; full-bleed case heroes.
-Picture per page: Services (campaign review), Problems (hoardings), Process (one road through Cairo), About (downtown studio), Work (desert billboard), Start (brief notebook).
+  - **Portfolio grid:** a packed 12-column grid of wide, tall and square tiles with discipline filters; a tile opens a full-screen view with details and its case study.
+- **Client wall:** a ruled grid of logo tiles; clients with a case study turn Green on hover and link to it.
+  Picture per page: Portfolio (street posters), Clients (mall activation), Services (campaign review), Problems (hoardings), Process (one road through Cairo), About (downtown studio), Work (desert billboard), Start (brief notebook).
 
 ## Components
 

@@ -1,0 +1,131 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import SectionHead from "../components/SectionHead.astro";
+import PageHero from "../components/PageHero.astro";
+import ClientWall from "../components/ClientWall.astro";
+import CtaBand from "../components/CtaBand.astro";
+import { clients, testimonials } from "../data/clients";
+import hero from "../assets/demo/pf-activation.jpg";
+
+const sectors = [...new Set(clients.map((c) => c.sector))].map((s) => ({
+  name: s,
+  count: clients.filter((c) => c.sector === s).length,
+  cases: clients.filter((c) => c.sector === s && c.caseId).length,
+}));
+---
+
+<Base
+  title="Clients we've worked with | Massar"
+  description="The startups and SMEs Massar has worked with across Egypt and the GCC, by sector, with the case studies behind them."
+  breadcrumbs={[{ name: "Clients", path: "/clients" }]}
+  headerVariant="overlay"
+>
+  <PageHero
+    title="Who we've<br />worked with."
+    intro="Startups and SMEs in Egypt and the GCC. The ones you can click have a full case study behind them."
+    image={hero}
+    alt="Visitors streaming past a green brand booth in a Cairo mall"
+    compact
+  />
+
+  <Section labelledby="wall-title">
+    <h2 id="wall-title" class="visually-hidden">
+      Clients
+    </h2>
+    <ClientWall clients={clients} />
+    <p class="note">
+      [Client names and logos appear here once each client has approved being named.]
+    </p>
+  </Section>
+
+  <Section tone="ink" labelledby="words-title">
+    <SectionHead title="In their words" id="words-title" />
+    <div class="quotes">
+      {testimonials.map((t) => (
+        <blockquote class="quote">
+          <p>"{t.text}"</p>
+          <footer>
+            {t.name} · {t.role}
+          </footer>
+        </blockquote>
+      ))}
+    </div>
+  </Section>
+
+  <Section labelledby="sectors-title">
+    <SectionHead title="Sectors we know" id="sectors-title" />
+    <ul class="sectors">
+      {sectors.map((s) => (
+        <li>
+          <span class="sectors__name">{s.name}</span>
+          <span class="sectors__count">
+            {s.count} {s.count === 1 ? "client" : "clients"}
+            {s.cases > 0 && ` · ${s.cases} ${s.cases === 1 ? "case study" : "case studies"}`}
+          </span>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <CtaBand title="Want your name on this wall?<br />Bring us the problem." />
+</Base>
+
+<style>
+  .note {
+    font-size: var(--fs-xs);
+  }
+  .quotes {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 48px var(--gutter);
+  }
+  .quote {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+    padding-top: 24px;
+    border-top: 6px solid var(--clay);
+  }
+  .quote p {
+    font-size: var(--fs-title);
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+  }
+  .quote footer {
+    font-size: var(--fs-body);
+    opacity: 0.85;
+  }
+  .sectors {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 var(--gutter);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sectors li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--ink);
+  }
+  .sectors__name {
+    font-size: var(--fs-h3);
+    font-weight: 500;
+  }
+  .sectors__count {
+    font-size: var(--fs-xs);
+    color: var(--green);
+  }
+  @media (max-width: 767px) {
+    .quotes,
+    .sectors {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

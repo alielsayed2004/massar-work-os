@@ -1,0 +1,122 @@
+---
+/**
+ * Logo wall. Until real logos arrive each tile is a labelled placeholder.
+ * A client with a case study links to it.
+ */
+import { Image } from "astro:assets";
+import type { Client } from "../data/clients";
+
+interface Props {
+  clients: Client[];
+  /** Small variant for the home page. */
+  compact?: boolean;
+}
+const { clients, compact = false } = Astro.props;
+const list = compact ? clients.slice(0, 6) : clients;
+---
+
+<ul class:list={["wall", { "wall--compact": compact }]}>
+  {list.map((c) => {
+    const inner = (
+      <>
+        {c.logo ? (
+          <Image src={c.logo} alt={c.name} class="wall__logo" width={240} />
+        ) : (
+          <span class="wall__name">{c.name}</span>
+        )}
+        <span class="wall__sector">{c.sector}</span>
+        {c.caseId && <span class="wall__case">See the case →</span>}
+      </>
+    );
+    return (
+      <li>
+        {c.caseId ? (
+          <a href={`/work/${c.caseId}`} class="wall__tile wall__tile--link">
+            {inner}
+          </a>
+        ) : (
+          <div class="wall__tile">{inner}</div>
+        )}
+      </li>
+    );
+  })}
+</ul>
+
+<style>
+  .wall {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    margin: 0;
+    padding: 1px;
+    list-style: none;
+    background: var(--ink);
+  }
+  .wall--compact {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+  .wall li {
+    background: var(--white);
+  }
+  .wall__tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    aspect-ratio: 3 / 2;
+    padding: 16px;
+    text-align: center;
+    transition: background-color 200ms ease;
+  }
+  .wall--compact .wall__tile {
+    aspect-ratio: 4 / 3;
+  }
+  .wall__name {
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .wall :global(.wall__logo) {
+    max-width: 70%;
+    max-height: 48%;
+    object-fit: contain;
+  }
+  .wall__sector {
+    font-size: var(--fs-xs);
+    color: var(--green);
+  }
+  .wall__case {
+    position: absolute;
+    bottom: 12px;
+    font-size: var(--fs-xs);
+    font-weight: 500;
+    color: var(--white);
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+  .wall__tile--link:hover {
+    background: var(--green);
+  }
+  .wall__tile--link:hover .wall__name,
+  .wall__tile--link:hover .wall__sector {
+    color: var(--white);
+  }
+  .wall__tile--link:hover .wall__case {
+    opacity: 1;
+  }
+  @media (max-width: 1023px) {
+    .wall--compact {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 767px) {
+    .wall {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .wall__name {
+      font-size: var(--fs-lead);
+    }
+  }
+</style>

@@ -60,3 +60,11 @@ pnpm lint && pnpm format:check
 5. `pnpm build`, check `/work/<slug>`, commit.
 
 Problems (`src/content/problems/`) and field notes (`src/content/notes/`) work the same way.
+
+## Add a portfolio piece
+
+Edit `src/data/portfolio.ts`: import the picture from `src/assets/…`, then add an entry with `title`, `client`, `discipline` (Branding, Campaigns, Outdoor, Social, Packaging, Spaces, Digital), `year`, `alt`, `size` (`wide`, `tall` or `square`, which sets its tile in the grid) and, if it has one, the `caseId` of its case study. Set `draft: false` once the client has approved it.
+
+## Add a client
+
+Edit `src/data/clients.ts`: `name`, `sector`, optionally `logo` (an imported image) and `caseId`. Only list clients who have agreed to be named. Testimonials live in the same file and must be real, approved quotes.

@@ -13,9 +13,10 @@ export const org = {
 
 export const nav = [
   { href: "/work", label: "Work" },
+  { href: "/portfolio", label: "Portfolio" },
+  { href: "/clients", label: "Clients" },
   { href: "/problems", label: "Problems" },
   { href: "/services", label: "Services" },
-  { href: "/process", label: "Process" },
   { href: "/about", label: "About" },
 ];
 

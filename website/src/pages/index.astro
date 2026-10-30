@@ -12,6 +12,8 @@ import MovingParts from "../components/MovingParts.astro";
 import ServiceRows from "../components/ServiceRows.astro";
 import Path from "../components/Path.astro";
 import CtaBand from "../components/CtaBand.astro";
+import ClientWall from "../components/ClientWall.astro";
+import { clients } from "../data/clients";
 import { getProblems, getWork } from "../lib/content";
 import { homeFaqs, processSteps } from "../data/site";
 import imgMarketing from "../assets/demo/campaign-review.jpg";
@@ -50,13 +52,27 @@ const problems = await getProblems();
     <h2 id="proof-title" class="h2">
       Problems we've already solved.
     </h2>
-    <a href="/work" class="link">
-      All case studies
-    </a>
+    <span class="proof-links">
+      <a href="/work" class="link">
+        All case studies
+      </a>
+      <a href="/portfolio" class="link">
+        Portfolio
+      </a>
+    </span>
   </section>
   {work.length > 0 && <CaseStack work={work} />}
 
-  <Section labelledby="services-title">
+  <Section labelledby="clients-title">
+    <SectionHead title="Clients we've worked with" id="clients-title">
+      <Button slot="aside" href="/clients" variant="link">
+        All clients
+      </Button>
+    </SectionHead>
+    <ClientWall clients={clients} compact />
+  </Section>
+
+  <Section labelledby="services-title" class="tight-top">
     <SectionHead title="What we use to fix it" id="services-title">
       <Button slot="aside" href="/services" variant="link">
         All services
@@ -98,6 +114,10 @@ const problems = await getProblems();
 </Base>
 
 <style>
+  .proof-links {
+    display: flex;
+    gap: 24px;
+  }
   .proof-head {
     display: flex;
     justify-content: space-between;
@@ -111,6 +131,7 @@ const problems = await getProblems();
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: 32px 96px;
   }
+  :global(.tight-top) :global(.section__inner),
   :global(.faq-section) :global(.section__inner) {
     padding-top: 0;
   }

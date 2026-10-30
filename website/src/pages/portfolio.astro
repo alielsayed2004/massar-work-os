@@ -1,0 +1,78 @@
+---
+import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
+import SectionHead from "../components/SectionHead.astro";
+import PageHero from "../components/PageHero.astro";
+import PortfolioGrid from "../components/PortfolioGrid.astro";
+import ClientWall from "../components/ClientWall.astro";
+import Button from "../components/Button.astro";
+import CtaBand from "../components/CtaBand.astro";
+import { portfolio } from "../data/portfolio";
+import { clients } from "../data/clients";
+import { showDrafts } from "../lib/content";
+import { abs } from "../lib/seo";
+import hero from "../assets/demo/pf-posters.jpg";
+
+const pieces = portfolio.filter((p) => showDrafts || !p.draft);
+const gallery = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Massar portfolio",
+  url: abs("/portfolio", Astro.site),
+  about: { "@id": abs("/#org", Astro.site) },
+  hasPart: pieces.map((p) => ({
+    "@type": "CreativeWork",
+    name: p.title,
+    genre: p.discipline,
+    creator: { "@id": abs("/#org", Astro.site) },
+    ...(p.caseId ? { url: abs(`/work/${p.caseId}`, Astro.site) } : {}),
+  })),
+};
+---
+
+<Base
+  title="Portfolio: branding, campaigns & outdoor | Massar"
+  description="The work, piece by piece: identities, campaigns, outdoor, social, packaging and spaces made by Massar for businesses in Egypt and the GCC."
+  breadcrumbs={[{ name: "Portfolio", path: "/portfolio" }]}
+  jsonLd={[gallery]}
+  headerVariant="overlay"
+>
+  <PageHero
+    title="The work,<br />piece by piece."
+    intro="Identities, campaigns, outdoor, social, packaging and spaces. Every piece answered a business problem; the ones with a case study tell the whole story."
+    image={hero}
+    alt="A wall of green and bone campaign posters on a Cairo street"
+    compact
+  />
+
+  <Section labelledby="pf-title">
+    <h2 id="pf-title" class="visually-hidden">
+      Portfolio
+    </h2>
+    {pieces.length ? (
+      <PortfolioGrid pieces={pieces} />
+    ) : (
+      <p class="empty">The portfolio is being photographed. Ask us for examples in the meantime.</p>
+    )}
+  </Section>
+
+  <Section labelledby="clients-title" class="tight-top">
+    <SectionHead title="Made for" id="clients-title">
+      <Button slot="aside" href="/clients" variant="link">
+        All clients
+      </Button>
+    </SectionHead>
+    <ClientWall clients={clients} compact />
+  </Section>
+
+  <CtaBand picks={false} />
+</Base>
+
+<style>
+  .empty {
+    font-size: var(--fs-lead);
+  }
+  :global(.tight-top) :global(.section__inner) {
+    padding-top: 0;
+  }
+</style>
