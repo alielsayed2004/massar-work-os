@@ -115,7 +115,9 @@ const ld = [
           document.documentElement.classList.add("intro");
           sessionStorage.setItem("massar-intro", "1");
         }
-      } catch (e) {}
+      } catch {
+        // Storage blocked: skip the intro.
+      }
     </script>
     <ClientRouter />
   </head>
