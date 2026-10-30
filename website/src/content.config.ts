@@ -75,6 +75,8 @@ const problems = defineCollection({
     title: z.string(),
     /** One-line answer for the home card. */
     short: z.string(),
+    /** What usually sits behind the problem, one sentence. */
+    cause: z.string(),
     /** Answer-first paragraph, 2–3 sentences. */
     answer: z.string(),
     steps: z.array(z.string()).length(3),

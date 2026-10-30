@@ -1,0 +1,76 @@
+---
+interface Props {
+  items: string[];
+}
+const { items } = Astro.props;
+// Two copies so the loop is seamless; the second is hidden from assistive tech.
+---
+
+<div class="marquee" aria-label={items.join(", ")} role="img">
+  <div class="marquee__track" aria-hidden="true">
+    {[0, 1].map(() => (
+      <ul class="marquee__list">
+        {items.map((t) => (
+          <li>
+            <span>{t}</span>
+            <svg viewBox="0 0 16 16" width="16" height="16" class="marquee__dot">
+              <path d="M8 0 10 6 16 8 10 10 8 16 6 10 0 8 6 6Z" />
+            </svg>
+          </li>
+        ))}
+      </ul>
+    ))}
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    border-block: 1px solid var(--ink);
+    padding-block: 22px;
+    background: var(--white);
+  }
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    animation: marquee 38s linear infinite;
+  }
+  .marquee:hover .marquee__track {
+    animation-play-state: paused;
+  }
+  .marquee__list {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .marquee__list li {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    padding-right: 40px;
+    font-size: clamp(28px, 3.4vw, 48px);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    color: var(--ink);
+  }
+  .marquee__list li:nth-child(odd) span {
+    color: var(--green);
+  }
+  .marquee__dot {
+    fill: var(--clay);
+    flex: none;
+  }
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee__track {
+      animation: none;
+    }
+  }
+</style>

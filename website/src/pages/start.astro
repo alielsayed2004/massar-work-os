@@ -271,6 +271,15 @@ const steps = ["The problem", "Your business", "Goal", "Contact"];
       }
     });
 
+    // Preselect the problem when coming from a "Which one is yours?" link.
+    const pre = new URLSearchParams(location.search).get("problem");
+    if (pre) {
+      const radio = [...form.querySelectorAll<HTMLInputElement>('input[name="problem"]')].find(
+        (r) => r.value === pre,
+      );
+      if (radio) radio.checked = true;
+    }
+
     show(0);
   }
   document.addEventListener("astro:page-load", initStart);

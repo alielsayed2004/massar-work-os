@@ -30,8 +30,8 @@ const values = [1, 2, 3];
     <ul class="services">
       {services.map((s) => (
         <li data-reveal>
-          <span class="services__name">{s}</span>
-          <span>[One line on what this covers.]</span>
+          <span class="services__name">{s.name}</span>
+          <span>{s.line}</span>
         </li>
       ))}
     </ul>
