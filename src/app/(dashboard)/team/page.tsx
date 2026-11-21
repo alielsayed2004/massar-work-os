@@ -174,9 +174,20 @@ export default async function TeamPage({
                     <input type="hidden" name="back" value="/team" />
                     <input type="hidden" name="user_id" value={p.id} />
                     <button type="submit" style={{ ...s.textBtn, fontWeight: 500, color: 'var(--color-text-muted)' }} title="Emails them a fresh link to choose a password">
-                      Send sign-in link
+                      Email sign-in link
                     </button>
                   </form>
+                )}
+                {isPartner && p.whatsapp_phone && (
+                  <a
+                    href={`/api/sign-in-link/whatsapp?user=${p.id}`}
+                    target="_blank"
+                    rel="noopener"
+                    style={{ ...s.textBtn, fontWeight: 500, color: 'var(--color-text-muted)', textDecoration: 'none' }}
+                    title="Opens WhatsApp with a one-time link for them to choose a password"
+                  >
+                    Sign-in link on WhatsApp
+                  </a>
                 )}
                 {chat && !p.late.length && (
                   <a href={chat} target="_blank" rel="noopener" style={{ ...s.secondary, minHeight: 38, textDecoration: 'none' }}>

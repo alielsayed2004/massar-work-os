@@ -8,6 +8,9 @@ import { registerTaskFile } from '@/app/actions/delivery'
 import { MESSAGES } from '@/lib/labels'
 import { s } from '@/components/ui'
 
+// Supabase Storage's per-file limit on the current plan
+const MAX_FILE_BYTES = 50 * 1024 * 1024
+
 /**
  * Uploads straight from the browser to the private `massar_files` bucket
  * (Storage RLS: internal staff only), then records the file on the draft
@@ -34,6 +37,14 @@ export default function VersionUpload({
     setMessage(null)
     const supabase = createClient()
 
+    const tooBig = files.find(f => f.size > MAX_FILE_BYTES)
+    if (tooBig) {
+      setMessage(`${tooBig.name}: ${MESSAGES.FILE_TOO_LARGE}`)
+      setBusy(false)
+      e.target.value = ''
+      return
+    }
+
     for (const file of files) {
       const safeName = file.name.replace(/[^\w.\-]+/g, '_')
       const key = taskId
@@ -45,6 +56,7 @@ export default function VersionUpload({
       if (upErr) {
         setMessage(MESSAGES.FILE_UPLOAD_FAILED)
         setBusy(false)
+        e.target.value = ''
         return
       }
       const meta = { storageKey: key, name: file.name, type: file.type, size: file.size }
@@ -54,6 +66,7 @@ export default function VersionUpload({
       if (!res.ok) {
         setMessage(MESSAGES[res.code || 'FILE_UPLOAD_FAILED'])
         setBusy(false)
+        e.target.value = ''
         return
       }
     }

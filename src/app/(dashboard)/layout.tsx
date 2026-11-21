@@ -105,7 +105,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         fullName={fullName}
         roleLabel={ROLE[role] || role}
         notifications={notifications || []}
-        canSearch={isInternal}
+        canSearch={isLead}
       >
         {children}
       </AppShell>

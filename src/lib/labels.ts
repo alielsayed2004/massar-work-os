@@ -112,7 +112,12 @@ export const MESSAGES: Record<string, string> = {
   SAVED: 'Saved successfully.',
   // admin
   INVITE_FAILED: 'Could not send the invite. Check the email address and try again.',
-  EMAIL_EXISTS: 'This email already has an account. Use “Send sign-in link” next to their name to email them a fresh link.',
+  EMAIL_RATE_LIMIT: 'The email service has reached its hourly limit. Send the link on WhatsApp instead, or try the email again in an hour.',
+  NO_WHATSAPP: 'Save this person’s WhatsApp number first.',
+  TASK_SAVED: 'Task updated.',
+  TASK_CANCELED: 'Task cancelled.',
+  FILE_TOO_LARGE: 'This file is over 50 MB, the storage limit per file. Compress it or share a link instead.',
+  EMAIL_EXISTS: 'This email already has an account. On the Team page, send them a sign-in link by WhatsApp or email.',
   INVITE_SENT: 'Invite emailed. They open the link and choose their own password.',
   SIGN_IN_LINK_SENT: 'Sign-in link emailed. They open it and choose a new password.',
   USER_DEACTIVATED: 'Access removed. Their history stays in the system.',
@@ -148,4 +153,34 @@ export function toCode(err: unknown): string {
 /** Current time for server-rendered deadline buckets (kept out of render for react-hooks/purity). */
 export function nowMs(): number {
   return Date.now()
+}
+
+/**
+ * The database writes notification text in Arabic (older decision); the app is
+ * English. Translate the fixed opening and keep the task / delivery title.
+ * Unknown text is shown as it is.
+ */
+const NOTIFICATION_PREFIX: [string, string][] = [
+  ['تم إسناد مهمة لك بعد نقل المسؤولية: ', 'Handed over to you: '],
+  ['تم إسناد مهمة جديدة لك: ', 'New task for you: '],
+  ['مهمة جديدة مسندة لك: ', 'New task for you: '],
+  ['تم اتخاذ قرار بشأن طلب نقل المهمة: ', 'Your handover request was decided: '],
+  ['طلب نقل مسؤولية: ', 'Handover request: '],
+  ['تم قبول طلب نقل المسؤولية: ', 'Handover accepted: '],
+  ['تم رفض طلب نقل المسؤولية: ', 'Handover declined: '],
+  ['تم إلغاء طلب نقل المسؤولية: ', 'Handover cancelled: '],
+  ['طلب مراجعة داخلية: ', 'Waiting for your check: '],
+  ['تسليم جديد في انتظار مراجعتك: ', 'New delivery to review: '],
+  ['تم الاعتماد الداخلي: ', 'Approved by the partner: '],
+  ['مطلوب تعديل داخلي: ', 'Partner asked for changes: '],
+  ['العميل اعتمد: ', 'Client approved: '],
+  ['العميل طلب تعديلات: ', 'Client asked for changes: '],
+  ['العميل وافق على: ', 'Client approved: '],
+  ['مطلوب تعديل على: ', 'Changes requested: '],
+]
+
+export function notificationText(message: string): string {
+  const hit = NOTIFICATION_PREFIX.find(([ar]) => message.startsWith(ar))
+  if (!hit) return message
+  return hit[1] + message.slice(hit[0].length).replace(' — نسخة ', ' · V')
 }

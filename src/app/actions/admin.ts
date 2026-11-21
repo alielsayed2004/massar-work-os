@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { inviteAccount } from '@/lib/invite'
+import { inviteAccount, isEmailRateLimit } from '@/lib/invite'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { siteOrigin } from '@/lib/site'
 import { revalidatePath } from 'next/cache'
@@ -143,7 +143,7 @@ export async function sendSetPasswordLink(formData: FormData) {
   const { error: sendErr } = await admin.auth.resetPasswordForEmail(data.user.email, {
     redirectTo: `${await siteOrigin()}/auth/set-password`,
   })
-  if (sendErr) backWithError(back, 'INVITE_FAILED')
+  if (sendErr) backWithError(back, isEmailRateLimit(sendErr) ? 'EMAIL_RATE_LIMIT' : 'INVITE_FAILED')
   backWithOk(back, 'SIGN_IN_LINK_SENT')
 }
 

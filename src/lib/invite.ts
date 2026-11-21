@@ -3,6 +3,12 @@ import { siteOrigin } from '@/lib/site'
 
 type Role = 'admin' | 'manager' | 'member'
 
+/** Supabase's built-in email sends only a few messages an hour. */
+export function isEmailRateLimit(error: unknown): boolean {
+  const e = error as { code?: string; status?: number }
+  return e?.code === 'over_email_send_rate_limit' || e?.status === 429
+}
+
 /**
  * Sends a Supabase invite and sets role / team with the service
  * key (app_metadata), so nobody can choose their own role at sign-up.
@@ -30,6 +36,7 @@ export async function inviteAccount(input: {
   })
   // Already has an account (e.g. invited before): a fresh sign-in link is the fix
   if (error && (error as { code?: string }).code === 'email_exists') return 'EMAIL_EXISTS'
+  if (error && isEmailRateLimit(error)) return 'EMAIL_RATE_LIMIT'
   if (error || !data?.user) return 'INVITE_FAILED'
 
   const { error: metaErr } = await admin.auth.admin.updateUserById(data.user.id, {
