@@ -138,7 +138,8 @@ export async function sendSetPasswordLink(formData: FormData) {
   } catch {
     backWithError(back, 'MISSING_SERVICE_ROLE_KEY')
   }
-  const { data, error } = await admin.auth.admin.getUserById(target_id)
+  // getUserById throws on an id that isn't a UUID
+  const { data, error } = await admin.auth.admin.getUserById(target_id).catch(() => ({ data: { user: null }, error: true }))
   if (error || !data.user?.email) backWithError(back, 'NOT_ALLOWED')
   const { error: sendErr } = await admin.auth.resetPasswordForEmail(data.user.email, {
     redirectTo: `${await siteOrigin()}/auth/set-password`,

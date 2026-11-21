@@ -2,6 +2,7 @@ export const instant = false;
 import { createClient } from '@/lib/supabase/server'
 import { getSessionUser, getMyProfile } from '@/lib/session'
 import { redirect } from 'next/navigation'
+import { connection } from 'next/server'
 import {
   inviteUser,
   saveUser,
@@ -22,6 +23,7 @@ export default async function AdminPage({
 }: {
   searchParams: Promise<{ error?: string; ok?: string }>
 }) {
+  await connection()
   const { error, ok } = await searchParams
   const supabase = await createClient()
   const user = await getSessionUser()

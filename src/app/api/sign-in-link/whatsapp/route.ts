@@ -4,6 +4,8 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { siteOrigin } from '@/lib/site'
 import { whatsappLink } from '@/lib/workflow'
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 /**
  * Opened in a new tab from Team → "Sign-in link on WhatsApp". Partners only.
  * Makes a one-time link to the set-password page and opens WhatsApp to that
@@ -16,6 +18,7 @@ export async function GET(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.redirect(new URL('/login', request.url))
+  if (!UUID.test(userId)) return back('NOT_ALLOWED')
   const { data: actor } = await supabase.from('profiles').select('role, status').eq('id', user.id).single()
   if (actor?.role !== 'admin' || actor?.status !== 'active') return back('NOT_ALLOWED')
 
