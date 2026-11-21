@@ -1,5 +1,6 @@
 'use client'
 
+import { BRAND } from '@/lib/brand'
 import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -76,14 +77,14 @@ export default function SetPasswordForm() {
   return (
     <main className="massar-auth-page">
       <section className="massar-login-card" aria-busy={phase === 'checking' || phase === 'saving'}>
-        <div className="massar-login-mark" role="img" aria-label="Massar" />
+        <div className="massar-login-mark" role="img" aria-label={BRAND.name} />
 
         {phase === 'invalid' ? (
           <>
             <h1 className="massar-login-title">Link expired</h1>
-            <p className="massar-login-sub">Massar Work OS</p>
+            <p className="massar-login-sub">{BRAND.name} Work OS</p>
             <p style={{ margin: '0 0 var(--space-4)', textAlign: 'center', color: 'var(--color-text-muted)' }}>
-              This link was already used or is too old. Ask a Massar partner to send a new invite, or use “Forgot password?” on the sign-in page.
+              This link was already used or is too old. Ask a {BRAND.name} partner to send a new invite, or use “Forgot password?” on the sign-in page.
             </p>
             <a href="/login" className="massar-btn-primary-light" style={{ display: 'grid', placeItems: 'center', textDecoration: 'none' }}>
               Go to sign in
@@ -92,7 +93,7 @@ export default function SetPasswordForm() {
         ) : (
           <>
             <h1 className="massar-login-title">{name ? `Welcome, ${name}` : 'Set your password'}</h1>
-            <p className="massar-login-sub">Choose a password for Massar Work OS</p>
+            <p className="massar-login-sub">Choose a password for {BRAND.name} Work OS</p>
             <form onSubmit={onSubmit} className="massar-login-form">
               <div>
                 <label htmlFor="password">New password</label>
@@ -104,12 +105,13 @@ export default function SetPasswordForm() {
               </div>
               {error && <p role="alert" className="massar-login-alert">{error}</p>}
               <button type="submit" disabled={phase !== 'ready'} className="massar-btn-primary-light">
-                {phase === 'checking' ? 'Checking your link…' : phase === 'saving' ? 'Saving…' : 'Save and open Massar'}
+                {phase === 'checking' ? 'Checking your link…' : phase === 'saving' ? 'Saving…' : `Save and open ${BRAND.name}`}
               </button>
             </form>
           </>
         )}
       </section>
+      {BRAND.credit && <p className="massar-credit massar-credit-page">{BRAND.credit}</p>}
     </main>
   )
 }

@@ -1,5 +1,6 @@
 'use client'
 
+import { BRAND } from '@/lib/brand'
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -39,15 +40,15 @@ export default function AppShell({
   const [navOpen, setNavOpen] = useState(false)
   const closeNav = () => setNavOpen(false)
 
-  const title = groups.flatMap(g => g.items).find(i => isActivePath(pathname, i.href))?.label || 'Massar'
+  const title = groups.flatMap(g => g.items).find(i => isActivePath(pathname, i.href))?.label || BRAND.name
 
   return (
     <div className="massar-shell" data-nav-open={navOpen}>
       <aside className="massar-sidebar" aria-label="Sidebar">
         <div className="massar-sidebar-brand">
-          <Link href={homeHref} aria-label="Massar home" onClick={closeNav}>
+          <Link href={homeHref} aria-label={`${BRAND.name} home`} onClick={closeNav}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/image/massar_logo.svg" alt="Massar" className="massar-sidebar-logo" />
+            <img src={BRAND.logo} alt={BRAND.name} className="massar-sidebar-logo" />
           </Link>
           <button type="button" className="massar-icon-btn massar-menu-btn" onClick={closeNav} aria-label="Close navigation">
             <Icon name="close" />
@@ -68,6 +69,7 @@ export default function AppShell({
             </button>
           </form>
         </div>
+        {BRAND.credit && <p className="massar-credit">{BRAND.credit}</p>}
       </aside>
 
       <div className="massar-scrim" onClick={closeNav} aria-hidden="true" />

@@ -1,4 +1,6 @@
 export const instant = false
+import { BRAND } from '@/lib/brand'
+import { Fragment } from 'react'
 import Link from 'next/link'
 import { connection } from 'next/server'
 import { formatInTimeZone } from 'date-fns-tz'
@@ -7,7 +9,7 @@ import { getSessionUser, getMyProfile } from '@/lib/session'
 import { checkDelivery } from '@/app/actions/delivery'
 import { CAIRO, nowMs } from '@/lib/labels'
 import { whatsappLink, dueLabel, hoursUntil } from '@/lib/workflow'
-import { s, Flash, Empty, PageHeader, Panel } from '@/components/ui'
+import { s, Flash, Empty, PageHeader, Panel, StatStrip } from '@/components/ui'
 import { Icon } from '@/components/icons'
 import ApproveSendButton from '@/components/ApproveSendButton'
 
@@ -94,41 +96,8 @@ export default async function TodayPage({
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening'
   const firstName = me.full_name?.split(' ')[0]
 
-  return (
-    <div>
-      <PageHeader
-        eyebrow={formatInTimeZone(new Date(now), CAIRO, 'EEEE, d MMMM')}
-        title={firstName ? `${greeting}, ${firstName}.` : `${greeting}.`}
-        description={total ? `${total} ${total === 1 ? 'thing needs' : 'things need'} you today. Each one has its next step beside it.` : 'All clear. Nothing is waiting for your check, nobody is late, and no client has been waiting more than a day.'}
-        actions={<Link href="/spaces" style={{ ...s.secondary, textDecoration: 'none' }}>Client spaces</Link>}
-      />
-      <Flash error={error} ok={ok} />
-
-      {/* Straight after an approval: send it to the client while it's fresh */}
-      {justSent && (
-        <div className="massar-due-alert" style={{ borderColor: 'var(--color-action-primary)', alignItems: 'center' }}>
-          <Icon name="chat" style={{ color: 'var(--color-action-primary)' }} />
-          <div style={{ flex: 1 }}>
-            <strong>WhatsApp is open with the message for {justSent.projects?.clients?.contact_name || justSent.projects?.clients?.company_name}</strong>
-            <div style={{ fontSize: 14 }}>Just press send. The link lets them approve or ask for changes without signing in.</div>
-          </div>
-          <a href={`/api/review-link/whatsapp?version=${justSent.version!.id}`} target="_blank" rel="noopener" className="massar-wa-btn" style={{ padding: '0 16px' }}>
-            <Icon name="chat" /> Didn’t open? Send again
-          </a>
-        </div>
-      )}
-
-      {!!handovers && (
-        <div className="massar-due-alert" style={{ alignItems: 'center' }}>
-          <Icon name="team" />
-          <div style={{ flex: 1 }}>
-            <strong>{handovers} handover {handovers === 1 ? 'request' : 'requests'}</strong>
-            <div style={{ fontSize: 14 }}>Someone can’t finish on time and needs you to pick who takes over.</div>
-          </div>
-          <Link href="/team#handovers" style={{ ...s.primary, textDecoration: 'none' }}>Decide</Link>
-        </div>
-      )}
-
+  const sections = {
+    check: (
       <Panel title="Waiting for your check" count={toCheck.length} attention flush>
         {toCheck.length === 0 ? (
           <Empty>No deliveries to check.</Empty>
@@ -164,7 +133,8 @@ export default async function TodayPage({
           ))
         )}
       </Panel>
-
+    ),
+    late: (
       <Panel title="Late with the team" count={late.length} attention flush>
         {late.length === 0 ? (
           <Empty>Nobody is late.</Empty>
@@ -173,7 +143,7 @@ export default async function TodayPage({
             const first = t.owner?.full_name.split(' ')[0] || 'there'
             const wa = whatsappLink(
               t.owner?.whatsapp_phone,
-              `Hi ${first}, “${t.title}”${t.projects?.clients ? ` for ${t.projects.clients.company_name}` : ''} was due ${dueLabel(t.due_at, now).replace(' late', '')} ago. Where are we on it? Please deliver it on Massar as soon as you can.`
+              `Hi ${first}, “${t.title}”${t.projects?.clients ? ` for ${t.projects.clients.company_name}` : ''} was due ${dueLabel(t.due_at, now).replace(' late', '')} ago. Where are we on it? Please deliver it on ${BRAND.name} as soon as you can.`
             )
             return (
               <article key={t.id} className="massar-row massar-today-row">
@@ -197,7 +167,8 @@ export default async function TodayPage({
           })
         )}
       </Panel>
-
+    ),
+    client: (
       <Panel
         title="Client hasn’t replied"
         count={slowClients.length}
@@ -222,6 +193,55 @@ export default async function TodayPage({
           ))
         )}
       </Panel>
+    ),
+  }
+
+  return (
+    <div>
+      <PageHeader
+        eyebrow={formatInTimeZone(new Date(now), CAIRO, 'EEEE, d MMMM')}
+        title={firstName ? `${greeting}, ${firstName}.` : `${greeting}.`}
+        description={total ? `${total} ${total === 1 ? 'thing needs' : 'things need'} you today. Each one has its next step beside it.` : 'All clear. Nothing is waiting for your check, nobody is late, and no client has been waiting more than a day.'}
+        actions={<Link href="/spaces" style={{ ...s.secondary, textDecoration: 'none' }}>Client spaces</Link>}
+      />
+      <Flash error={error} ok={ok} />
+
+      {/* Straight after an approval: send it to the client while it's fresh */}
+      {justSent && (
+        <div className="massar-due-alert" style={{ borderColor: 'var(--color-action-primary)', alignItems: 'center' }}>
+          <Icon name="chat" style={{ color: 'var(--color-action-primary)' }} />
+          <div style={{ flex: 1 }}>
+            <strong>WhatsApp is open with the message for {justSent.projects?.clients?.contact_name || justSent.projects?.clients?.company_name}</strong>
+            <div style={{ fontSize: 14 }}>Just press send. The link lets them approve or ask for changes without signing in.</div>
+          </div>
+          <a href={`/api/review-link/whatsapp?version=${justSent.version!.id}`} target="_blank" rel="noopener" className="massar-wa-btn" style={{ padding: '0 16px' }}>
+            <Icon name="chat" /> Didn’t open? Send again
+          </a>
+        </div>
+      )}
+
+      {!!handovers && (
+        <div className="massar-due-alert" style={{ alignItems: 'center' }}>
+          <Icon name="team" />
+          <div style={{ flex: 1 }}>
+            <strong>{handovers} handover {handovers === 1 ? 'request' : 'requests'}</strong>
+            <div style={{ fontSize: 14 }}>Someone can’t finish on time and needs you to pick who takes over.</div>
+          </div>
+          <Link href="/team#handovers" style={{ ...s.primary, textDecoration: 'none' }}>Decide</Link>
+        </div>
+      )}
+
+      {BRAND.todayStats && (
+        <StatStrip
+          items={[
+            { label: 'Late with the team', value: late.length, attention: late.length > 0 },
+            { label: 'Waiting for your check', value: toCheck.length },
+            { label: 'With clients', value: withClient.length },
+          ]}
+        />
+      )}
+
+      {BRAND.todayOrder.map(key => <Fragment key={key}>{sections[key]}</Fragment>)}
     </div>
   )
 }

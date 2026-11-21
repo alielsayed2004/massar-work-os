@@ -1,3 +1,4 @@
+import { BRAND } from '@/lib/brand'
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -45,6 +46,6 @@ export async function GET(request: Request) {
   if (error || !url) return back('INVITE_FAILED')
 
   const first = person.full_name.split(' ')[0]
-  const text = `Hi ${first}, this is your private link to choose your Massar password and sign in: ${url}\nIt works once and expires in 24 hours. Don’t forward it.`
+  const text = `Hi ${first}, this is your private link to choose your ${BRAND.name} password and sign in: ${url}\nIt works once and expires in 24 hours. Don’t forward it.`
   return NextResponse.redirect(whatsappLink(person.whatsapp_phone, text) || new URL('/team?error=NO_WHATSAPP', request.url))
 }

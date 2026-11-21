@@ -1,4 +1,5 @@
 export const instant = false
+import { BRAND } from '@/lib/brand'
 import type { Metadata } from 'next'
 import { connection } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -8,7 +9,7 @@ import { s, Flash } from '@/components/ui'
 import { Icon } from '@/components/icons'
 import { decideByLink } from './actions'
 
-export const metadata: Metadata = { title: 'Review your delivery · Massar', robots: { index: false, follow: false } }
+export const metadata: Metadata = { title: `Review your delivery · ${BRAND.name}`, robots: { index: false, follow: false } }
 
 type Row = {
   expires_at: string
@@ -27,11 +28,12 @@ type Row = {
 function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div style={{ minHeight: '100vh', background: 'var(--color-page)' }}>
-      <header style={{ background: 'var(--massar-green)', padding: '18px max(16px, env(safe-area-inset-left, 0px))', display: 'flex', justifyContent: 'center' }}>
+      <header style={{ background: 'var(--color-navigation)', padding: '18px max(16px, env(safe-area-inset-left, 0px))', display: 'flex', justifyContent: 'center' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/image/massar_logo.svg" alt="Massar" style={{ height: 44 }} />
+        <img src={BRAND.logo} alt={BRAND.name} style={{ height: 44 }} />
       </header>
       <main style={{ maxWidth: 680, margin: '0 auto', padding: '32px 16px 64px', display: 'grid', gap: 'var(--space-4)' }}>{children}</main>
+      {BRAND.credit && <p className="massar-credit massar-credit-page" style={{ position: 'static', paddingBottom: 24 }}>{BRAND.credit}</p>}
     </div>
   )
 }
@@ -57,7 +59,7 @@ export default async function ReviewLinkPage({
   await connection()
   const { token } = await params
   const { error, ok } = await searchParams
-  if (!isTokenShaped(token)) return <Notice title="This link doesn’t work" body="Please ask your Massar contact to send you a new one." />
+  if (!isTokenShaped(token)) return <Notice title="This link doesn’t work" body={`Please ask your ${BRAND.name} contact to send you a new one.`} />
 
   let admin
   try {
@@ -79,12 +81,12 @@ export default async function ReviewLinkPage({
   const v = row?.deliverable_versions
   const d = v?.deliverables
 
-  if (!row || !v || !d) return <Notice title="This link doesn’t work" body="Please ask your Massar contact to send you a new one." />
+  if (!row || !v || !d) return <Notice title="This link doesn’t work" body={`Please ask your ${BRAND.name} contact to send you a new one.`} />
   if (new Date(row.expires_at).getTime() < nowMs() && v.status === 'shared_with_client') {
-    return <Notice title="This link has expired" body="Links stay open for 14 days. Ask your Massar contact for a fresh one." />
+    return <Notice title="This link has expired" body={`Links stay open for 14 days. Ask your ${BRAND.name} contact for a fresh one.`} />
   }
   if (d.current_version_id !== v.id) {
-    return <Notice title="There’s a newer version" body="Your Massar contact will send you the link to the latest version." />
+    return <Notice title="There’s a newer version" body={`Your ${BRAND.name} contact will send you the link to the latest version.`} />
   }
 
   // Short-lived download links, made only for the files of this one version

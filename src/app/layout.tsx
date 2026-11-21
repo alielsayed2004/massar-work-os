@@ -1,3 +1,4 @@
+import { BRAND } from '@/lib/brand'
 import type { Metadata } from "next";
 import localFont from 'next/font/local';
 import "./globals.css";
@@ -55,8 +56,8 @@ const switzer = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Massar Work OS",
-  description: "Internal operations for Massar",
+  title: `${BRAND.name} Work OS`,
+  description: `Internal operations for ${BRAND.name}`,
   icons: {
     icon: [
       { url: '/icon.svg', type: 'image/svg+xml' },
@@ -81,7 +82,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" dir="ltr" className={`${ibmPlex.variable} ${switzer.variable}`} suppressHydrationWarning>
+    <html lang="en" dir="ltr" data-brand={BRAND.key} className={`${ibmPlex.variable} ${switzer.variable}`} suppressHydrationWarning>
       <body suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: AUTH_LINK_FORWARD }} />
         {children}

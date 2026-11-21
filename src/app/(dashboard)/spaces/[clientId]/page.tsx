@@ -1,4 +1,5 @@
 export const instant = false
+import { BRAND } from '@/lib/brand'
 import Link from 'next/link'
 import { connection } from 'next/server'
 import { notFound } from 'next/navigation'
@@ -184,7 +185,7 @@ function FlowRow({ item, contact, back, now, people }: { item: SpaceItem; contac
   const label: Record<SpaceItem['stage'], string> = { received: 'Assigned', working: first, check: 'Your check', client: contact, done: 'Approved' }
   const nudge = whatsappLink(
     task.owner?.whatsapp_phone,
-    `Hi ${first}, “${task.title}” was due ${dueLabel(task.due_at, now).replace(' late', '')} ago. Where are we on it? Please deliver it on Massar as soon as you can.`
+    `Hi ${first}, “${task.title}” was due ${dueLabel(task.due_at, now).replace(' late', '')} ago. Where are we on it? Please deliver it on ${BRAND.name} as soon as you can.`
   )
 
   const sub = (key: SpaceItem['stage']) => {

@@ -1,3 +1,4 @@
+import { BRAND } from '@/lib/brand'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { newReviewToken } from '@/lib/review-link'
 import { siteOrigin } from '@/lib/site'
@@ -27,7 +28,7 @@ export async function reviewWhatsAppUrl(supabase: SupabaseClient, versionId: str
 
   const link = `${await siteOrigin()}/r/${token}`
   const work = v?.deliverables?.title ? `“${v.deliverables.title}” (V${v.version_number})` : 'your work'
-  const text = `Hi${c?.contact_name ? ` ${c.contact_name}` : ''}, ${work} from Massar is ready for your review. Approve it or ask for changes here: ${link}`
+  const text = `Hi${c?.contact_name ? ` ${c.contact_name}` : ''}, ${work} from ${BRAND.name} is ready for your review. Approve it or ask for changes here: ${link}`
 
   // Without a saved number WhatsApp opens its contact picker with the message ready.
   return { url: whatsappLink(c?.whatsapp_phone, text) || `https://wa.me/?text=${encodeURIComponent(text)}` }
