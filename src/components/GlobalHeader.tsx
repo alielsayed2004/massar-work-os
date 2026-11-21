@@ -5,13 +5,13 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { markNotificationAsRead, searchAll } from '@/app/actions/global'
 import { Icon } from '@/components/icons'
-import { formatCairo } from '@/lib/labels'
+import { formatCairo, notificationText } from '@/lib/labels'
 
 type Notification = { id: string; message: string; internal_link: string | null; created_at: string }
 type Results = {
-  projects: { id: string; name: string }[] | null
-  tasks: { id: string; title: string }[] | null
-  clients: { id: string; company_name: string }[] | null
+  projects: { id: string; name: string; href: string | null }[]
+  tasks: { id: string; title: string; href: string | null }[]
+  clients: { id: string; company_name: string; href: string }[]
 }
 
 /** Closes a popover when the user clicks outside it or presses Escape. */
@@ -35,6 +35,12 @@ function useDismiss(open: boolean, close: () => void) {
   return ref
 }
 
+/** A search result opens the client space it belongs to; internal tasks have nowhere to open. */
+function SearchHit({ href, onPick, children }: { href: string | null; onPick: () => void; children: React.ReactNode }) {
+  if (!href) return <div className="massar-popover-item" style={{ color: 'var(--color-text-muted)' }}>{children} · internal</div>
+  return <Link href={href} className="massar-popover-item" onClick={onPick} style={{ display: 'block', color: 'inherit', textDecoration: 'none' }}>{children}</Link>
+}
+
 export default function GlobalHeader({
   title,
   unreadNotifications,
@@ -50,6 +56,11 @@ export default function GlobalHeader({
   const [showNotifs, setShowNotifs] = useState(false)
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<Results | null>(null)
+  const searchTurn = useRef(0)
+  const closeSearch = () => {
+    setResults(null)
+    setQuery('')
+  }
 
   const notifRef = useDismiss(showNotifs, () => setShowNotifs(false))
   const searchRef = useDismiss(results !== null, () => setResults(null))
@@ -57,7 +68,10 @@ export default function GlobalHeader({
   async function handleSearch(e: React.ChangeEvent<HTMLInputElement>) {
     const q = e.target.value
     setQuery(q)
-    setResults(q.trim().length >= 2 ? await searchAll(q) : null)
+    // Answers can come back out of order while typing: keep only the latest
+    const turn = ++searchTurn.current
+    const found = q.trim().length >= 2 ? await searchAll(q) : null
+    if (turn === searchTurn.current) setResults(found)
   }
 
   async function handleRead(id: string) {
@@ -93,11 +107,11 @@ export default function GlobalHeader({
           {results && (
             <div className="massar-popover" style={{ insetInlineStart: 0, width: '100%' }}>
               {!!results.tasks?.length && <div className="massar-popover-group">Tasks</div>}
-              {results.tasks?.map(t => <div key={t.id} className="massar-popover-item">{t.title}</div>)}
+              {results.tasks?.map(t => <SearchHit key={t.id} href={t.href} onPick={closeSearch}>{t.title}</SearchHit>)}
               {!!results.projects?.length && <div className="massar-popover-group">Projects</div>}
-              {results.projects?.map(p => <div key={p.id} className="massar-popover-item">{p.name}</div>)}
+              {results.projects?.map(p => <SearchHit key={p.id} href={p.href} onPick={closeSearch}>{p.name}</SearchHit>)}
               {!!results.clients?.length && <div className="massar-popover-group">Clients</div>}
-              {results.clients?.map(c => <div key={c.id} className="massar-popover-item">{c.company_name}</div>)}
+              {results.clients?.map(c => <SearchHit key={c.id} href={c.href} onPick={closeSearch}>{c.company_name}</SearchHit>)}
               {empty && <div className="massar-popover-item">No results for “{query}”.</div>}
             </div>
           )}
@@ -130,7 +144,7 @@ export default function GlobalHeader({
               <ul style={{ listStyle: 'none', padding: 0, margin: 0, maxHeight: 400, overflowY: 'auto' }}>
                 {unreadNotifications.map(n => (
                   <li key={n.id} style={{ padding: '12px var(--space-3)', borderBottom: 'var(--border-width) solid var(--color-line)' }}>
-                    <p style={{ margin: '0 0 4px', fontSize: 14, lineHeight: 1.45 }}>{n.message}</p>
+                    <p style={{ margin: '0 0 4px', fontSize: 14, lineHeight: 1.45 }}><bdi>{notificationText(n.message)}</bdi></p>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', fontSize: 13 }}>
                       <span style={{ color: 'var(--color-text-muted)', flex: 1 }}><bdi>{formatCairo(n.created_at)}</bdi></span>
                       {n.internal_link && (

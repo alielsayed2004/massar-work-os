@@ -80,6 +80,55 @@ export async function createTask(formData: FormData) {
   backWithOk(back, 'TASK_CREATED')
 }
 
+/** A partner or the team lead fixes a task: wording, deadline, or who does it (RLS enforces who). */
+export async function updateTask(formData: FormData) {
+  const supabase = await createClient()
+  const back = String(formData.get('back') || '/spaces')
+  const taskId = String(formData.get('task_id') || '')
+  const title = String(formData.get('title') || '').trim()
+  const dueLocal = String(formData.get('due_at') || '')
+  const owner = String(formData.get('owner_id') || '')
+  if (!taskId || !title || !dueLocal || !owner) backWithError(back, 'MISSING_FIELDS')
+
+  // The task follows its owner's team, as on create
+  const { data: person } = await supabase.from('profiles').select('team_id, status').eq('id', owner).single()
+  if (!person || person.status !== 'active') backWithError(back, 'TASK_OWNER_INVALID')
+  if (!person.team_id) backWithError(back, 'TASK_TEAM_REQUIRED')
+
+  const { data, error } = await supabase
+    .from('tasks')
+    .update({
+      title,
+      description: String(formData.get('description') || '').trim() || null,
+      due_at: cairoInputToUtcIso(dueLocal),
+      current_owner_user_id: owner,
+      team_id: person.team_id,
+    })
+    .eq('id', taskId)
+    .select('id')
+  if (error) backWithError(back, error)
+  if (!data?.length) backWithError(back, 'NOT_ALLOWED')
+
+  revalidatePath('/my-work')
+  revalidatePath('/today')
+  revalidatePath('/team')
+  revalidatePath('/spaces', 'layout')
+  backWithOk(back, 'TASK_SAVED')
+}
+
+export async function cancelTask(formData: FormData) {
+  const supabase = await createClient()
+  const back = String(formData.get('back') || '/spaces')
+  const { error } = await supabase.rpc('update_task_status', { p_task_id: String(formData.get('task_id') || ''), p_status: 'canceled' })
+  if (error) backWithError(back, error)
+
+  revalidatePath('/my-work')
+  revalidatePath('/today')
+  revalidatePath('/team')
+  revalidatePath('/spaces', 'layout')
+  backWithOk(back, 'TASK_CANCELED')
+}
+
 export async function addComment(formData: FormData) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

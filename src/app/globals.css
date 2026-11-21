@@ -77,6 +77,11 @@
   /* Layout */
   --sidebar-width: 232px;
   --content-max-width: 1280px;
+  /* Layout grid: one page width and one 12-column grid for every screen.
+     The gutter (page edge padding) steps down with the viewport. */
+  --page-max: 1160px;
+  --gutter: 48px;
+  --grid-gap: 24px;
   --grid-columns-desktop: 12;
   --grid-gap: 24px;
   --control-height: 48px;
@@ -330,7 +335,7 @@ body {
   align-items: center;
   gap: var(--space-3);
   height: 64px;
-  padding: 0 var(--space-5);
+  padding: 0 var(--gutter);
   background: color-mix(in srgb, var(--bone) 88%, transparent);
   backdrop-filter: blur(8px);
 }
@@ -457,9 +462,9 @@ body {
 
 .massar-content {
   width: 100%;
-  max-width: var(--content-max-width);
+  max-width: calc(var(--page-max) + 2 * var(--gutter));
   margin: 0 auto;
-  padding: var(--space-5) var(--space-5) var(--space-8);
+  padding: var(--space-6) var(--gutter) var(--space-8);
   box-sizing: border-box;
   animation: massarFadeIn var(--motion-standard) var(--motion-ease);
 }
@@ -784,17 +789,80 @@ body {
 }
 
 .massar-create-body {
-  position: absolute;
-  inset-inline-end: 0;
-  top: calc(100% + 8px);
-  width: min(760px, calc(100vw - 48px));
+  position: fixed;
+  z-index: 61;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(680px, calc(100vw - 32px));
+  max-height: calc(100vh - 64px);
+  overflow-y: auto;
   box-sizing: border-box;
   background: var(--color-surface-raised);
-  border: var(--border-width) solid var(--color-line);
-  border-radius: var(--radius-surface);
-  box-shadow: var(--shadow-overlay);
-  padding: var(--space-4);
-  z-index: 18;
+  border-radius: 14px;
+  box-shadow: 0 32px 64px -24px color-mix(in srgb, var(--ink) 45%, transparent);
+  padding: var(--space-5);
+  text-align: start;
+  animation: massarDialogIn 220ms var(--intro-ease, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+/* The backdrop belongs to the summary, so clicking it closes the dialog */
+.massar-create[open] > summary::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  background: color-mix(in srgb, var(--ink) 38%, transparent);
+  cursor: default;
+  animation: massarFadeIn 180ms var(--motion-ease);
+}
+
+.massar-create[open] > summary {
+  filter: none !important;
+}
+
+.massar-create-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.massar-create-title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--color-text-strong);
+}
+
+.massar-create-close {
+  width: 36px;
+  height: 36px;
+  margin: -6px -6px 0 0;
+  display: inline-grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.massar-create-close:hover {
+  background: var(--color-hover-strong);
+  color: var(--color-text);
+}
+
+.massar-create-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+@keyframes massarDialogIn {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 8px)) scale(0.98); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
 }
 
 /* Row actions menu */
@@ -1300,7 +1368,6 @@ body {
 .massar-people-list {
   display: grid;
   gap: var(--space-3);
-  max-width: 900px;
 }
 
 .massar-person-card {
@@ -1461,12 +1528,6 @@ body {
   .massar-create {
     width: 100%;
   }
-  .massar-create-body {
-    position: static;
-    width: 100%;
-    margin-top: var(--space-3);
-    box-shadow: none;
-  }
   .massar-shell {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1492,11 +1553,9 @@ body {
   .massar-menu-btn {
     display: inline-flex;
   }
-  .massar-topbar {
-    padding: 0 var(--space-3);
-  }
   .massar-content {
-    padding: var(--space-4) var(--space-3) var(--space-7);
+    padding-top: var(--space-4);
+    padding-bottom: var(--space-7);
   }
 }
 
@@ -1958,4 +2017,156 @@ html[data-intro='skip'] .massar-intro {
 
 @media (max-width: 640px) {
   .massar-skel-button { display: none; }
+}
+
+/* ── Layout grid ──────────────────────────────────────────────────────
+   12 columns inside the page width. Sections pick a span; below 1024px
+   everything stacks to full width. */
+.massar-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: var(--grid-gap);
+  align-items: start;
+}
+
+.massar-grid > * { grid-column: 1 / -1; min-width: 0; }
+.massar-grid > .massar-col-8 { grid-column: span 8; }
+.massar-grid > .massar-col-7 { grid-column: span 7; }
+.massar-grid > .massar-col-6 { grid-column: span 6; }
+.massar-grid > .massar-col-5 { grid-column: span 5; }
+.massar-grid > .massar-col-4 { grid-column: span 4; }
+
+/* Forms: two even columns, labels on top, rows aligned to the top */
+.massar-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3) var(--grid-gap);
+  align-items: start;
+}
+
+.massar-form-grid > .massar-form-full { grid-column: 1 / -1; }
+
+.massar-form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+  padding-top: var(--space-2);
+}
+
+/* A small titled block inside a dialog (e.g. Department | Team) */
+.massar-subform {
+  display: grid;
+  gap: var(--space-2);
+  align-content: start;
+  padding: var(--space-4);
+  border: var(--border-width) solid var(--color-line);
+  border-radius: var(--radius-surface);
+}
+
+.massar-subform h3 {
+  margin: 0 0 var(--space-1);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-strong);
+}
+
+/* Table headers stay visible under the top bar while scrolling */
+.massar-table thead th {
+  position: sticky;
+  top: 64px;
+  z-index: 2;
+}
+
+/* Inline-edit tables: fields fill their cell */
+.massar-table-edit th,
+.massar-table-edit td {
+  padding: 10px 8px;
+}
+
+.massar-table-edit th:first-child,
+.massar-table-edit td:first-child {
+  padding-inline-start: var(--space-4);
+}
+
+.massar-table-edit th:last-child,
+.massar-table-edit td:last-child {
+  padding-inline-end: var(--space-4);
+}
+
+.massar-table-edit input,
+.massar-table-edit select {
+  min-height: 40px !important;
+  width: 100% !important;
+}
+
+@media (max-width: 1100px) {
+  :root { --gutter: 32px; }
+}
+
+@media (max-width: 1024px) {
+  .massar-grid > [class*='massar-col-'] { grid-column: 1 / -1; }
+}
+
+@media (max-width: 900px) {
+  :root { --gutter: 24px; --grid-gap: 16px; }
+  .massar-table thead th { position: static; }
+}
+
+@media (max-width: 640px) {
+  :root { --gutter: 16px; }
+  .massar-form-grid { grid-template-columns: minmax(0, 1fr); }
+  .massar-create-body {
+    top: auto;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 88vh;
+    transform: none;
+    border-radius: 18px 18px 0 0;
+    padding: var(--space-4) var(--gutter) calc(var(--space-5) + env(safe-area-inset-bottom));
+    animation-name: massarSheetIn;
+  }
+}
+
+@keyframes massarSheetIn {
+  from { transform: translateY(24px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+/* In a dialog, a form's submit row and its wide fields span the full width */
+.massar-create-body form > div:has(> button[type='submit']),
+.massar-create-body form > div:has(> textarea) {
+  grid-column: 1 / -1;
+}
+
+/* Side column: stays in view beside a long main column */
+.massar-aside {
+  position: sticky;
+  top: calc(64px + var(--space-4));
+  display: grid;
+  gap: var(--space-5);
+}
+
+/* Stats in a narrow column stack as a compact 3-up row */
+.massar-aside .massar-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.massar-aside .massar-stat {
+  padding: 14px 12px;
+}
+
+.massar-aside .massar-stat dd {
+  font-size: 32px;
+}
+
+.massar-aside .massar-section {
+  margin-bottom: 0;
+}
+
+@media (max-width: 1024px) {
+  .massar-aside { position: static; order: -1; }
 }

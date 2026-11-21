@@ -4,10 +4,11 @@ import { connection } from 'next/server'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getSessionUser, getMyProfile } from '@/lib/session'
-import { createTask } from '@/app/actions/tasks'
+import { createTask, updateTask, cancelTask } from '@/app/actions/tasks'
 import { updateClientContact } from '@/app/actions/projects'
 import { checkDelivery, recordClientDecision } from '@/app/actions/delivery'
-import { nowMs, formatCairo } from '@/lib/labels'
+import { nowMs, formatCairo, CAIRO } from '@/lib/labels'
+import { formatInTimeZone } from 'date-fns-tz'
 import { whatsappLink, dueLabel, hoursUntil } from '@/lib/workflow'
 import { loadSpaceItems, spaceCounts, initials, type SpaceItem } from '@/lib/spaces'
 import { s, Flash, Empty, CreatePanel } from '@/components/ui'
@@ -163,7 +164,7 @@ export default async function SpacePage({
         {list.length === 0 ? (
           <Empty>{showDone ? 'Nothing finished in the last 30 days.' : 'No open work for this client. Press “New task” to start one.'}</Empty>
         ) : (
-          list.map(item => <FlowRow key={item.task.id} item={item} contact={contact} back={back} now={now} />)
+          list.map(item => <FlowRow key={item.task.id} item={item} contact={contact} back={back} now={now} people={people} />)
         )}
       </div>
       <p style={{ ...s.muted, marginTop: 'var(--space-3)' }}>
@@ -173,7 +174,7 @@ export default async function SpacePage({
   )
 }
 
-function FlowRow({ item, contact, back, now }: { item: SpaceItem; contact: string; back: string; now: number }) {
+function FlowRow({ item, contact, back, now, people }: { item: SpaceItem; contact: string; back: string; now: number; people: Person[] }) {
   const { task, stage, version, late, changes } = item
   const at = ORDER.indexOf(stage)
   const owner = task.owner?.full_name || 'Unassigned'
@@ -268,6 +269,40 @@ function FlowRow({ item, contact, back, now }: { item: SpaceItem; contact: strin
             {(stage === 'received' || stage === 'working') && <VersionUpload taskId={task.id} label="Add material" />}
           </div>
         </details>
+        {(stage === 'received' || stage === 'working') && (
+          <details className="massar-disclosure">
+            <summary className="massar-flow-more-link">Edit task</summary>
+            <form action={updateTask} className="massar-task-edit" style={{ display: 'grid', gap: 8, marginTop: 8 }}>
+              <input type="hidden" name="back" value={back} />
+              <input type="hidden" name="task_id" value={task.id} />
+              <div>
+                <label htmlFor={`et-${task.id}`} style={s.label}>Title</label>
+                <input id={`et-${task.id}`} name="title" required defaultValue={task.title} style={{ ...s.field, minHeight: 38 }} />
+              </div>
+              <div>
+                <label htmlFor={`eo-${task.id}`} style={s.label}>Who does it</label>
+                <select id={`eo-${task.id}`} name="owner_id" required defaultValue={task.current_owner_user_id} style={{ ...s.field, minHeight: 38 }}>
+                  {!people.some(p => p.id === task.current_owner_user_id) && <option value={task.current_owner_user_id}>{owner}</option>}
+                  {people.map(p => <option key={p.id} value={p.id}>{p.full_name}</option>)}
+                </select>
+              </div>
+              <div>
+                <label htmlFor={`ed-${task.id}`} style={s.label}>Due (Cairo time)</label>
+                <input id={`ed-${task.id}`} name="due_at" type="datetime-local" required defaultValue={formatInTimeZone(new Date(task.due_at), CAIRO, "yyyy-MM-dd'T'HH:mm")} style={{ ...s.field, minHeight: 38 }} />
+              </div>
+              <div>
+                <label htmlFor={`eb-${task.id}`} style={s.label}>Brief</label>
+                <textarea id={`eb-${task.id}`} name="description" rows={3} defaultValue={task.description || ''} style={{ ...s.field, padding: 8, fontSize: 14 }} />
+              </div>
+              <button type="submit" style={{ ...s.secondary, minHeight: 38, fontSize: 13 }}>Save changes</button>
+            </form>
+            <form action={cancelTask} style={{ marginTop: 8 }}>
+              <input type="hidden" name="back" value={back} />
+              <input type="hidden" name="task_id" value={task.id} />
+              <button type="submit" style={{ ...s.textBtn, fontSize: 13, fontWeight: 500, color: 'var(--color-text-muted)' }}>Cancel this task</button>
+            </form>
+          </details>
+        )}
       </div>
       {NODES.map((n, i) => {
         const state = stage === 'done' || i < at ? 'done' : i === at ? (waiting ? 'now wait' : 'now') : ''
