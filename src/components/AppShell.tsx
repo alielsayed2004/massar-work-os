@@ -69,6 +69,7 @@ export default function AppShell({
             </button>
           </form>
         </div>
+        {BRAND.credit && <p className="massar-credit">{BRAND.credit}</p>}
       </aside>
 
       <div className="massar-scrim" onClick={closeNav} aria-hidden="true" />

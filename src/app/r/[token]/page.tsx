@@ -33,6 +33,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         <img src={BRAND.logo} alt={BRAND.name} style={{ height: 44 }} />
       </header>
       <main style={{ maxWidth: 680, margin: '0 auto', padding: '32px 16px 64px', display: 'grid', gap: 'var(--space-4)' }}>{children}</main>
+      {BRAND.credit && <p className="massar-credit massar-credit-page" style={{ position: 'static', paddingBottom: 24 }}>{BRAND.credit}</p>}
     </div>
   )
 }

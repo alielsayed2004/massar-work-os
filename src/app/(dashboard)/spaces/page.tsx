@@ -1,4 +1,5 @@
 export const instant = false
+import { BRAND } from '@/lib/brand'
 import Link from 'next/link'
 import { connection } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
@@ -66,7 +67,7 @@ export default async function SpacesPage({
       {clients.length === 0 ? (
         <section className="massar-panel"><Empty>No clients yet. Create the first space.</Empty></section>
       ) : (
-        <div className="massar-spaces">
+        <div className="massar-spaces" data-view={BRAND.spacesView}>
           {clients.map(c => {
             const n = spaceCounts(items.filter(i => i.task.projects?.client_id === c.id))
             return (

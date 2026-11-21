@@ -111,6 +111,7 @@ export default function SetPasswordForm() {
           </>
         )}
       </section>
+      {BRAND.credit && <p className="massar-credit massar-credit-page">{BRAND.credit}</p>}
     </main>
   )
 }

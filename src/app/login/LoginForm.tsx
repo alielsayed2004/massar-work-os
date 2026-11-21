@@ -174,6 +174,7 @@ export default function LoginForm({ hasError, inactive, resetSent, devAuth }: Lo
         </form>
         )}
       </section>
+      {BRAND.credit && <p className="massar-credit massar-credit-page">{BRAND.credit}</p>}
     </main>
   )
 }
