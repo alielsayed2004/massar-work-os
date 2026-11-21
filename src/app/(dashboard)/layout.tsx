@@ -1,4 +1,5 @@
 export const instant = false;
+import { BRAND } from '@/lib/brand'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
@@ -42,7 +43,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const isLead = role === 'admin' || role === 'manager'
   // Clients have no account any more: they review from the WhatsApp link
   if (!isInternal) redirect('/login?message=inactive')
-  const fullName = profile.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || 'Massar'
+  const fullName = profile.full_name || user.user_metadata?.full_name || user.email?.split('@')[0] || BRAND.name
 
   // Team members see their own work only; partners and leads see the business.
   // Leads get each client space in the sidebar, with what's waiting for their check

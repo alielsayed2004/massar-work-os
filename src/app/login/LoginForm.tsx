@@ -1,5 +1,6 @@
 'use client'
 
+import { BRAND } from '@/lib/brand'
 import { useEffect, useState, useTransition } from 'react'
 import { login, loginDirectly, requestPasswordReset } from './actions'
 
@@ -76,11 +77,11 @@ export default function LoginForm({ hasError, inactive, resetSent, devAuth }: Lo
         >
           <div className="massar-intro-mark">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/image/massar_logo.svg" alt="" className="massar-intro-logo" fetchPriority="high" />
+            <img src={BRAND.logo} alt="" className="massar-intro-logo" fetchPriority="high" />
           </div>
           <div className="massar-intro-caption">
-            <strong>ONE PARTNER. ONE PATH.</strong>
-            <span>MASSAR · WORK OPERATING SYSTEM</span>
+            <strong>{BRAND.tagline}</strong>
+            <span>{BRAND.name.toUpperCase()} · WORK OPERATING SYSTEM</span>
           </div>
           <div className="massar-intro-line" />
           <button
@@ -98,9 +99,9 @@ export default function LoginForm({ hasError, inactive, resetSent, devAuth }: Lo
       )}
 
       <section className="massar-login-card" aria-busy={working}>
-        <div className="massar-login-mark" role="img" aria-label="Massar" />
+        <div className="massar-login-mark" role="img" aria-label={BRAND.name} />
         <h1 className="massar-login-title">Sign in</h1>
-        <p className="massar-login-sub">Massar Work OS</p>
+        <p className="massar-login-sub">{BRAND.name} Work OS</p>
 
         {forgot ? (
           <form action={requestPasswordReset} className="massar-login-form">
@@ -147,13 +148,13 @@ export default function LoginForm({ hasError, inactive, resetSent, devAuth }: Lo
 
           {resetSent && (
             <p role="status" className="massar-login-alert" data-tone="ok">
-              If that email has a Massar account, a link to choose a new password is on its way. Check spam too.
+              If that email has a {BRAND.name} account, a link to choose a new password is on its way. Check spam too.
             </p>
           )}
 
           {(hasError || inactive) && (
             <p role="alert" className="massar-login-alert">
-              {inactive ? 'This account can’t sign in. Ask a Massar partner if you think that’s wrong.' : 'Wrong email or password.'}
+              {inactive ? `This account can’t sign in. Ask a ${BRAND.name} partner if you think that’s wrong.` : 'Wrong email or password.'}
             </p>
           )}
 

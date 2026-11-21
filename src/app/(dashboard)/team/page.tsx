@@ -1,4 +1,5 @@
 export const instant = false
+import { BRAND } from '@/lib/brand'
 import Link from 'next/link'
 import { connection } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
@@ -141,7 +142,7 @@ export default async function TeamPage({
               {p.late.map(t => {
                 const nudge = whatsappLink(
                   p.whatsapp_phone,
-                  `Hi ${first}, “${t.title}”${t.projects?.clients ? ` for ${t.projects.clients.company_name}` : ''} was due ${dueLabel(t.due_at, now).replace(' late', '')} ago. Where are we on it? Please deliver it on Massar as soon as you can.`
+                  `Hi ${first}, “${t.title}”${t.projects?.clients ? ` for ${t.projects.clients.company_name}` : ''} was due ${dueLabel(t.due_at, now).replace(' late', '')} ago. Where are we on it? Please deliver it on ${BRAND.name} as soon as you can.`
                 )
                 return (
                   <div key={t.id} className="massar-person-late">

@@ -1,4 +1,5 @@
 export const instant = false;
+import { BRAND } from '@/lib/brand'
 import { createClient } from '@/lib/supabase/server'
 import { getSessionUser, getMyProfile } from '@/lib/session'
 import { redirect } from 'next/navigation'
@@ -157,7 +158,7 @@ export default async function AdminPage({
         actions={
           <>
             <CreatePanel label="Assign task" title="Assign a task" secondary>{assignForm}</CreatePanel>
-            <CreatePanel label="Invite person" title="Invite someone to Massar">{inviteForm}</CreatePanel>
+            <CreatePanel label="Invite person" title={`Invite someone to ${BRAND.name}`}>{inviteForm}</CreatePanel>
           </>
         }
       />
